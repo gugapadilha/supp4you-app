@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Supp4You</string>
+    <string name="password">Password</string>
+    <string name="guga_santospadilha_rede_ulbra_br">guga.santospadilha@rede.ulbra.br</string>
+    <string name="email">Email</string>
+    <string name="sign_in">Sign in</string>
+    <string name="create_your_space">create your space</string>
+    <string name="supp4you">SUPP4YOU</string>
+    <string name="forgot">Forgot?</string>
+    <string name="log_in">Log in</string>
+    <string name="or_continue_with">Or continue with</string>
+    <string name="google">Google</string>
+    <string name="facebook">Facebook</string>
+    <string name="don_t_have_account_create_now">Don\'t have account? Create now</string>
+</resources>
