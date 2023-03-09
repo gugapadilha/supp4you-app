@@ -221,7 +221,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="15dp"
         android:text="@string/don_t_have_account_create_now"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
