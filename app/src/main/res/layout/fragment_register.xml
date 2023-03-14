@@ -73,11 +73,10 @@
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@id/tv_signin" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:text="@string/guga_santospadilha_rede_ulbra_br"
         android:textColor="@color/white"
         android:textSize="14sp"
@@ -88,38 +87,36 @@
         android:id="@+id/view2"
         android:layout_width="300dp"
         android:layout_height="1dp"
-        android:layout_marginTop="10dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tv_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:text="@string/password"
         android:textColor="@color/sub_text"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/view"
+        app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <View
         android:id="@+id/view"
         android:layout_width="300dp"
         android:layout_height="1dp"
-        android:layout_marginTop="10dp"
         android:background="@color/sub_text"
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/tv_password" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tv_repeat_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Repeat Password"
+        android:text="@string/repeat_password"
         android:textColor="@color/sub_text"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view"
@@ -129,17 +126,16 @@
         android:id="@+id/view3"
         android:layout_width="300dp"
         android:layout_height="1dp"
-        android:layout_marginTop="70dp"
         android:background="@color/sub_text"
-        app:layout_constraintStart_toStartOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@+id/tv_password" />
+        app:layout_constraintStart_toStartOf="@+id/tv_repeat_password"
+        app:layout_constraintTop_toBottomOf="@+id/tv_repeat_password" />
 
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/tv_login"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
+        android:layout_marginTop="80dp"
         android:backgroundTint="@color/sub_bar"
         android:text="@string/log_in"
         app:cornerRadius="5dp"
