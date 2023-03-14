@@ -1,4 +1,4 @@
-package com.guga.supp4you
+package com.guga.supp4youapp
 
 import org.junit.Test
 
