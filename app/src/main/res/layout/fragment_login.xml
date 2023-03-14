@@ -77,7 +77,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/guga_santospadilha_rede_ulbra_br"
+        android:text="@string/guga_santospadilha_rede_ulbra_br"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"
@@ -94,14 +94,14 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tv_password"
-        android:layout_width="wrap_content"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:textColor="@color/sub_text"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:text="Password" />
+        android:text="@string/password" />
 
     <TextView
         android:id="@+id/tv_forgot"
@@ -117,7 +117,6 @@
         android:id="@+id/view"
         android:layout_width="300dp"
         android:layout_height="1dp"
-        android:layout_marginTop="10dp"
         android:background="@color/sub_text"
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@+id/tv_password" />
@@ -141,7 +140,7 @@
         android:id="@+id/tv_continue_with"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="15dp"
         android:text="@string/or_continue_with"
         android:textColor="@color/sub_text"
         android:textSize="14sp"
@@ -154,7 +153,7 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/btn_border"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_continue_with">
@@ -187,7 +186,7 @@
         android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
         android:background="@drawable/btn_border"
         app:layout_constraintEnd_toEndOf="parent"
