@@ -73,11 +73,10 @@
         app:layout_constraintStart_toStartOf="@+id/textView"
         app:layout_constraintTop_toBottomOf="@id/tv_signin" />
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:text="@string/guga_santospadilha_rede_ulbra_br"
         android:textColor="@color/white"
         android:textSize="14sp"
@@ -88,7 +87,6 @@
         android:id="@+id/view2"
         android:layout_width="300dp"
         android:layout_height="1dp"
-        android:layout_marginTop="10dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
