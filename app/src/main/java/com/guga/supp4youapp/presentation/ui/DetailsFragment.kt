@@ -22,7 +22,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val spinnerItems = listOf("ULBRA", "UNESC", "UNIASSELVI", "UCS")
+        val spinnerItems = listOf("ULBRA", "UNESC", "UNIASSELVI", "UCS", "UNINASSAU")
         val spinnerAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, spinnerItems)
         binding.spinner.adapter = spinnerAdapter
 
