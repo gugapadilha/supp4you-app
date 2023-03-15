@@ -1,10 +1,10 @@
-package com.guga.supp4youapp
+package com.guga.supp4youapp.presentation.ui
 
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentRegisterBinding
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
