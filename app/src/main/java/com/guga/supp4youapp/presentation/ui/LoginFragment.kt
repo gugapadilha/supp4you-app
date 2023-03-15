@@ -19,5 +19,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         binding.tvCreatenow.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
+
+        binding.tvLogin.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
+        }
     }
 }
