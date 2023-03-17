@@ -19,4 +19,7 @@
     <string name="gustavo_padilha">Gustavo Padilha</string>
     <string name="six_digit_code">Y3HZX9</string>
     <string name="enter_space">Enter Space</string>
+    <string name="login_space">Login space</string>
+    <string name="create_space">Create space</string>
+    <string name="whats_your_name">Whats your name?</string>
 </resources>
