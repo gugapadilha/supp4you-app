@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentDetailsBinding
 
@@ -32,6 +33,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.tvLoginspace.setOnClickListener {
+            findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
+        }
 
         binding.spinner.adapter = spinnerAdapter
 
