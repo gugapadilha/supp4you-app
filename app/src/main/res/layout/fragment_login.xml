@@ -70,12 +70,12 @@
         android:text="@string/email"
         android:textColor="@color/white"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/ed_email"
         app:layout_constraintTop_toBottomOf="@id/tv_signin" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:id="@+id/ed_email"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
         android:text="@string/guga_santospadilha_rede_ulbra_br"
         android:textColor="@color/white"
@@ -90,18 +90,18 @@
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/ed_email" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tv_password"
-        android:layout_width="200dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="@string/password"
         android:textColor="@color/sub_text"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/ed_email" />
 
     <TextView
         android:id="@+id/tv_forgot"
@@ -118,7 +118,7 @@
         android:layout_width="300dp"
         android:layout_height="1dp"
         android:background="@color/sub_text"
-        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintStart_toStartOf="@+id/ed_email"
         app:layout_constraintTop_toBottomOf="@+id/tv_password" />
 
 
