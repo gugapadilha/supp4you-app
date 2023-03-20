@@ -6,12 +6,18 @@ class DataSourceLogin2 {
 
     companion object {
 
-        fun createDataSetLogin(): ArrayList<LoginRequest> {
+        fun createDataSetLogin2(): ArrayList<LoginRequest> {
 
             val list = ArrayList<LoginRequest>()
             list.add(
                 LoginRequest(
                     "guga",
+                    "123456"
+                )
+            )
+            list.add(
+                LoginRequest(
+                    "guga.santospadilha@rede.ulbra.br",
                     "123456"
                 )
             )
