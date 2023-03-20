@@ -35,7 +35,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             if (user.equals(binding.edEmail) && user2.equals(binding.tvPassword)) {
                 findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
             } else {
-                Toast.makeText(requireContext(), "Credenciais inválidas.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Invalid Credencials.", Toast.LENGTH_SHORT).show()
             }
         }
     }
