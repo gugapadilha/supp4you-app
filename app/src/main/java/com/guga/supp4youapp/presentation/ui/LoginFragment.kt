@@ -25,6 +25,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         binding.tvLogin.setOnClickListener {
             logInValidate()
+            //findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
         }
     }
 
