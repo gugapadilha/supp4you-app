@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.guga.supp4youapp.R
-import com.guga.supp4youapp.data.DataSourceLogin2
+import com.guga.supp4youapp.data.DataSourceLogin
 import com.guga.supp4youapp.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
@@ -25,11 +25,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             val username = binding.edEmail.text.toString()
             val password = binding.tvPassword.text.toString()
 
-            val loginDataSet = DataSourceLogin2.createDataSetLogin2()
+            val loginDataSet = DataSourceLogin.createDataSetLogin2()
 
             var isLoginSuccessful = false
             for (loginRequest in loginDataSet) {
-                if (loginRequest.email == username && loginRequest.password == password) {
+                if (loginRequest.value?.email == username && loginRequest.value?.password == password) {
                     isLoginSuccessful = true
                     break
                 }
