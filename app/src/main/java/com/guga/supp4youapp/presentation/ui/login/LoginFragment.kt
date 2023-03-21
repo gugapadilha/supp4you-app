@@ -1,4 +1,4 @@
-package com.guga.supp4youapp.presentation.ui
+package com.guga.supp4youapp.presentation.ui.login
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
