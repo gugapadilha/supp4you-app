@@ -12,8 +12,5 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val _data = MutableLiveData<List<LoginRequest>>()
     val data: MutableLiveData<List<LoginRequest>> = _data
 
-    fun validateLogin(){
-
-    }
 
 }

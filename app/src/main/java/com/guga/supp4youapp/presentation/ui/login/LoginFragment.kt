@@ -1,4 +1,5 @@
 package com.guga.supp4youapp.presentation.ui.login
+
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -17,11 +18,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         binding = FragmentLoginBinding.bind(view)
 
-        binding.tvCreatenow.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
-        }
-
-        binding.tvLogin.setOnClickListener {
+        fun validateLogin() {
             val username = binding.edEmail.text.toString()
             val password = binding.tvPassword.text.toString()
 
@@ -41,5 +38,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 Toast.makeText(requireContext(), "Invalid Credencials", Toast.LENGTH_SHORT).show()
             }
         }
+
+        binding.tvCreatenow.setOnClickListener {
+            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
+        }
+
+        binding.tvLogin.setOnClickListener {
+            validateLogin()
+        }
+
     }
 }
