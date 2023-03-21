@@ -25,7 +25,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             val username = binding.edEmail.text.toString()
             val password = binding.tvPassword.text.toString()
 
-            val loginDataSet = DataSourceLogin.createDataSetLogin2()
+            val loginDataSet = DataSourceLogin.createDataSetLogin()
 
             var isLoginSuccessful = false
             for (loginRequest in loginDataSet) {
