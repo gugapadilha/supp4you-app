@@ -25,7 +25,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         binding.tvLogin.setOnClickListener {
             val username = binding.edEmail.text.toString()
-            val password = binding.tvPassword.text.toString()
+            val password = binding.edPassword.text.toString()
 
             val isLoginSuccessful = loginViewModel.validateLogin(username, password)
 

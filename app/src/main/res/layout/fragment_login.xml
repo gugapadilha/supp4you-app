@@ -93,7 +93,7 @@
         app:layout_constraintTop_toBottomOf="@+id/ed_email" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/tv_password"
+        android:id="@+id/ed_password"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -111,7 +111,7 @@
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/view"
-        app:layout_constraintTop_toTopOf="@+id/tv_password" />
+        app:layout_constraintTop_toTopOf="@+id/ed_password" />
 
     <View
         android:id="@+id/view"
@@ -119,7 +119,7 @@
         android:layout_height="1dp"
         android:background="@color/sub_text"
         app:layout_constraintStart_toStartOf="@+id/ed_email"
-        app:layout_constraintTop_toBottomOf="@+id/tv_password" />
+        app:layout_constraintTop_toBottomOf="@+id/ed_password" />
 
 
     <com.google.android.material.button.MaterialButton
