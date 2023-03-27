@@ -24,7 +24,7 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
     }
 
     private fun validateCode(): String {
-        val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+        val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
         val codeSize = 6
         val random = java.util.Random()
         val code = CharArray(codeSize)
