@@ -1,3 +1,4 @@
+import Validator.validateCode
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -23,18 +24,6 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
     }
 
-    private fun validateCode(): String {
-        val letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        val codeSize = 6
-        val random = java.util.Random()
-        val code = CharArray(codeSize)
-
-        for (i in 0 until codeSize) {
-            code[i] = letters[random.nextInt(letters.length)]
-        }
-
-        return String(code)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
