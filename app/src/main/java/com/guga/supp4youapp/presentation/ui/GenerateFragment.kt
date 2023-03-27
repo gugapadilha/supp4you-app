@@ -24,7 +24,6 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
     }
 
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
