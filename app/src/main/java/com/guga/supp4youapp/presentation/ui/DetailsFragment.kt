@@ -38,6 +38,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
         }
 
+        binding.tvCreatespace.setOnClickListener{
+            findNavController().navigate(R.id.action_detailsFragment_to_generateFragment)
+        }
+
         binding.spinner.adapter = spinnerAdapter
 
         binding.spinner.post {
