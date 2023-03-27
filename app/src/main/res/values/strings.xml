@@ -22,4 +22,7 @@
     <string name="login_space">Login space</string>
     <string name="create_space">Create space</string>
     <string name="whats_your_name">Whats your name?</string>
+    <string name="here_it_is_your_generate_code">Here it is your generate code</string>
+    <string name="generate">Generate</string>
+    <string name="share_with_others">Share with others</string>
 </resources>
