@@ -34,10 +34,18 @@
         <action
             android:id="@+id/action_detailsFragment_to_accessFragment"
             app:destination="@id/accessFragment" />
+        <action
+            android:id="@+id/action_detailsFragment_to_generateFragment"
+            app:destination="@id/generateFragment" />
     </fragment>
     <fragment
         android:id="@+id/accessFragment"
         android:name="AccessFragment"
         android:label="AccessFragment"
         tools:layout="@layout/fragment_access"/>
+    <fragment
+        android:id="@+id/generateFragment"
+        android:name="GenerateFragment"
+        android:label="GenerateFragment"
+        tools:layout="@layout/fragment_generate"/>
 </navigation>
