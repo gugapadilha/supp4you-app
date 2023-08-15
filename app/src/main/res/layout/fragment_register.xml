@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.ui.MainActivity"
+    android:background="@color/home">
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -79,6 +87,7 @@
         android:layout_height="wrap_content"
         android:text="@string/guga_santospadilha_rede_ulbra_br"
         android:textColor="@color/white"
+        android:inputType="textNoSuggestions"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@id/tv_email" />
@@ -97,8 +106,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="@string/password"
+        android:hint="@string/password"
+        android:textColorHint="@color/sub_text"
         android:textColor="@color/sub_text"
+        android:inputType="textNoSuggestions"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@+id/ed_email" />
@@ -116,8 +127,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="@string/repeat_password"
+        android:hint="@string/repeat_password"
+        android:textColorHint="@color/sub_text"
         android:textColor="@color/sub_text"
+        android:inputType="textNoSuggestions"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toBottomOf="@+id/view" />
@@ -225,4 +238,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
+</ScrollView>
