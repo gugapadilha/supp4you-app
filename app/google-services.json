@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "584290121417",
+    "project_id": "supp-4-you",
+    "storage_bucket": "supp-4-you.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584290121417:android:bd370c0f5c00188d0cbf18",
+        "android_client_info": {
+          "package_name": "com.guga.supp4youapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584290121417-cuuci0cajtd8ib49tfov3re37n07itup.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkW47a2HQzvsFumn9cYi0KImWVZtyJ62I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584290121417-cuuci0cajtd8ib49tfov3re37n07itup.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

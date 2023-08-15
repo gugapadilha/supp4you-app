@@ -1,7 +1,7 @@
 package com.guga.supp4youapp.presentation.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.guga.supp4youapp.R
 
 class MainActivity : AppCompatActivity() {
