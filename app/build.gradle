@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id("com.google.gms.google-services") version "4.3.15" apply false
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -68,7 +68,5 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
 
-    //Firebase
-    implementation("com.google.firebase:firebase-analytics-ktx")
-
+    implementation platform('com.google.firebase:firebase-bom:32.2.2')
 }
