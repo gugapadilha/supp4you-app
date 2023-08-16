@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center_horizontal"
+    android:background="@drawable/rounded_top_corners_background"
+    android:paddingHorizontal="50dp">
+
+    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+        android:id="@+id/tv_generate_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:text="@string/put_the_generate_code_to_acces_your_groups"/>
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/ed_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColorHint="@color/sub_text"
+        android:textColor="@color/white"
+        android:hint="@string/y46rgsf842"/>
+    <View
+        android:id="@+id/view2"
+        android:layout_width="300dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/tv_enter_space"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        android:backgroundTint="@color/sub_bar"
+        android:text="@string/enter_space"
+/>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

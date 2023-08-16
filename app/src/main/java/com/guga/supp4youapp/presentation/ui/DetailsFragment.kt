@@ -2,12 +2,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentDetailsBinding
 
@@ -16,17 +15,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val spinnerItems = listOf("ULBRA", "UNESC", "UNIASSELVI", "UCS", "UNINASSAU")
-    private val spinnerAdapter by lazy {
-        ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, spinnerItems).apply {
-            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        }
-    }
-    private val textColor by lazy {
-        ContextCompat.getColor(requireContext(), R.color.white)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,40 +28,27 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.tvLoginspace.setOnClickListener {
-            findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
+            val bottomSheetFragment = MyBottomSheetDialogFragment()
+            bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
         }
 
-        binding.tvCreatespace.setOnClickListener{
+        binding.tvCreatespace.setOnClickListener {
             findNavController().navigate(R.id.action_detailsFragment_to_generateFragment)
-        }
-
-        binding.spinner.adapter = spinnerAdapter
-
-        binding.spinner.post {
-            (binding.spinner.selectedView as TextView).setTextColor(textColor)
-        }
-
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // change the color from selected text
-                (parent?.getChildAt(position) as? TextView)?.setTextColor(textColor)
-
-                // change the color from every item thats not selected as well
-                for (i in 0 until parent?.childCount!!) {
-                    (parent.getChildAt(i) as? TextView)?.setTextColor(textColor)
-                }
-
-                // do something with selected value
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // impl if needed
-            }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    class MyBottomSheetDialogFragment : BottomSheetDialogFragment() {
+        override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
+        ): View? {
+            return inflater.inflate(R.layout.bottom_sheet_dialog, container, false)
+        }
     }
 }
