@@ -19,9 +19,8 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         binding = FragmentAccessBinding.bind(view)
 
         binding.tvCreateSpace.setOnClickListener {
-            //navigation to next screen here
+            findNavController().navigate(R.id.action_accessFragment_to_generateFragment)
         }
-
 
         val daysArray = resources.getStringArray(R.array.days).toList()
         val customAdapter = CustomSpinnerAdapter(requireContext(), daysArray)
