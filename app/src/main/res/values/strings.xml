@@ -27,4 +27,45 @@
     <string name="share_with_others">Share with others</string>
     <string name="put_the_generate_code_to_acces_your_groups">Put the generate code to acces your groups!</string>
     <string name="y46rgsf842">Y46RGSF842</string>
+    <string name="what_will_be_your_group_name">What will be your group name?</string>
+    <string name="chose_a_time_to_allow_other_participants_to_take_pictures">Chose the time to be able to take pictures</string>
+    <string name="to_string">to</string>
+
+
+    //Days
+    <string-array name="days">
+        <item>3 Days</item>
+        <item>7 Days</item>
+        <item>14 Days</item>
+        <item>21 Days</item>
+        <item>30 Days</item>
+        <item>Unlimited</item>
+    </string-array>
+
+    <string-array name="times">
+        <item>01:00 AM</item>
+        <item>02:00 AM</item>
+        <item>03:00 AM</item>
+        <item>04:00 AM</item>
+        <item>05:00 AM</item>
+        <item>06:00 AM</item>
+        <item>07:00 AM</item>
+        <item>08:00 AM</item>
+        <item>09:00 AM</item>
+        <item>10:00 AM</item>
+        <item>11:00 AM</item>
+        <item>12:00 AM</item>
+        <item>01:00 PM</item>
+        <item>02:00 PM</item>
+        <item>03:00 PM</item>
+        <item>04:00 PM</item>
+        <item>05:00 PM</item>
+        <item>06:00 PM</item>
+        <item>07:00 PM</item>
+        <item>08:00 PM</item>
+        <item>09:00 PM</item>
+        <item>10:00 PM</item>
+        <item>11:00 PM</item>
+        <item>12:00 PM</item>
+    </string-array>
 </resources>

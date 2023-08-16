@@ -24,16 +24,17 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         binding.tvLogin.setOnClickListener {
-            val username = binding.edEmail.text.toString()
-            val password = binding.edPassword.text.toString()
-
-            val isLoginSuccessful = loginViewModel.validateLogin(username, password)
-
-            if (isLoginSuccessful) {
-                findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
-            } else {
-                Toast.makeText(requireContext(), "Invalid Credencials", Toast.LENGTH_SHORT).show()
-            }
+            findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
+//            val username = binding.edEmail.text.toString()
+//            val password = binding.edPassword.text.toString()
+//
+//            val isLoginSuccessful = loginViewModel.validateLogin(username, password)
+//
+//            if (isLoginSuccessful) {
+//                findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
+//            } else {
+//                Toast.makeText(requireContext(), "Invalid Credencials", Toast.LENGTH_SHORT).show()
+//            }
         }
 
     }

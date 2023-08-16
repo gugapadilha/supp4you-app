@@ -1,10 +1,13 @@
 import android.os.Bundle
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentAccessBinding
+import com.guga.supp4youapp.presentation.ui.adapter.CustomSpinnerAdapter
 
 class AccessFragment : Fragment(R.layout.fragment_access) {
 
@@ -15,17 +18,35 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
 
         binding = FragmentAccessBinding.bind(view)
 
-        binding.tvEnterspace.setOnClickListener {
+        binding.tvCreateSpace.setOnClickListener {
             //navigation to next screen here
         }
 
-        fun validateCode(){
-            if(binding.tvEntercode.text.toString().isBlank() || binding.tvEntercode.text?.length != 6){
-                Toast.makeText(requireContext(), "Invalid Credencials", Toast.LENGTH_SHORT).show()
+
+        val daysArray = resources.getStringArray(R.array.days).toList()
+        val customAdapter = CustomSpinnerAdapter(requireContext(), daysArray)
+        binding.spDays.adapter = customAdapter
+
+        binding.spDays.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (adapterView != null) {
+                    val selectedItem = adapterView.getItemAtPosition(position)
+//                    val selectedText = "You selected $selectedItem"
+//                    val context = requireActivity()
+//                    Toast.makeText(context, selectedText, Toast.LENGTH_LONG).show()
+                }
             }
-            else{
-                //navigation here
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                // Lógica para quando nada é selecionado
             }
         }
+
+        val timesArray = resources.getStringArray(R.array.times).toList()
+        val timeAdapter = CustomSpinnerAdapter(requireContext(), timesArray)
+        binding.spStartTime.adapter = timeAdapter
+        binding.spEndTime.adapter = timeAdapter
+
+
     }
 }

@@ -8,103 +8,187 @@
     tools:context=".presentation.ui.MainActivity"
     android:background="@color/home">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_head"
-        android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/iv_home"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/home_icon"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_head"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_marginTop="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tv_supp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/supp4you"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_home"
-            app:layout_constraintTop_toTopOf="parent" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/home_icon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_your_space"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/iv_home"
-            app:layout_constraintTop_toBottomOf="@id/tv_supp" />
+            <TextView
+                android:id="@+id/tv_supp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="@string/supp4you"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_home"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/create_your_space"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iv_home"
+                app:layout_constraintTop_toBottomOf="@id/tv_supp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/tv_access"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:text="Access"
         android:textColor="@color/white"
         android:textSize="26sp"
-        android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cl_head" />
 
+        <TextView
+            android:id="@+id/tv_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/what_will_be_your_group_name"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_entercode"
+            app:layout_constraintTop_toBottomOf="@id/tv_access" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/tv_entercode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Study Group"
+            android:textColorHint="@color/white"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/view2"
+            app:layout_constraintTop_toBottomOf="@id/tv_code" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="300dp"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_entercode" />
+
     <TextView
-        android:id="@+id/tv_code"
+        android:id="@+id/tv_availability"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
-        android:text="Put your code class down below"
+        android:text="How many time this group will be available?"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tv_entercode"
-        app:layout_constraintTop_toBottomOf="@id/tv_access" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_entercode" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/tv_entercode"
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/sp_days"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/six_digit_code"
+        android:entries="@array/days"
+        android:spinnerMode="dropdown"
+        app:layout_constraintStart_toStartOf="@+id/tv_availability"
+        app:layout_constraintTop_toBottomOf="@+id/tv_availability" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="300dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sp_days" />
+
+    <TextView
+        android:id="@+id/tv_times"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/chose_a_time_to_allow_other_participants_to_take_pictures"
         android:textColor="@color/white"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/view2"
-        app:layout_constraintTop_toBottomOf="@id/tv_code" />
+        app:layout_constraintStart_toStartOf="@+id/tv_availability"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/tv_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="15dp"
+        android:text="@string/to_string"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/view3"
+        app:layout_constraintEnd_toStartOf="@+id/sp_end_time"
+        app:layout_constraintStart_toEndOf="@+id/sp_start_time"
+        app:layout_constraintTop_toBottomOf="@+id/tv_times" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/tv_create_space"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/sub_bar"
+        android:text="@string/create_space"
+        app:cornerRadius="5dp"
+        app:iconGravity="textStart"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view3" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/sp_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:entries="@array/times"
+        android:spinnerMode="dropdown"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_times" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:id="@+id/sp_end_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:entries="@array/times"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_times" />
+
 
     <View
-        android:id="@+id/view2"
+        android:id="@+id/view3"
         android:layout_width="300dp"
         android:layout_height="1dp"
+        android:layout_marginTop="10dp"
         android:background="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_entercode" />
+        app:layout_constraintTop_toBottomOf="@+id/sp_end_time" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/tv_enterspace"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="228dp"
-        android:backgroundTint="@color/sub_bar"
-        android:text="@string/enter_space"
-        app:cornerRadius="5dp"
-        app:iconGravity="textStart"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>

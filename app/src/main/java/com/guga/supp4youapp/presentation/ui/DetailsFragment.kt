@@ -33,7 +33,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
 
         binding.tvCreatespace.setOnClickListener {
-            findNavController().navigate(R.id.action_detailsFragment_to_generateFragment)
+            findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
         }
     }
 
