@@ -1,265 +1,156 @@
 package com.guga.supp4youapp.presentation.ui.camera
-
-import CountDownTimerState
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.content.res.ColorStateList
+import android.Manifest
+import android.content.ContentValues
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.HapticFeedbackConstants
-import android.view.View
+import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCapture.*
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
-import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
-import androidx.core.view.isVisible
-import checkPermissions
-import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
-import com.guga.supp4youapp.presentation.ui.login.LoginFragment
-import com.guga.supp4youapp.utils.extensions.eventArgs
-import com.guga.supp4youapp.utils.extensions.putEventArgs
-import getAppFileDir
-import getColorRes
-import getDrawableRes
-import openHelpChat
-import setStatusBarTransparent
-import showConfirmExitDialog
-import showRationaleCameraDialog
-import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.properties.Delegates.observable
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class CameraActivity : AppCompatActivity() {
+    private lateinit var viewBinding: ActivityCameraBinding
 
-    private val binding: ActivityCameraBinding by lazy {
-        ActivityCameraBinding.inflate(layoutInflater)
+    private var imageCapture: ImageCapture? = null
+    private lateinit var cameraExecutor: ExecutorService
+
+    private val pickImagesLauncher = registerForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia()
+    ) { uris: List<Uri>? ->
+        uris?.let {
+            Toast.makeText(this, "Files selected: ${uris.size}", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    private val cameraProvider: ProcessCameraProvider by lazy {
-        ProcessCameraProvider.getInstance(this).get()
+    private val requestPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            finish()
+        }
     }
-
-    private val imageCapture: ImageCapture by lazy {
-        ImageCapture.Builder()
-            .build()
-    }
-
-    private var lensFacingDirection by observable(CameraSelector.LENS_FACING_BACK) { _, _, _ ->
-        updateCameraView()
-    }
-
-    private val permissionsRequest = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-        ::handlePermissions
-    )
-
-    private val screenPermissions = listOf(
-        android.Manifest.permission.CAMERA
-    )
-
-    private val eventArgs by lazy { intent.eventArgs }
-
-    private val viewModel: CameraViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera)
+        viewBinding = ActivityCameraBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
-        eventArgs?.let { viewModel?.setCurrentEvent(it) }
-        binding.setupViews()
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
+        }
+
+        cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun ActivityCameraBinding.setupViews() {
-        cameraContent.run {
-            takeShotButton.setOnClickListener { view ->
-                view.performHapticFeedback(
-                    HapticFeedbackConstants.VIRTUAL_KEY,
-                    HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+
+    private fun takePhoto() {
+        // Get a stable reference of the modifiable image capture use case
+        val imageCapture = imageCapture ?: return
+
+        // Create time stamped name and MediaStore entry.
+        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/FassoFoto")
+            }
+        }
+
+        // Create output options object which contains file + metadata
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+        ).build()
+
+        // Set up image capture listener, which is triggered after photo has
+        // been taken
+        imageCapture.takePicture(outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun showRecentPhotos() {
+        pickImagesLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            // Used to bind the lifecycle of cameras to the lifecycle owner
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            // Preview
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewBinding.cameraPreview.surfaceProvider)
+            }
+
+            imageCapture = ImageCapture.Builder().build()
+
+            // Select back camera as a default
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                // Unbind use cases before rebinding
+                cameraProvider.unbindAll()
+
+                // Bind use cases to camera
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview, imageCapture
                 )
-                viewModel?.onTakeShotButtonClicked()
 
+            } catch (exc: Exception) {
             }
 
-            flipCameraButton.setOnClickListener { changeLensFacingDirection() }
-            flashButton.setOnClickListener { changeFlashMode() }
-            // TODO: When we create event screen, we should un-comment this section
-            //eventThumbImage.setOnClickListener { onBackPressed() }
-            backButton.setOnClickListener { onBackPressed() }
-            helpButton.setOnClickListener { openHelpChat() }
-        }
-    }
-    override fun onStart() {
-        setupCamera()
-        super.onStart()
+        }, ContextCompat.getMainExecutor(this))
     }
 
-    override fun onBackPressed() {
-            val intent = eventArgs?.let {
-                Intent(this, LoginFragment::class.java)
-                    .putEventArgs(it)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
+    companion object {
+        private const val TAG = "FassoFoto"
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private val REQUIRED_PERMISSIONS = mutableListOf(
+            Manifest.permission.CAMERA
+        ).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             }
-            startActivity(intent)
-            finish()
-    }
-
-    private fun showTakePhotoDisabledToast(isGalleryClosed: Boolean) {
-        val textRes =
-            if (isGalleryClosed) R.string.photo_disabled_toast_gallery_closed
-            else R.string.photo_disabled_toast_event_ended
-
-        Toast.makeText(this, textRes, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setupCamera() {
-        val hasPermissions = checkPermissions(screenPermissions)
-
-        if (hasPermissions) updateCameraView()
-        else permissionsRequest.launch(screenPermissions.toTypedArray())
-    }
-
-    private fun PreviewView.bind(cameraProvider: ProcessCameraProvider) {
-        val preview: Preview = Preview.Builder().build()
-        val cameraSelector: CameraSelector = CameraSelector.Builder()
-            .requireLensFacing(lensFacingDirection)
-            .build()
-
-        preview.setSurfaceProvider(surfaceProvider)
-
-        cameraProvider.bindToLifecycle(
-            this@CameraActivity,
-            cameraSelector,
-            imageCapture,
-            preview
-        )
-    }
-
-    private fun updateCameraView() {
-        cameraProvider.unbindAll()
-        binding.cameraPreview.bind(cameraProvider)
-    }
-
-    private fun handlePermissions(permissions: Map<String, Boolean>) {
-        val arePermissionsGranted = permissions.values.all { isGranted -> isGranted }
-
-        if (arePermissionsGranted) updateCameraView()
-        else showRationaleCameraDialog()
-    }
-
-    private fun takeShot() {
-        val cameraMainExecutor = ContextCompat.getMainExecutor(this)
-        val fileName = "${Date().time}.jpg"
-        val shotFile = File(getAppFileDir(), fileName)
-
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(shotFile)
-            .build()
-
-        imageCapture.takePicture(
-            outputOptions,
-            cameraMainExecutor,
-            onImageSavedCallback
-        )
-    }
-
-    private fun changeLensFacingDirection() {
-        lensFacingDirection = if (lensFacingDirection == CameraSelector.LENS_FACING_BACK) {
-            CameraSelector.LENS_FACING_FRONT
-        } else {
-            CameraSelector.LENS_FACING_BACK
-        }
-    }
-
-    private fun changeFlashMode() = with(binding.cameraContent) {
-        val isFlashOn = imageCapture.flashMode == FLASH_MODE_ON
-        imageCapture.flashMode = if (isFlashOn) {
-            flashButton.setImageResource(R.drawable.ic_baseline_flash_off_24)
-            FLASH_MODE_OFF
-        } else {
-            flashButton.setImageResource(R.drawable.ic_baseline_flash_on_24)
-            FLASH_MODE_ON
-        }
-    }
-
-    private val onImageSavedCallback = object : OnImageSavedCallback {
-        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-            val savedFile = outputFileResults.savedUri?.toFile()?.also {
-                viewModel?.uploadFile(it)
-            }
-        }
-
-        override fun onError(exception: ImageCaptureException) {
-         //error
-        }
-    }
-
-    private fun shareEventLink() {
-        val appLink = "https://pov.camera"
-        val sharedMessage = "I'm using POV at '${eventArgs?.title}'! $appLink"
-        ShareCompat.IntentBuilder(this)
-            .setType("text/plain")
-            .setText(sharedMessage)
-            .startChooser()
-    }
-
-    private fun setCountDownTimerState(state: CountDownTimerState) {
-        with(binding) {
-            countdownLabel.text = if (state.type == CountDownTimerType.END_DATE) {
-                getString(R.string.camera_closes_in_label)
-            } else {
-                getString(R.string.gallery_opens_in_label)
-            }
-            countdownContainer.isVisible =
-                state.type != CountDownTimerType.DONE && state.type != CountDownTimerType.INITIAL
-        }
-    }
-
-    @SuppressLint("UseCompatTextViewDrawableApis")
-    private fun setContinueButtonState(isEnabled: Boolean) {
-        with(binding.continueButton) {
-            if (isEnabled) {
-                background = getDrawableRes(R.drawable.background_rounded_button)
-                setTextColor(getColorRes(R.color.white))
-                compoundDrawableTintList = ColorStateList.valueOf(getColorRes(R.color.white))
-//                setOnClickListener { navigateToGallery() }
-            } else {
-                background = getDrawableRes(R.drawable.background_rounded_button_disabled)
-                setTextColor(getColorRes(R.color.purple_200))
-                compoundDrawableTintList = ColorStateList.valueOf(getColorRes(R.color.purple_200))
-//                setOnClickListener { shake(this@CameraActivity) }
-            }
-        }
-    }
-
-//    private fun navigateToGallery() {
-//        val intent = Intent(
-//            this,
-//            GalleryActivity::class.java
-//        ).putEventArgs(eventArgs)
-//
-//        startActivity(intent)
-//    }
-
-    private fun setShotButtonState(isEnabled: Boolean) {
-        with(binding.cameraContent.takeShotButton) {
-            if (isEnabled) {
-                background = getDrawableRes(R.drawable.background_shot_button)
-                setImageResource(0) // remove icon
-            } else {
-                background = getDrawableRes(R.drawable.background_shot_button_disabled)
-                setImageResource(R.drawable.ic_lock)
-            }
-        }
+        }.toTypedArray()
     }
 }

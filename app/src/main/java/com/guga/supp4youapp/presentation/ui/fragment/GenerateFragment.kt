@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentGenerateBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity

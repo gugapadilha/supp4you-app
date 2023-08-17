@@ -1,132 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black"
-    tools:context=".presentation.ui.camera.CameraActivity">
+    tools:background="@color/black">
 
-    <FrameLayout
-        android:id="@+id/cameraFrame"
+    <androidx.camera.view.PreviewView
+        android:id="@+id/cameraPreview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="80dp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cameraContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:cardCornerRadius="18dp"
-                app:cardPreventCornerOverlap="false"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <androidx.camera.view.PreviewView
-                    android:id="@+id/cameraPreview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.cardview.widget.CardView>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" >
 
         <include
             android:id="@+id/cameraContent"
             layout="@layout/view_camera_content" />
-
-    </FrameLayout>
-
+    </androidx.camera.view.PreviewView>
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/btn_back"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingEnd="3dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cameraFrame">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="45dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/shotsLabel"
+        <ImageView
+            android:id="@+id/back_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:letterSpacing="0.03"
-            android:textColor="@color/white"
-            android:textSize="22sp" />
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_baseline_chevron_left_24"
+            app:layout_constraintBottom_toBottomOf="@id/backButton"
+            app:layout_constraintEnd_toStartOf="@id/backButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/backButton"
+            android:contentDescription="TODO" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/remainingLabel"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:layout_marginTop="-3.5dp"
-            android:includeFontPadding="true"
+            android:background="@color/transparent"
+            android:text="@string/back"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
             android:textColor="@color/white"
-            app:autoSizeMaxTextSize="14sp"
-            app:autoSizeMinTextSize="11sp"
-            app:autoSizeTextType="uniform" />
-
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintStart_toEndOf="@id/back_arrow"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/countdownContinueContainer"
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/helpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/transparent"
+        android:padding="10dp"
+        android:src="@drawable/ic_baseline_help_outline_24"
+        android:tint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cameraFrame">
+        app:layout_constraintTop_toTopOf="@id/btn_back" />
 
-        <Button
-            android:id="@+id/continueButton"
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/flashButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/transparent"
+        android:padding="10dp"
+        android:src="@drawable/ic_baseline_flash_off_24"
+        app:layout_constraintEnd_toEndOf="@id/helpButton"
+        app:layout_constraintTop_toBottomOf="@id/helpButton" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/flipCameraButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/transparent"
+        android:padding="10dp"
+        android:src="@drawable/ic_outline_cameraswitch_24"
+        app:layout_constraintEnd_toEndOf="@id/flashButton"
+        app:layout_constraintTop_toBottomOf="@id/flashButton" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/participantsContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/takeShotButton"
+        app:layout_constraintEnd_toStartOf="@+id/takeShotButton"
+        app:layout_constraintTop_toTopOf="@id/takeShotButton">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/participantsNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="6dp"
-            android:paddingHorizontal="20dp"
-            android:textAllCaps="false" />
+            android:includeFontPadding="false"
+            android:text="1"
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            tools:ignore="HardcodedText" />
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/countdownContainer"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/participantsLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="2dp"
-            android:orientation="horizontal">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/countdownLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                tools:ignore="SmallSp" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/countdownValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                tools:ignore="SmallSp" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
+            android:includeFontPadding="false"
+            android:text="@string/participants"
+            android:textColor="@color/white"
+            android:textSize="11sp" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/takeShotButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/background_shot_button"
+        android:hapticFeedbackEnabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
