@@ -8,7 +8,7 @@
     android:background="@drawable/rounded_top_corners_background"
     android:paddingHorizontal="50dp">
 
-    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+    <TextView
         android:id="@+id/tv_generate_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

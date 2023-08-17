@@ -59,8 +59,6 @@
     <string-array name="days">
         <item>3 Days</item>
         <item>7 Days</item>
-        <item>14 Days</item>
-        <item>21 Days</item>
         <item>30 Days</item>
         <item>Unlimited</item>
     </string-array>

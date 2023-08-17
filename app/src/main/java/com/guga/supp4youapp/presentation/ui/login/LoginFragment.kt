@@ -25,9 +25,9 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         binding.tvLogin.setOnClickListener {
-                val intent = Intent(requireContext(), CameraActivity::class.java)
-                startActivity(intent)
-
+//                val intent = Intent(requireContext(), CameraActivity::class.java)
+//                startActivity(intent)
+            findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
 //            val username = binding.edEmail.text.toString()
 //            val password = binding.edPassword.text.toString()
 //
