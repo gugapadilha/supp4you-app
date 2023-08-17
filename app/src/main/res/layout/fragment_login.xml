@@ -135,6 +135,7 @@
             android:backgroundTint="@color/sub_bar"
             android:text="@string/log_in"
             android:layout_marginTop="20dp"
+            android:textColor="@color/white"
             app:cornerRadius="5dp"
             app:iconGravity="textStart"
             app:iconPadding="8dp"

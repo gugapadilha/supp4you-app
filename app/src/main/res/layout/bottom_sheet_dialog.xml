@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="30dp"
+        android:textColor="@color/white"
         android:backgroundTint="@color/sub_bar"
         android:text="@string/enter_space"
 />

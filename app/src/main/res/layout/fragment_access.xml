@@ -108,6 +108,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/days"
+        android:textColor="@color/white"
         android:spinnerMode="dropdown"
         app:layout_constraintStart_toStartOf="@+id/tv_availability"
         app:layout_constraintTop_toBottomOf="@+id/tv_availability" />
@@ -155,6 +156,7 @@
         android:backgroundTint="@color/sub_bar"
         android:text="@string/create_space"
         app:cornerRadius="5dp"
+        android:textColor="@color/white"
         app:iconGravity="textStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -166,6 +168,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:entries="@array/times"
+        android:textColor="@color/white"
         android:spinnerMode="dropdown"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_times" />
@@ -177,6 +180,7 @@
         android:layout_marginEnd="20dp"
         android:entries="@array/times"
         android:spinnerMode="dropdown"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_times" />
 

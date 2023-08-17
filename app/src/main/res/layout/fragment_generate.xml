@@ -102,6 +102,8 @@
         android:text="@string/share_with_others"
         app:cornerRadius="5dp"
         app:iconGravity="textStart"
+        android:textColor="@color/white"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -111,6 +113,7 @@
         android:id="@+id/tv_continue"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
         android:layout_marginTop="16dp"
         android:backgroundTint="@color/sub_bar"
         android:text="Continue"

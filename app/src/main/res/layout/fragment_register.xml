@@ -150,6 +150,8 @@
         android:text="@string/log_in"
         app:cornerRadius="5dp"
         app:iconGravity="textStart"
+        android:textColor="@color/white"
+
         app:iconPadding="8dp"
         app:layout_constraintEnd_toEndOf="@+id/view3"
         app:layout_constraintStart_toStartOf="@+id/view3"
