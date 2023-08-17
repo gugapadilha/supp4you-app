@@ -1,153 +1,165 @@
 package com.guga.supp4youapp.presentation.ui.camera
 
 import android.Manifest
-import android.R
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.ContentValues
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
-import android.view.View
+import android.provider.MediaStore
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
-import java.io.File
-import java.util.concurrent.ExecutionException
+import com.guga.supp4youapp.databinding.ActivityCameraBinding
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 
 class CameraActivity : AppCompatActivity() {
-    var capture: ImageButton? = null
-    var toggleFlash: ImageButton? = null
-    var flipCamera: ImageButton? = null
-    private var previewView: PreviewView? = null
-    var cameraFacing = CameraSelector.LENS_FACING_BACK
-    private val activityResultLauncher = registerForActivityResult<String, Boolean>(
-        ActivityResultContracts.RequestPermission()
-    ) { result ->
-        if (result) {
-            startCamera(cameraFacing)
+    private lateinit var viewBinding: ActivityCameraBinding
+
+    private var imageCapture: ImageCapture? = null
+    private lateinit var cameraExecutor: ExecutorService
+
+    private val pickImagesLauncher = registerForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia()
+    ) { uris: List<Uri>? ->
+        uris?.let {
+            Toast.makeText(this, "Files selected: ${uris.size}", Toast.LENGTH_SHORT).show()
         }
     }
+
+    private val requestPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            finish()
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_list_item)
+        viewBinding = ActivityCameraBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
-        if (ContextCompat.checkSelfPermission(
-                this@CameraActivity,
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            activityResultLauncher.launch(Manifest.permission.CAMERA)
+        if (allPermissionsGranted()) {
+            startCamera()
         } else {
-            startCamera(cameraFacing)
+            requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
         }
-        flipCamera?.setOnClickListener {
-            cameraFacing = if (cameraFacing == CameraSelector.LENS_FACING_BACK) {
-                CameraSelector.LENS_FACING_FRONT
-            } else {
-                CameraSelector.LENS_FACING_BACK
-            }
-            startCamera(cameraFacing)
+
+        setTakePhotoButton()
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    private fun setTakePhotoButton() {
+        viewBinding.capture.setOnClickListener {
+            takePhoto()
         }
     }
 
-    fun startCamera(cameraFacing: Int) {
-        val aspectRatio = aspectRatio(previewView!!.width, previewView!!.height)
-        val listenableFuture = ProcessCameraProvider.getInstance(this)
-        listenableFuture.addListener({
-            try {
-                val cameraProvider =
-                    listenableFuture.get() as ProcessCameraProvider
-                val preview: Preview = Preview.Builder().setTargetAspectRatio(aspectRatio).build()
-                val imageCapture = ImageCapture.Builder()
-                    .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                    .setTargetRotation(windowManager.defaultDisplay.rotation).build()
-                val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(cameraFacing).build()
-                cameraProvider.unbindAll()
-                val camera: Camera =
-                    cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageCapture)
-                capture!!.setOnClickListener {
-                    if (ContextCompat.checkSelfPermission(
-                            this@CameraActivity,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        activityResultLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    } else {
-                        takePicture(imageCapture)
-                    }
-                }
-                toggleFlash!!.setOnClickListener { setFlashIcon(camera) }
-                preview.setSurfaceProvider(previewView!!.surfaceProvider)
-            } catch (e: ExecutionException) {
-                e.printStackTrace()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-        }, ContextCompat.getMainExecutor(this))
-    }
+    private fun takePhoto() {
+        // Get a stable reference of the modifiable image capture use case
+        val imageCapture = imageCapture ?: return
 
-    fun takePicture(imageCapture: ImageCapture) {
-        val file = File(getExternalFilesDir(null), System.currentTimeMillis().toString() + ".jpg")
-        val outputFileOptions: ImageCapture.OutputFileOptions =
-            ImageCapture.OutputFileOptions.Builder(file).build()
-        imageCapture.takePicture(
-            outputFileOptions,
-            Executors.newCachedThreadPool(),
+        // Create time stamped name and MediaStore entry.
+        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/FassoFoto")
+            }
+        }
+
+        // Create output options object which contains file + metadata
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+        ).build()
+
+        // Set up image capture listener, which is triggered after photo has
+        // been taken
+        imageCapture.takePicture(outputOptions,
+            ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@CameraActivity,
-                            "Image saved at: " + file.getPath(),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    startCamera(cameraFacing)
+                override fun onError(exc: ImageCaptureException) {
                 }
 
-                override fun onError(exception: ImageCaptureException) {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@CameraActivity,
-                            "Failed to save: " + exception.message,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    startCamera(cameraFacing)
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                 }
             })
     }
 
-    private fun setFlashIcon(camera: Camera) {
-        if (camera.getCameraInfo().hasFlashUnit()) {
-            if (camera.getCameraInfo().getTorchState().getValue() === 0) {
-                camera.getCameraControl().enableTorch(true)
-//                toggleFlash!!.setImageResource(R.drawable.baseline_flash_off_24)
-            } else {
-                camera.getCameraControl().enableTorch(false)
-//                toggleFlash!!.setImageResource(R.drawable.baseline_flash_on_24)
-            }
-        } else {
-            runOnUiThread {
-                Toast.makeText(
-                    this@CameraActivity,
-                    "Flash is not available currently",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
+    private fun showRecentPhotos() {
+        pickImagesLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    private fun aspectRatio(width: Int, height: Int): Int {
-        val previewRatio = Math.max(width, height).toDouble() / Math.min(width, height)
-        return if (Math.abs(previewRatio - 4.0 / 3.0) <= Math.abs(previewRatio - 16.0 / 9.0)) {
-            AspectRatio.RATIO_4_3
-        } else AspectRatio.RATIO_16_9
+    private fun startCamera() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            // Used to bind the lifecycle of cameras to the lifecycle owner
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            // Preview
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewBinding.cameraPreview.surfaceProvider)
+            }
+
+            imageCapture = ImageCapture.Builder().build()
+
+            // Select back camera as a default
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                // Unbind use cases before rebinding
+                cameraProvider.unbindAll()
+
+                // Bind use cases to camera
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview, imageCapture
+                )
+
+            } catch (exc: Exception) {
+            }
+
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            baseContext, it
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cameraExecutor.shutdown()
+    }
+
+    companion object {
+        private const val TAG = "FassoFoto"
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+        private val REQUIRED_PERMISSIONS = mutableListOf(
+            Manifest.permission.CAMERA
+        ).apply {
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+                add(WRITE_EXTERNAL_STORAGE)
+            }
+        }.toTypedArray()
     }
 }
