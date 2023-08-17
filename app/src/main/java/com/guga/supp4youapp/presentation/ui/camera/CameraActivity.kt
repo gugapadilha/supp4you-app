@@ -1,4 +1,5 @@
 package com.guga.supp4youapp.presentation.ui.camera
+
 import android.Manifest
 import android.content.ContentValues
 import android.content.pm.PackageManager
@@ -58,6 +59,7 @@ class CameraActivity : AppCompatActivity() {
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
+        takePhoto()
     }
 
 
