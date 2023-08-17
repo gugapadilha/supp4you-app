@@ -15,9 +15,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
 
-        <include
-            android:id="@+id/cameraContent"
-            layout="@layout/view_camera_content" />
     </androidx.camera.view.PreviewView>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/btn_back"
@@ -80,7 +77,7 @@
         android:padding="10dp"
         android:src="@drawable/ic_baseline_flash_off_24"
         app:layout_constraintEnd_toEndOf="@id/helpButton"
-        app:layout_constraintTop_toBottomOf="@id/helpButton" />
+        app:layout_constraintTop_toBottomOf="@id/helpButton"/>
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/flipCameraButton"

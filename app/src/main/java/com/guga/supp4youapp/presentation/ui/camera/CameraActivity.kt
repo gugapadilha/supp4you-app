@@ -16,37 +16,23 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.properties.Delegates
 
 class CameraActivity : AppCompatActivity() {
+
     private lateinit var viewBinding: ActivityCameraBinding
-
+    private var currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var imageCapture: ImageCapture? = null
+    private var isFlashEnabled = false
     private lateinit var cameraExecutor: ExecutorService
-
-    private val pickImagesLauncher = registerForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia()
-    ) { uris: List<Uri>? ->
-        uris?.let {
-            Toast.makeText(this, "Files selected: ${uris.size}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private val requestPermissionsLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            finish()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
@@ -58,10 +44,90 @@ class CameraActivity : AppCompatActivity() {
             requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
         }
 
-        cameraExecutor = Executors.newSingleThreadExecutor()
-        takePhoto()
+        viewBinding.takeShotButton.setOnClickListener {
+            takePhoto() // Move isso para o clique do botão da câmera
+        }
+
+        viewBinding.flipCameraButton.setOnClickListener {
+            flipCamera() // Adicione isso para o clique do botão de virar a câmera
+        }
+
+        viewBinding.flashButton.setOnClickListener {
+            toggleFlash() // Chama a função toggleFlash()
+        }
     }
 
+    private val pickImagesLauncher = registerForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia()
+    ) { uris: List<Uri>? ->
+        uris?.let {
+            Toast.makeText(this, "Files selected: ${uris.size}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun toggleFlash() {
+        isFlashEnabled = !isFlashEnabled
+        applyFlash()
+
+        val flashIcon = if (isFlashEnabled) {
+            R.drawable.ic_baseline_flash_on_24 // Ícone de flash ligado
+        } else {
+            R.drawable.ic_baseline_flash_off_24 // Ícone de flash desligado
+        }
+
+        viewBinding.flashButton.setImageResource(flashIcon)
+    }
+
+    private fun applyFlash() {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
+
+        cameraProviderFuture.addListener({
+            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
+
+            val preview = Preview.Builder().build().also {
+                it.setSurfaceProvider(viewBinding.cameraPreview.surfaceProvider)
+            }
+
+            val imageCaptureBuilder = ImageCapture.Builder()
+
+            if (isFlashEnabled) {
+                imageCaptureBuilder.setFlashMode(ImageCapture.FLASH_MODE_ON)
+            } else {
+                imageCaptureBuilder.setFlashMode(ImageCapture.FLASH_MODE_OFF)
+            }
+
+            imageCapture = imageCaptureBuilder.build()
+
+            try {
+                cameraProvider.unbindAll()
+
+                cameraProvider.bindToLifecycle(
+                    this, currentCameraSelector, preview, imageCapture
+                )
+
+            } catch (exc: Exception) {
+                exc.printStackTrace()
+            }
+
+        }, ContextCompat.getMainExecutor(this))
+    }
+
+    private val requestPermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            finish()
+        }
+    }
+    private fun flipCamera() {
+        currentCameraSelector = if (currentCameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+            CameraSelector.DEFAULT_FRONT_CAMERA
+        } else {
+            CameraSelector.DEFAULT_BACK_CAMERA
+        }
+        startCamera()
+    }
 
     private fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
@@ -73,7 +139,7 @@ class CameraActivity : AppCompatActivity() {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/FassoFoto")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Supp4You")
             }
         }
 
@@ -105,29 +171,24 @@ class CameraActivity : AppCompatActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
-            // Used to bind the lifecycle of cameras to the lifecycle owner
             val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
-            // Preview
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(viewBinding.cameraPreview.surfaceProvider)
             }
 
             imageCapture = ImageCapture.Builder().build()
 
-            // Select back camera as a default
-            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
             try {
-                // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
+                // Bind use cases to camera using currentCameraSelector
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview, imageCapture
+                    this, currentCameraSelector, preview, imageCapture
                 )
 
             } catch (exc: Exception) {
+                exc.printStackTrace()
             }
 
         }, ContextCompat.getMainExecutor(this))
@@ -145,7 +206,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "FassoFoto"
+        private const val TAG = "guga"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private val REQUIRED_PERMISSIONS = mutableListOf(
             Manifest.permission.CAMERA
