@@ -10,4 +10,5 @@
     <color name="home">#1E293B</color>
     <color name="sub_text">#94A3B8</color>
     <color name="sub_bar">#334155</color>
+    <color name="transparent">#00000000</color>
 </resources>

@@ -31,7 +31,7 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.constraintlayout.utils.widget.MotionButton
         android:id="@+id/tv_enter_space"
         android:layout_width="300dp"
         android:layout_height="wrap_content"

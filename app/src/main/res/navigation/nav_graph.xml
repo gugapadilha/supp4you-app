@@ -28,7 +28,7 @@
     </fragment>
     <fragment
         android:id="@+id/detailsFragment"
-        android:name="DetailsFragment"
+        android:name="com.guga.supp4youapp.presentation.ui.fragment.DetailsFragment"
         android:label="DetailsFragment"
         tools:layout="@layout/fragment_details">
         <action
@@ -40,7 +40,7 @@
     </fragment>
     <fragment
         android:id="@+id/accessFragment"
-        android:name="AccessFragment"
+        android:name="com.guga.supp4youapp.presentation.ui.fragment.AccessFragment"
         android:label="AccessFragment"
         tools:layout="@layout/fragment_access">
         <action
@@ -49,7 +49,16 @@
     </fragment>
     <fragment
         android:id="@+id/generateFragment"
-        android:name="GenerateFragment"
+        android:name="com.guga.supp4youapp.presentation.ui.fragment.GenerateFragment"
         android:label="GenerateFragment"
-        tools:layout="@layout/fragment_generate"/>
+        tools:layout="@layout/fragment_generate">
+        <action
+            android:id="@+id/action_generateFragment_to_cameraActivity2"
+            app:destination="@id/cameraActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/cameraActivity"
+        android:name="com.guga.supp4youapp.presentation.ui.camera.CameraActivity"
+        android:label="activity_camera"
+        tools:layout="@layout/activity_camera" />
 </navigation>

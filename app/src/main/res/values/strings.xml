@@ -30,8 +30,31 @@
     <string name="what_will_be_your_group_name">What will be your group name?</string>
     <string name="chose_a_time_to_allow_other_participants_to_take_pictures">Chose the time to be able to take pictures</string>
     <string name="to_string">to</string>
+    <string name="back">Back</string>
+    <string name="participants">participants</string>
 
 
+    <string name="join_event">Join an event to capture\nyour perspective.</string>
+    <string name="downloading_toast_text">Downloading file</string>
+    <string name="action_sheet_title1">Android makes it impossible to save photos to your camera roll directly from Instant Apps :/</string>
+    <string name="action_sheet_title2">3 workarounds:\n1. Share photos with yourself (text or email)\n2. Take screenshots\n3. Download the full POV app</string>
+    <string name="help_dialog_message">Event creation is not available for Android yet. We\'re working on it! In the meantime, you\'re able to participate in events created from iPhone.</string>
+    <string name="confirm_exit_dialog_title">Are you sure?</string>
+    <string name="confirm_exit_dialog_message">Do you want to close the app?</string>
+    <string name="confirm_exit_dialog_positive_button">Yes</string>
+    <string name="confirm_exit_dialog_negative_button">Cancel</string>
+    <string name="rationale_camera_title">We need permission to access your camera</string>
+    <string name="rationale_camera_message">This app relies on access to your camera to take photos.</string>
+    <string name="rationale_positive_button">Permission settings</string>
+    <string name="rationale_negative_button">Cancel</string>
+    <string name="photo_disabled_toast_gallery_closed">Camera is locked</string>
+    <string name="photo_disabled_toast_event_ended">Event has ended</string>
+    <string name="no_photos_yet">No Photos Yet!</string>
+    <string name="gallery_notification_title">The gallery is open</string>
+    <string name="gallery_notification_message">Check out all the photos you and others took!</string>
+    <string name="subscription_success_toast_message">We\'ll let you know when it\'s available!</string>
+    <string name="camera_closes_in_label">Camera closes in</string>
+    <string name="gallery_opens_in_label">Gallery opens in</string>
     //Days
     <string-array name="days">
         <item>3 Days</item>
