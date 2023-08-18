@@ -14,59 +14,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" >
-
     </androidx.camera.view.PreviewView>
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/btn_back"
-        android:visibility="invisible"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="45dp"
-        android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/back_arrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_baseline_chevron_left_24"
-            app:layout_constraintBottom_toBottomOf="@id/backButton"
-            app:layout_constraintEnd_toStartOf="@id/backButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/backButton"
-            android:contentDescription="TODO" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:text="@string/back"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:visibility="visible"
-            app:layout_constraintStart_toEndOf="@id/back_arrow"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/helpButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:background="@color/transparent"
         android:padding="10dp"
         android:src="@drawable/ic_baseline_help_outline_24"
         android:tint="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/btn_back"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/btn_back" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/flashButton"
@@ -78,6 +39,28 @@
         android:src="@drawable/ic_baseline_flash_off_24"
         app:layout_constraintEnd_toEndOf="@id/helpButton"
         app:layout_constraintTop_toBottomOf="@id/helpButton"/>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/back_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/transparent"
+        android:layout_marginTop="5dp"
+        android:src="@drawable/ic_baseline_chevron_left_24"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/cameraPreview" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:text="@string/back"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/back_icon"
+        app:layout_constraintStart_toEndOf="@+id/back_icon"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/flipCameraButton"

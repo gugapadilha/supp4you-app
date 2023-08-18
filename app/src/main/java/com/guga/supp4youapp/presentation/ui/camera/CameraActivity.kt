@@ -54,11 +54,19 @@ class CameraActivity : AppCompatActivity() {
         }
 
         viewBinding.flashButton.setOnClickListener {
-            toggleFlash() // Chama a função toggleFlash()
+            toggleFlash()
         }
 
         viewBinding.helpButton.setOnClickListener {
             showHelpDialog()
+        }
+
+        viewBinding.back.setOnClickListener {
+            onBackPressed() // Volta para a tela anterior
+        }
+
+        viewBinding.backIcon.setOnClickListener {
+            onBackPressed() // Volta para a tela anterior
         }
     }
 
@@ -221,7 +229,6 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
     }
 
     companion object {
