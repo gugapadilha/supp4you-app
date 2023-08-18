@@ -46,6 +46,13 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         binding.spStartTime.adapter = timeAdapter
         binding.spEndTime.adapter = timeAdapter
 
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
+
+        binding.backIcon.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
 
     }
 }

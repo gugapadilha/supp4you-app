@@ -33,6 +33,14 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
             val intent = Intent(requireContext(), CameraActivity::class.java)
             startActivity(intent)
         }
+
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
+
+        binding.backIcon.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
     }
 
     override fun onDestroyView() {

@@ -35,6 +35,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         binding.tvCreatespace.setOnClickListener {
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
         }
+
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
+
+        binding.backIcon.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
     }
 
     override fun onDestroyView() {
