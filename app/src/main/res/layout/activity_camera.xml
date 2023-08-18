@@ -133,4 +133,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/continueButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="6dp"
+        android:background="@drawable/background_rounded_button_disabled"
+        android:drawableEnd="@drawable/ic_arrow_foward"
+        android:drawableTint="@color/grey_300"
+        android:paddingHorizontal="20dp"
+        android:text="@string/continue_btn"
+        android:textAllCaps="false"
+        android:textColor="@color/grey_300"
+        app:layout_constraintBottom_toBottomOf="@+id/takeShotButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/takeShotButton"
+        app:layout_constraintTop_toTopOf="@+id/takeShotButton"
+        tools:ignore="MissingConstraints" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -54,6 +55,10 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.flashButton.setOnClickListener {
             toggleFlash() // Chama a função toggleFlash()
+        }
+
+        viewBinding.helpButton.setOnClickListener {
+            showHelpDialog()
         }
     }
 
@@ -198,6 +203,20 @@ class CameraActivity : AppCompatActivity() {
         ContextCompat.checkSelfPermission(
             baseContext, it
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun showHelpDialog() {
+        val dialogMessage = "Here you can take your picture and share with other participants in this group, feel free to click Continue when you are ready! :)"
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Tips for you!")
+            .setMessage(dialogMessage)
+            .setPositiveButton("Continue") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        alertDialog.show()
     }
 
     override fun onDestroy() {
