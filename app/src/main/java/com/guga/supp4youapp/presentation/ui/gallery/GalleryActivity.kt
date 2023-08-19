@@ -18,6 +18,14 @@ class GalleryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerView()
+
+        binding.back.setOnClickListener {
+            onBackPressed()
+        }
+
+        binding.backIcon.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     private fun setupRecyclerView() {
