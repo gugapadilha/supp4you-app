@@ -63,6 +63,20 @@
         app:layout_constraintStart_toEndOf="@+id/back_icon"
         app:layout_constraintTop_toTopOf="@+id/back_icon" />
 
+
+    <TextView
+        android:id="@+id/tv_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/study_group"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/helpButton"
+        app:layout_constraintStart_toEndOf="@+id/back"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/flipCameraButton"
         android:layout_width="wrap_content"

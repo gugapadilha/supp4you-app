@@ -56,6 +56,7 @@
     <string name="camera_closes_in_label">Camera closes in</string>
     <string name="gallery_opens_in_label">Gallery opens in</string>
     <string name="continue_btn">Continue</string>
+    <string name="study_group">Study Group</string>
 
     //Days
     <string-array name="days">

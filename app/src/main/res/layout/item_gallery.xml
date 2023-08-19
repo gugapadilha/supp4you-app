@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    tools:background="@color/black_200">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_photo"
+        android:layout_width="175dp"
+        android:layout_height="210dp"
+        android:adjustViewBounds="true"
+        android:padding="0.5dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/roundedCornersSmall"
+        app:strokeColor="@color/normal_gray"
+        app:strokeWidth="2dp"
+        tools:src="@drawable/exemplo1" />
+
+    <TextView
+        android:id="@+id/tv_name_person"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/iv_photo"
+        app:layout_constraintStart_toStartOf="@id/iv_photo"
+        tools:text="@string/gustavo_padilha" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
