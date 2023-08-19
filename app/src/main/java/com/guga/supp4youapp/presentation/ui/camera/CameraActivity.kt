@@ -2,6 +2,7 @@ package com.guga.supp4youapp.presentation.ui.camera
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -21,6 +22,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
+import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -67,6 +69,11 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.backIcon.setOnClickListener {
             onBackPressed() // Volta para a tela anterior
+        }
+
+        viewBinding.continueButton.setOnClickListener {
+            val intent = Intent(this, GalleryActivity::class.java)
+            startActivity(intent)
         }
     }
 

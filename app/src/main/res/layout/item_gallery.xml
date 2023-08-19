@@ -31,7 +31,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/white"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="@id/iv_photo"
         app:layout_constraintStart_toStartOf="@id/iv_photo"
         tools:text="@string/gustavo_padilha" />
