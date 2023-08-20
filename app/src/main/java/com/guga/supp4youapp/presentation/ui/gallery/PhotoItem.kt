@@ -1,3 +1,6 @@
 package com.guga.supp4youapp.presentation.ui.gallery
 
-data class PhotoItem(val photoRes: Int, val personName: String)
+import android.net.Uri
+
+data class PhotoItem(val photoUri: Uri, val personName: String)
+

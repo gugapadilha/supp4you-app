@@ -1,5 +1,6 @@
 package com.guga.supp4youapp.presentation.ui.gallery
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -26,31 +27,28 @@ class GalleryActivity : AppCompatActivity() {
         binding.backIcon.setOnClickListener {
             onBackPressed()
         }
+
+        // Recupera a Uri passada como extra do Intent
+        val photoUriString = intent.getStringExtra("photoUri")
+        val photoUri = Uri.parse(photoUriString)
+
+        // Crie um novo PhotoItem com a Uri da foto tirada
+        val photoItem = PhotoItem(photoUri, "Gustavo Padilha")
+        // Atualize a lista de fotos no adaptador usando submitList
+        galleryAdapter.submitList(galleryAdapter.currentList + photoItem)
     }
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()
 
         // Use GridLayoutManager with 2 columns
-        val layoutManager = GridLayoutManager(this, 2)
+        val layoutManager = GridLayoutManager(this, 1)
         binding.rvGallery.layoutManager = layoutManager
 
         binding.rvGallery.adapter = galleryAdapter
 
-        val photoList: List<PhotoItem> = createPhotoItemList()
-        galleryAdapter.submitList(photoList)
+        val initialPhotoList: List<PhotoItem> = emptyList() // Lista vazia inicial
+        galleryAdapter.submitList(initialPhotoList)
     }
 
-    private fun createPhotoItemList(): List<PhotoItem> {
-        val photoList = mutableListOf<PhotoItem>()
-
-        // Assume that the resource IDs for the photos are R.drawable.exemplo1
-        val photoResId =R.drawable.exemplo1
-
-        for (i in 1..10) {
-            photoList.add(PhotoItem(photoResId, "Gustavo Padilha $i"))
-        }
-
-        return photoList
-    }
 }

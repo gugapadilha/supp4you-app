@@ -21,7 +21,7 @@ class GalleryAdapter : ListAdapter<PhotoItem, GalleryAdapter.PhotoViewHolder>(Ph
 
     class PhotoViewHolder(private val binding: ItemGalleryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(photoItem: PhotoItem) {
-            binding.ivPhoto.setImageResource(photoItem.photoRes)
+            binding.ivPhoto.setImageURI(photoItem.photoUri)
             binding.tvNamePerson.text = photoItem.personName
         }
     }
@@ -32,8 +32,10 @@ class GalleryAdapter : ListAdapter<PhotoItem, GalleryAdapter.PhotoViewHolder>(Ph
         }
 
         override fun areContentsTheSame(oldItem: PhotoItem, newItem: PhotoItem): Boolean {
-            return oldItem.photoRes == newItem.photoRes &&
+            return oldItem.photoUri == newItem.photoUri &&
                     oldItem.personName == newItem.personName
         }
     }
+
+
 }

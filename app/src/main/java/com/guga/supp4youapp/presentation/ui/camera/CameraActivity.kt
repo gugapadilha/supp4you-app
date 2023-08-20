@@ -79,6 +79,7 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.continueButton.setOnClickListener {
             val intent = Intent(this, GalleryActivity::class.java)
+            intent.putExtra("photoUri", takenPhotoUri.toString())
             startActivity(intent)
         }
     }
