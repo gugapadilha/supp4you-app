@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -36,6 +37,7 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private var isFlashEnabled = false
     private lateinit var cameraExecutor: ExecutorService
+    private lateinit var takenPhotoUri: Uri // Nova variável para armazenar a Uri da foto tirada
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
@@ -49,6 +51,10 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.takeShotButton.setOnClickListener {
             takePhoto() // Move isso para o clique do botão da câmera
+        }
+
+        viewBinding.reshot.setOnClickListener {
+            hidePhoto()
         }
 
         viewBinding.flipCameraButton.setOnClickListener {
@@ -96,6 +102,25 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.flashButton.setImageResource(flashIcon)
     }
+    private fun showPhoto(uri: Uri) {
+        viewBinding.cameraPreview.visibility = View.GONE
+        viewBinding.photoImageView.visibility = View.VISIBLE
+        viewBinding.helpButton.visibility = View.GONE
+        viewBinding.flashButton.visibility = View.GONE
+        viewBinding.flipCameraButton.visibility = View.GONE
+        viewBinding.photoImageView.setImageURI(takenPhotoUri)
+        viewBinding.reshot.visibility = View.VISIBLE
+    }
+
+    private fun hidePhoto() {
+        viewBinding.cameraPreview.visibility = View.VISIBLE
+        viewBinding.photoImageView.visibility = View.GONE
+        viewBinding.helpButton.visibility = View.VISIBLE
+        viewBinding.flashButton.visibility = View.VISIBLE
+        viewBinding.flipCameraButton.visibility = View.VISIBLE
+        viewBinding.reshot.visibility = View.GONE
+    }
+
 
     private fun applyFlash() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -177,8 +202,13 @@ class CameraActivity : AppCompatActivity() {
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val msg = "Photo capture succeeded: ${output.savedUri}"
-                    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    val savedUri = output.savedUri
+                    savedUri?.let {
+                        takenPhotoUri = savedUri // Armazena a Uri da foto tirada
+                        showPhoto(takenPhotoUri) // Passa a Uri como parâmetro
+                        val msg = "Photo capture succeeded: ${output.savedUri}"
+                        Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    }
                 }
             })
     }

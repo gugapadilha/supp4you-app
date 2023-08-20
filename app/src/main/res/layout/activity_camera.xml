@@ -13,8 +13,14 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
-    </androidx.camera.view.PreviewView>
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/photoImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:scaleType="centerCrop" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/helpButton"
@@ -73,8 +79,8 @@
         android:text="@string/study_group"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
-        app:layout_constraintEnd_toStartOf="@+id/helpButton"
-        app:layout_constraintStart_toEndOf="@+id/back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
@@ -87,6 +93,17 @@
         android:src="@drawable/ic_outline_cameraswitch_24"
         app:layout_constraintEnd_toEndOf="@id/flashButton"
         app:layout_constraintTop_toBottomOf="@id/flashButton" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/reshot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:background="@color/transparent"
+        android:visibility="gone"
+        android:src="@drawable/baseline_settings_backup_restore_24"
+        app:layout_constraintBottom_toTopOf="@+id/continueButton"
+        app:layout_constraintEnd_toEndOf="@+id/continueButton" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/participantsContainer"
