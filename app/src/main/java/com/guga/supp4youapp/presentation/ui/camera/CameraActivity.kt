@@ -38,6 +38,8 @@ class CameraActivity : AppCompatActivity() {
     private var isFlashEnabled = false
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var takenPhotoUri: Uri // Nova variável para armazenar a Uri da foto tirada
+    private var photoTaken = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
@@ -78,9 +80,13 @@ class CameraActivity : AppCompatActivity() {
         }
 
         viewBinding.continueButton.setOnClickListener {
-            val intent = Intent(this, GalleryActivity::class.java)
-            intent.putExtra("photoUri", takenPhotoUri.toString())
-            startActivity(intent)
+            if (photoTaken) {
+                val intent = Intent(this, GalleryActivity::class.java)
+                intent.putExtra("photoUri", takenPhotoUri.toString())
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "You have to take a picture first before continue!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -205,8 +211,9 @@ class CameraActivity : AppCompatActivity() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
                     savedUri?.let {
-                        takenPhotoUri = savedUri // Armazena a Uri da foto tirada
-                        showPhoto(takenPhotoUri) // Passa a Uri como parâmetro
+                        takenPhotoUri = savedUri
+                        showPhoto(takenPhotoUri)
+                        photoTaken = true // Foto tirada
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     }
