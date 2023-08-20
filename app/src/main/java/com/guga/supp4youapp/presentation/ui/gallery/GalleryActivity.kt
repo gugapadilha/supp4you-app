@@ -3,9 +3,7 @@ package com.guga.supp4youapp.presentation.ui.gallery
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityGalleryBinding
 
 class GalleryActivity : AppCompatActivity() {
@@ -41,8 +39,8 @@ class GalleryActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()
 
-        // Use GridLayoutManager with 2 columns
-        val layoutManager = GridLayoutManager(this, 1)
+        // Use LinearLayoutManager with vertical orientation
+        val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvGallery.layoutManager = layoutManager
 
         binding.rvGallery.adapter = galleryAdapter

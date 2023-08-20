@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.guga.supp4youapp.databinding.ItemGalleryBinding
 
 class GalleryAdapter : ListAdapter<PhotoItem, GalleryAdapter.PhotoViewHolder>(PhotoDiffCallback()) {
@@ -21,7 +22,10 @@ class GalleryAdapter : ListAdapter<PhotoItem, GalleryAdapter.PhotoViewHolder>(Ph
 
     class PhotoViewHolder(private val binding: ItemGalleryBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(photoItem: PhotoItem) {
-            binding.ivPhoto.setImageURI(photoItem.photoUri)
+            Glide.with(binding.root)
+                .load(photoItem.photoUri)
+                .centerCrop()
+                .into(binding.ivPhoto)
             binding.tvNamePerson.text = photoItem.personName
         }
     }
