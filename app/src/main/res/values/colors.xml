@@ -9,5 +9,17 @@
     <color name="white">#FFFFFFFF</color>
     <color name="home">#1E293B</color>
     <color name="sub_text">#94A3B8</color>
+    <color name="grey_050">#d8d8da</color>
+    <color name="grey_200">#808080</color>
+    <color name="grey_300">#767271</color>
+    <color name="gray_200">#808080</color>
+    <color name="dark_gray">#020913</color>
+    <color name="normal_gray">#191919</color>
+    <color name="black_100">#101216</color>
+    <color name="black_200">#282628</color>
+    <color name="grey_100">#c3c3c3</color>
+    <color name="yellow">#ffd700</color>
+    <color name="date">#a99a55</color>
     <color name="sub_bar">#334155</color>
+    <color name="transparent">#00000000</color>
 </resources>

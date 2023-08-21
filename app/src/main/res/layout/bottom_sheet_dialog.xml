@@ -8,7 +8,7 @@
     android:background="@drawable/rounded_top_corners_background"
     android:paddingHorizontal="50dp">
 
-    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+    <TextView
         android:id="@+id/tv_generate_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,12 +31,13 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray" />
 
-    <com.google.android.material.button.MaterialButton
+    <androidx.constraintlayout.utils.widget.MotionButton
         android:id="@+id/tv_enter_space"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="30dp"
+        android:textColor="@color/white"
         android:backgroundTint="@color/sub_bar"
         android:text="@string/enter_space"
 />

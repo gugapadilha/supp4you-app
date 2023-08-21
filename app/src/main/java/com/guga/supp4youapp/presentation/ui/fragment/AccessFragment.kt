@@ -1,8 +1,8 @@
+package com.guga.supp4youapp.presentation.ui.fragment
+
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.guga.supp4youapp.R
@@ -46,6 +46,13 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         binding.spStartTime.adapter = timeAdapter
         binding.spEndTime.adapter = timeAdapter
 
+        binding.back.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
+
+        binding.backIcon.setOnClickListener {
+            requireActivity().onBackPressed() // Volta para a tela anterior
+        }
 
     }
 }
