@@ -55,10 +55,6 @@ class CameraActivity : AppCompatActivity() {
             takePhoto() // Move isso para o clique do botão da câmera
         }
 
-        viewBinding.reshot.setOnClickListener {
-            hidePhoto()
-        }
-
         viewBinding.flipCameraButton.setOnClickListener {
             flipCamera() // Adicione isso para o clique do botão de virar a câmera
         }
@@ -84,9 +80,13 @@ class CameraActivity : AppCompatActivity() {
                 val intent = Intent(this, GalleryActivity::class.java)
                 intent.putExtra("photoUri", takenPhotoUri.toString())
                 startActivity(intent)
+                viewBinding.reshot.visibility = View.GONE
             } else {
                 Toast.makeText(this, "You have to take a picture first before continue!", Toast.LENGTH_SHORT).show()
             }
+        }
+        viewBinding.reshot.setOnClickListener {
+            hidePhoto()
         }
     }
 
