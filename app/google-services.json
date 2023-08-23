@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "691342200517",
-    "project_id": "supp-4-you-app",
-    "storage_bucket": "supp-4-you-app.appspot.com"
+    "project_number": "584290121417",
+    "project_id": "supp-4-you",
+    "storage_bucket": "supp-4-you.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:691342200517:android:feed0feca9bdf8f7e3aaac",
+        "mobilesdk_app_id": "1:584290121417:android:bd370c0f5c00188d0cbf18",
         "android_client_info": {
           "package_name": "com.guga.supp4youapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "691342200517-dtdq3n1gj3j26dvlnasbv82j4ns8qpq1.apps.googleusercontent.com",
+          "client_id": "584290121417-io1medv5954i9hn40gaeg9qdmcmssk88.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.guga.supp4youapp",
+            "certificate_hash": "1f335c59c0adc7b1173a4f17540c79bdb11aa80f"
+          }
+        },
+        {
+          "client_id": "584290121417-cuuci0cajtd8ib49tfov3re37n07itup.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBy1A2ceUnj5dpVnU-vhQMPQTZZ6MLXVCQ"
+          "current_key": "AIzaSyBkW47a2HQzvsFumn9cYi0KImWVZtyJ62I"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "691342200517-dtdq3n1gj3j26dvlnasbv82j4ns8qpq1.apps.googleusercontent.com",
+              "client_id": "584290121417-cuuci0cajtd8ib49tfov3re37n07itup.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
