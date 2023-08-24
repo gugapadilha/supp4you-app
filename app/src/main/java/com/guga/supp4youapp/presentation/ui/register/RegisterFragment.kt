@@ -57,7 +57,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             )
         }
 
-        registerViewModel.senhaRepeticaoVisivel.observe(viewLifecycleOwner) { visible ->
+        registerViewModel.passwordRepetition.observe(viewLifecycleOwner) { visible ->
             changePasswordVisibility(
                 binding.edRepeatPassword,
                 binding.visibility,

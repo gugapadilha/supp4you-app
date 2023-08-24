@@ -13,13 +13,13 @@ class RegisterViewModel @Inject constructor() : ViewModel() {
     private val _visiblePassword = MutableLiveData(true)  // Defina como true
     val visiblePassword: LiveData<Boolean> = _visiblePassword
 
-    private val _senhaRepeticaoVisivel = MutableLiveData(true)  // Defina como true
-    val senhaRepeticaoVisivel: LiveData<Boolean> = _senhaRepeticaoVisivel
+    private val _passwordRepetition = MutableLiveData(true)  // Defina como true
+    val passwordRepetition: LiveData<Boolean> = _passwordRepetition
 
     fun changeVisibilityPassowrd() {
         _visiblePassword .value = !_visiblePassword .value!!
     }
     fun changeVisibilityPasswordRep() {
-        _senhaRepeticaoVisivel.value = !_senhaRepeticaoVisivel.value!!
+        _passwordRepetition.value = !_passwordRepetition.value!!
     }
 }
