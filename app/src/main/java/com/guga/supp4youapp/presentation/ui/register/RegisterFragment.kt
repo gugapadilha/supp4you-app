@@ -50,7 +50,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
 
         registerViewModel.visiblePassword.observe(viewLifecycleOwner) { visible ->
-            changePasswordVisibility(
+            changeIconVisibility(
                 binding.edPassword,
                 binding.visibilityOff,
                 visible
@@ -58,7 +58,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
 
         registerViewModel.passwordRepetition.observe(viewLifecycleOwner) { visible ->
-            changePasswordVisibility(
+            changeIconVisibility(
                 binding.edRepeatPassword,
                 binding.visibility,
                 visible
@@ -73,7 +73,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             registerViewModel.changeVisibilityPasswordRep()
         }
     }
-    private fun changePasswordVisibility(
+    private fun changeIconVisibility(
         passwordField: AppCompatEditText,
         textVisibility: AppCompatTextView,
         visible: Boolean
