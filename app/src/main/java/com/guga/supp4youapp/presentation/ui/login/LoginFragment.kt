@@ -1,6 +1,5 @@
 package com.guga.supp4youapp.presentation.ui.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
@@ -17,8 +16,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentLoginBinding
-import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private lateinit var binding: FragmentLoginBinding
@@ -29,7 +29,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentLoginBinding.bind(view)
-        togglePasswordVisibility(binding.edPassword, binding.visibility)
         auth = Firebase.auth
 
         binding.tvCreatenow.setOnClickListener {
@@ -53,9 +52,41 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         binding.visibility.setOnClickListener {
-            togglePasswordVisibility(binding.edPassword, binding.visibility)
+            loginViewModel.changeVisibilityPassowrd()
         }
 
+        loginViewModel.visiblePassword.observe(viewLifecycleOwner) { visible ->
+            changeIconVisibility(
+                binding.edPassword,
+                binding.visibility,
+                visible
+            )
+        }
+    }
+
+    private fun changeIconVisibility(
+        passwordField: AppCompatEditText,
+        textVisibility: AppCompatTextView,
+        visible: Boolean
+    ) {
+        if (visible) {
+            passwordField.transformationMethod = PasswordTransformationMethod.getInstance()
+            textVisibility.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0,
+                0,
+                R.drawable.baseline_visibility_off_24,
+                0
+            )
+        } else {
+            passwordField.transformationMethod = null
+            textVisibility.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0,
+                0,
+                R.drawable.baseline_visibility_24,
+                0
+            )
+        }
+        passwordField.setSelection(passwordField.text!!.length)
     }
 
     private fun checkAllFields() : Boolean {
@@ -74,7 +105,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 .show()
             return false
         }
-        if (binding.edPassword.length() <= 6) {
+        if (binding.edPassword.length() <= 7) {
             Toast.makeText(
                 requireContext(),
                 "Password should at least 8 characters long",
@@ -83,19 +114,5 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             return false
         }
         return true
-    }
-
-    private fun togglePasswordVisibility(passwordEditText: AppCompatEditText, visibilityTextView: AppCompatTextView) {
-        if (passwordEditText.transformationMethod == null) {
-            // A senha está visível, então tornamos oculta
-            passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
-            visibilityTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_visibility_off_24, 0)
-        } else {
-            // A senha está oculta, então tornamos visível
-            passwordEditText.transformationMethod = null
-            visibilityTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_visibility_24, 0)
-        }
-        // Move o cursor para o final do texto
-        passwordEditText.setSelection(passwordEditText.text!!.length)
     }
 }

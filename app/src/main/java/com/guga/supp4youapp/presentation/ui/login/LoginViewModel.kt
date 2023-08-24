@@ -1,5 +1,6 @@
 package com.guga.supp4youapp.presentation.ui.login
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.guga.supp4youapp.domain.model.LoginRequest
@@ -9,7 +10,11 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
 
-    private val _data = MutableLiveData<List<LoginRequest>>()
-    val data: MutableLiveData<List<LoginRequest>> = _data
+    private val _visiblePassword = MutableLiveData(true)
+    val visiblePassword: LiveData<Boolean> = _visiblePassword
+
+    fun changeVisibilityPassowrd() {
+        _visiblePassword .value = !_visiblePassword .value!!
+    }
 
 }
