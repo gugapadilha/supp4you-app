@@ -82,9 +82,10 @@
         android:id="@+id/ed_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/guga_santospadilha_rede_ulbra_br"
-        android:textColor="@color/white"
         android:inputType="textNoSuggestions"
+        android:hint="@string/write_your_email"
+        android:textColorHint="@color/white"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@id/tv_email" />
@@ -106,10 +107,21 @@
         android:hint="@string/password"
         android:textColorHint="@color/sub_text"
         android:textColor="@color/sub_text"
-        android:inputType="textNoSuggestions"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toBottomOf="@+id/ed_email" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/visibility_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/sub_text"
+        android:drawableEnd="@drawable/baseline_visibility_off_24"
+        app:layout_constraintEnd_toEndOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/ed_email"
+        android:clickable="true"
+        android:focusable="true" />
 
     <View
         android:id="@+id/view"
@@ -127,10 +139,22 @@
         android:hint="@string/repeat_password"
         android:textColorHint="@color/sub_text"
         android:textColor="@color/sub_text"
-        android:inputType="textNoSuggestions"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/visibility"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:drawableEnd="@drawable/baseline_visibility_off_24"
+        android:focusable="true"
+        android:textColor="@color/sub_text"
+        app:layout_constraintEnd_toEndOf="@+id/view3"
+        app:layout_constraintTop_toTopOf="@+id/ed_repeat_password" />
 
     <View
         android:id="@+id/view3"
@@ -175,7 +199,9 @@
         android:layout_height="50dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/btn_border"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_continue_with">
 
@@ -209,7 +235,9 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/btn_border"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cl_btn_google"
         app:layout_constraintTop_toBottomOf="@+id/tv_continue_with">
