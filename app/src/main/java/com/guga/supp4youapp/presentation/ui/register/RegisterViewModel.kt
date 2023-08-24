@@ -9,11 +9,10 @@ import javax.inject.Inject
 @HiltViewModel
 class RegisterViewModel @Inject constructor() : ViewModel() {
 
-    // Estado de visibilidade da senha
-    private val _visiblePassword = MutableLiveData(true)  // Defina como true
+    private val _visiblePassword = MutableLiveData(true)
     val visiblePassword: LiveData<Boolean> = _visiblePassword
 
-    private val _passwordRepetition = MutableLiveData(true)  // Defina como true
+    private val _passwordRepetition = MutableLiveData(true)
     val passwordRepetition: LiveData<Boolean> = _passwordRepetition
 
     fun changeVisibilityPassowrd() {
