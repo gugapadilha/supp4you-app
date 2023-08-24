@@ -1,7 +1,6 @@
 package com.guga.supp4youapp.presentation.ui.register
 
 import android.os.Bundle
-import android.text.InputType
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.util.Patterns
@@ -17,7 +16,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentRegisterBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     private lateinit var binding: FragmentRegisterBinding
@@ -45,51 +46,57 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     }
                 }
                 findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
-            } else {
-                Toast.makeText(requireContext(), "Invalid Credencials", Toast.LENGTH_SHORT).show()
             }
         }
-        togglePasswordVisibility(binding.edPassword, binding.visibilityOff)
-        togglePasswordVisibility(binding.edRepeatPassword, binding.visibility)
+
+        registerViewModel.visiblePassword.observe(viewLifecycleOwner) { visible ->
+            changePasswordVisibility(
+                binding.edPassword,
+                binding.visibilityOff,
+                visible
+            )
+        }
+
+        registerViewModel.senhaRepeticaoVisivel.observe(viewLifecycleOwner) { visible ->
+            changePasswordVisibility(
+                binding.edRepeatPassword,
+                binding.visibility,
+                visible
+            )
+        }
 
         binding.visibilityOff.setOnClickListener {
-            togglePasswordVisibility(binding.edPassword, binding.visibilityOff)
+            registerViewModel.changeVisibilityPassowrd()
         }
 
         binding.visibility.setOnClickListener {
-            togglePasswordVisibilityOff(binding.edRepeatPassword, binding.visibility)
+            registerViewModel.changeVisibilityPasswordRep()
         }
-
     }
-
-    private fun togglePasswordVisibility(passwordEditText: AppCompatEditText, visibilityTextView: AppCompatTextView) {
-        if (passwordEditText.transformationMethod == null) {
-            // A senha está visível, então tornamos oculta
-            passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
-            visibilityTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_visibility_off_24, 0)
+    private fun changePasswordVisibility(
+        passwordField: AppCompatEditText,
+        textVisibility: AppCompatTextView,
+        visible: Boolean
+    ) {
+        if (visible) {
+            passwordField.transformationMethod = PasswordTransformationMethod.getInstance()
+            textVisibility.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0,
+                0,
+                R.drawable.baseline_visibility_off_24,
+                0
+            )
         } else {
-            // A senha está oculta, então tornamos visível
-            passwordEditText.transformationMethod = null
-            visibilityTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_visibility_24, 0)
+            passwordField.transformationMethod = null
+            textVisibility.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                0,
+                0,
+                R.drawable.baseline_visibility_24,
+                0
+            )
         }
-        // Move o cursor para o final do texto
-        passwordEditText.setSelection(passwordEditText.text!!.length)
+        passwordField.setSelection(passwordField.text!!.length)
     }
-
-    private fun togglePasswordVisibilityOff(passwordEditText: AppCompatEditText, visibilityTextView: AppCompatTextView) {
-        if (passwordEditText.transformationMethod == null) {
-            // A senha está visível, então tornamos oculta
-            passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
-            visibilityTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_visibility_off_24, 0)
-        } else {
-            // A senha está oculta, então tornamos visível
-            passwordEditText.transformationMethod = null
-            visibilityTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.baseline_visibility_24, 0)
-        }
-        // Move o cursor para o final do texto
-        passwordEditText.setSelection(passwordEditText.text!!.length)
-    }
-
 
     private fun checkAllFields() : Boolean {
         val email = binding.edEmail.text.toString()
@@ -106,7 +113,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             Toast.makeText(requireContext(), "Password is a required field", Toast.LENGTH_SHORT).show()
             return false
         }
-        if (binding.edPassword.length() <= 6) {
+        if (binding.edPassword.length() <= 7) {
             Toast.makeText(requireContext(), "Password should at least 8 characters long", Toast.LENGTH_SHORT).show()
             return false
         }
