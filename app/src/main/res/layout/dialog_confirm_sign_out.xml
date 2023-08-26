@@ -4,13 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/home">
 
     <TextView
         android:id="@+id/dialog_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Are you sure you want to sign out?"
+        android:textColor="@color/white"
         android:textAppearance="?android:textAppearanceMedium"/>
 
     <LinearLayout
@@ -23,12 +25,14 @@
             android:id="@+id/btn_yes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/sub_bar"
             android:text="Yes"/>
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/sub_bar"
             android:text="Cancel"/>
     </LinearLayout>
 </LinearLayout>
