@@ -31,6 +31,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         binding = FragmentLoginBinding.bind(view)
         auth = Firebase.auth
 
+        val user = auth.currentUser
+        if (user != null) {
+            // Navega para o DetailsFragment se o usuário estiver autenticado
+            findNavController().navigate(R.id.detailsFragment)
+        }
+
+
         binding.tvCreatenow.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
