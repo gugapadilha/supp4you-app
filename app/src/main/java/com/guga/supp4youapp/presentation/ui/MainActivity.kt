@@ -3,12 +3,16 @@ package com.guga.supp4youapp.presentation.ui
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import checkPermission
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
+import com.guga.supp4youapp.presentation.ui.fragment.DetailsFragment
 import showRationaleCameraDialog
 
 class MainActivity : AppCompatActivity() {
