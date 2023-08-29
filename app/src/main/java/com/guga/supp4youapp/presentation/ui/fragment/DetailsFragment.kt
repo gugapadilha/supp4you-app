@@ -16,10 +16,17 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
+import com.guga.supp4youapp.data.remote.database.Person
 import com.guga.supp4youapp.databinding.FragmentDetailsBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class DetailsFragment : Fragment(R.layout.fragment_details) {
 
@@ -27,7 +34,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
     private var isSignOutDialogShowing = false // Variável para controlar o estado do diálogo
-
+    private val personCollectionRef = Firebase.firestore.collection("persons")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,10 +53,18 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         binding.tvLoginspace.setOnClickListener {
             val bottomSheetFragment = MyBottomSheetDialogFragment()
             bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+            val name = binding.textView.text.toString()
+            val person = Person(name, "")
+            savePerson(person)
+
         }
 
         binding.tvCreatespace.setOnClickListener {
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
+            val name = binding.textView.text.toString()
+            val person = Person(name, "")
+            savePerson(person)
+
         }
 
         binding.back.setOnClickListener {
@@ -58,6 +73,21 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         binding.backIcon.setOnClickListener {
             showSignOutConfirmationDialog()
+        }
+    }
+
+    private fun savePerson(person: Person) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            personCollectionRef.add(person).await()
+            withContext(Dispatchers.Main){
+                Toast.makeText(context, "Successfully saved data", Toast.LENGTH_SHORT).show()
+
+            }
+
+        } catch (e: Exception){
+            withContext(Dispatchers.Main){
+                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
