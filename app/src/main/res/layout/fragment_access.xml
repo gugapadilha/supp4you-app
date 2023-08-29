@@ -79,11 +79,11 @@
             android:text="@string/what_will_be_your_group_name"
             android:textColor="@color/white"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/tv_entercode"
+            app:layout_constraintStart_toStartOf="@+id/tv_group_name"
             app:layout_constraintTop_toBottomOf="@id/tv_access" />
 
         <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/tv_entercode"
+            android:id="@+id/tv_group_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/write_your_group_name"
@@ -100,7 +100,7 @@
             android:background="@android:color/darker_gray"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_entercode" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_group_name" />
 
     <TextView
         android:id="@+id/tv_availability"
@@ -110,8 +110,8 @@
         android:text="How many time this group will be available?"
         android:textColor="@color/white"
         android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_entercode"
-        app:layout_constraintTop_toBottomOf="@+id/tv_entercode" />
+        app:layout_constraintStart_toStartOf="@+id/tv_group_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_group_name" />
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/sp_days"
