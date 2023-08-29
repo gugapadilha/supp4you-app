@@ -6,3 +6,4 @@ data class Space(
    var selectBeginTime: String,
    var selectEndTime: String
 )
+

@@ -25,6 +25,8 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
         _binding = FragmentGenerateBinding.inflate(inflater, container, false)
         val code = validateCode()
         binding.tvEntercode.text = code
+        val spaceId = arguments?.getString("spaceId")
+        binding.tvEntercode.text = spaceId
         return binding.root
     }
 

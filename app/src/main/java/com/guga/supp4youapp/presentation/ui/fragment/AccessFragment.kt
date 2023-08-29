@@ -3,7 +3,6 @@ package com.guga.supp4youapp.presentation.ui.fragment
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.firestore.ktx.firestore
@@ -12,11 +11,9 @@ import com.guga.supp4youapp.R
 import com.guga.supp4youapp.data.remote.database.Space
 import com.guga.supp4youapp.databinding.FragmentAccessBinding
 import com.guga.supp4youapp.presentation.ui.adapter.CustomSpinnerAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
+
 
 class AccessFragment : Fragment(R.layout.fragment_access) {
 
@@ -34,8 +31,14 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectBeginTime = binding.spStartTime.selectedItem.toString()
             val selectEndTime = binding.spEndTime.selectedItem.toString()
             val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime)
-            createSpace(space)
-            findNavController().navigate(R.id.action_accessFragment_to_generateFragment)
+
+            // Usar um CoroutineScope para criar o espaço e obter o ID gerado
+            CoroutineScope(Dispatchers.Main).launch {
+                val spaceId = createSpace(space)
+                val bundle = Bundle()
+                bundle.putString("spaceId", spaceId)
+                findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
+            }
         }
 
         val daysArray = resources.getStringArray(R.array.days).toList()
@@ -71,18 +74,10 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         }
 
     }
-
-    private fun createSpace(space: Space) = CoroutineScope(Dispatchers.IO).launch {
-        try {
-            createSpace.add(space).await()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), "Successfully create space", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), e.message, Toast.LENGTH_SHORT).show()
-            }
-        }
+    private suspend fun createSpace(space: Space): String {
+        val result = createSpace.add(space).await()
+        createSpace.document(result.id).update("id", result.id).await()
+        return result.id
     }
 
 }
