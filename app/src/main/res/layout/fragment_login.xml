@@ -106,7 +106,9 @@
             android:hint="@string/password"
             android:textColorHint="@color/sub_text"
             android:textColor="@color/sub_text"
+            android:inputType="textPassword"
             android:textSize="14sp"
+            android:imeOptions="actionDone"
             app:layout_constraintStart_toStartOf="@+id/view"
             app:layout_constraintTop_toBottomOf="@+id/ed_email" />
 
