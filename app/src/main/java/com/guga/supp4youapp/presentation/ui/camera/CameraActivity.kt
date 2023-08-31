@@ -21,6 +21,8 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
 import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
@@ -214,6 +216,14 @@ class CameraActivity : AppCompatActivity() {
                         takenPhotoUri = savedUri
                         showPhoto(takenPhotoUri)
                         photoTaken = true // Foto tirada
+
+                        // Adicione o código para armazenar a URI da foto no Firestore aqui
+                        val firestore = Firebase.firestore
+                        val photoData = hashMapOf(
+                            "photoUri" to takenPhotoUri.toString()
+                        )
+                        firestore.collection("photos").add(photoData)
+
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     }
