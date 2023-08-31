@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
@@ -78,10 +79,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private fun savePerson(person: Person) = CoroutineScope(Dispatchers.IO).launch {
         try {
-            personCollectionRef.add(person).await()
+            val docRef = personCollectionRef.add(person).await()
             withContext(Dispatchers.Main){
                 Toast.makeText(context, "Successfully saved data", Toast.LENGTH_SHORT).show()
-
+                val bundle = Bundle()
+                bundle.putString("spaceId", docRef.id)
+                val detailsFragment = DetailsFragment()
+                detailsFragment.arguments = bundle
             }
 
         } catch (e: Exception){
@@ -150,12 +154,33 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             val enterSpaceButton = view.findViewById<Button>(R.id.tv_enter_space)
             enterSpaceButton.setOnClickListener {
-                val intent = Intent(requireContext(), CameraActivity::class.java)
-                startActivity(intent)
-                dismiss()
+                val codeEditText = view.findViewById<EditText>(R.id.ed_token)
+                val code = codeEditText.text.toString()
+
+                // Implementar a verificação do código de acesso aqui
+
+                val groupDocumentRef = Firebase.firestore.collection("create").document(code)
+                groupDocumentRef.get().addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val document = task.result
+                        if (document.exists()) {
+                            // Código de acesso é válido, redirecionar para a tela de conversa
+                            val intent = Intent(requireContext(), CameraActivity::class.java)
+                            startActivity(intent)
+                            dismiss()
+                        } else {
+                            // Código de acesso inválido, exibir Toast
+                            Toast.makeText(requireContext(), "Codigo inexistente", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        // Lidar com erros
+                        Toast.makeText(requireContext(), "Erro ao verificar o código", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
             return view
         }
     }
+
 }
