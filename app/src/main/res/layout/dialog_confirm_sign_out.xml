@@ -19,20 +19,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:gravity="end">
+        android:gravity="end"
+        >
 
         <Button
             android:id="@+id/btn_yes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/sub_bar"
+            android:textColor="@color/white"
+            android:layout_marginRight="10dp"
             android:text="Yes"/>
 
         <Button
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/sub_bar"
+            android:textColor="@color/white"
             android:text="Cancel"/>
     </LinearLayout>
 </LinearLayout>

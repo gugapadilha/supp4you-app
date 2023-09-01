@@ -16,6 +16,8 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
     private var _binding: FragmentGenerateBinding? = null
     private val binding get() = _binding!!
+    private var spaceId: String? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -25,15 +27,19 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
         _binding = FragmentGenerateBinding.inflate(inflater, container, false)
         val code = validateCode()
         binding.tvEntercode.text = code
-        val spaceId = arguments?.getString("spaceId")
+        spaceId = arguments?.getString("spaceId")
         binding.tvEntercode.text = spaceId
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.tvContinue.setOnClickListener {
-            val intent = Intent(requireContext(), CameraActivity::class.java)
-            startActivity(intent)
+            // Verifique se spaceId não é nulo
+            spaceId?.let { id ->
+                val intent = Intent(requireContext(), CameraActivity::class.java)
+                intent.putExtra("groupId", id) // Passe o ID para CameraActivity
+                startActivity(intent)
+            }
         }
 
         binding.back.setOnClickListener {

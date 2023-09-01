@@ -60,6 +60,7 @@
     <string name="write_your_email">Write your email</string>
     <string name="write_your_name">Write your name!</string>
     <string name="write_your_group_name">Write your group name</string>
+    <string name="write_the_code_here">Write the code here!</string>
 
     //Days
     <string-array name="days">

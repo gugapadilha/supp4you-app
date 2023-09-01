@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
@@ -19,7 +20,6 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,8 +29,6 @@ import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import kotlin.properties.Delegates
 
 class CameraActivity : AppCompatActivity() {
 
@@ -40,6 +38,7 @@ class CameraActivity : AppCompatActivity() {
     private var isFlashEnabled = false
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var takenPhotoUri: Uri // Nova variável para armazenar a Uri da foto tirada
+    private lateinit var groupId: String // Nova variável para armazenar a Uri da foto tirada
     private var photoTaken = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,9 +51,12 @@ class CameraActivity : AppCompatActivity() {
         } else {
             requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
         }
+        groupId = intent.getStringExtra("groupId") ?: ""
+        val enteredToken = intent.getStringExtra("groupId")
 
         viewBinding.takeShotButton.setOnClickListener {
-            takePhoto() // Move isso para o clique do botão da câmera
+            Log.d("Debug", "groupId before takePhoto: $groupId")
+            takePhoto(enteredToken) // Move isso para o clique do botão da câmera
         }
 
         viewBinding.flipCameraButton.setOnClickListener {
@@ -77,10 +79,12 @@ class CameraActivity : AppCompatActivity() {
             onBackPressed() // Volta para a tela anterior
         }
 
+
+
         viewBinding.continueButton.setOnClickListener {
             if (photoTaken) {
                 val intent = Intent(this, GalleryActivity::class.java)
-                intent.putExtra("photoUri", takenPhotoUri.toString())
+                intent.putExtra("groupId", groupId) // Passar o groupId corretamente
                 startActivity(intent)
                 viewBinding.reshot.visibility = View.GONE
             } else {
@@ -183,7 +187,7 @@ class CameraActivity : AppCompatActivity() {
         startCamera()
     }
 
-    private fun takePhoto() {
+    private fun takePhoto(enteredToken: String?) {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
@@ -220,7 +224,8 @@ class CameraActivity : AppCompatActivity() {
                         // Adicione o código para armazenar a URI da foto no Firestore aqui
                         val firestore = Firebase.firestore
                         val photoData = hashMapOf(
-                            "photoUri" to takenPhotoUri.toString()
+                            "photoUri" to takenPhotoUri.toString(),
+                            "groupId" to groupId
                         )
                         firestore.collection("photos").add(photoData)
 

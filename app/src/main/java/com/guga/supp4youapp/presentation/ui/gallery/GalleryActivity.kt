@@ -28,26 +28,33 @@ class GalleryActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        val firestore = Firebase.firestore
-        firestore.collection("photos").get()
-            .addOnSuccessListener { documents ->
-                val photoItems = mutableListOf<PhotoItem>()
-                for (document in documents) {
-                    val photoUriString = document.getString("photoUri")
-                    val photoUri = Uri.parse(photoUriString)
-                    val photoItem = PhotoItem(
-                        photoUri,
-                        "Gustavo Padilha"
-                    ) // Defina o nome do usuário apropriado
-                    photoItems.add(photoItem)
+        val groupId = intent.getStringExtra("groupId")
+
+        if (groupId != null) {
+            val firestore = Firebase.firestore
+            firestore.collection("photos")
+                .whereEqualTo("groupId", groupId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val photoItems = mutableListOf<PhotoItem>()
+                    for (document in documents) {
+                        val photoUriString = document.getString("photoUri")
+                        val photoUri = Uri.parse(photoUriString)
+                        val photoItem = PhotoItem(
+                            photoUri,
+                            "Gustavo Padilha"
+                        ) // Defina o nome do usuário apropriado
+                        photoItems.add(photoItem)
+                    }
+                    // Atualize a lista de fotos no adaptador usando submitList
+                    galleryAdapter.submitList(photoItems)
                 }
-                // Atualize a lista de fotos no adaptador usando submitList
-                galleryAdapter.submitList(photoItems)
-            }
-            .addOnFailureListener { exception ->
-                // Lidar com falha na recuperação dos dados
-            }
-    }
+                .addOnFailureListener { exception ->
+                    // Lidar com falha na recuperação dos dados
+                }
+        }
+
+        }
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()

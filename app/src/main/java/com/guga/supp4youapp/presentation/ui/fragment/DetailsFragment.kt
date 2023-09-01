@@ -145,6 +145,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     }
 
     class MyBottomSheetDialogFragment : BottomSheetDialogFragment() {
+        private var enteredToken: String? = null
+
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -154,6 +156,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             val enterSpaceButton = view.findViewById<Button>(R.id.tv_enter_space)
             enterSpaceButton.setOnClickListener {
+                enteredToken = view.findViewById<EditText>(R.id.ed_token).text.toString()
                 val codeEditText = view.findViewById<EditText>(R.id.ed_token)
                 val code = codeEditText.text.toString()
 
@@ -166,6 +169,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                         if (document.exists()) {
                             // Código de acesso é válido, redirecionar para a tela de conversa
                             val intent = Intent(requireContext(), CameraActivity::class.java)
+                            intent.putExtra("groupId", enteredToken)
                             startActivity(intent)
                             dismiss()
                         } else {
