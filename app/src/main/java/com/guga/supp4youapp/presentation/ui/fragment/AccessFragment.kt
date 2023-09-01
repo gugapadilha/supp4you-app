@@ -5,13 +5,20 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
+import com.guga.supp4youapp.data.remote.database.Space
 import com.guga.supp4youapp.databinding.FragmentAccessBinding
 import com.guga.supp4youapp.presentation.ui.adapter.CustomSpinnerAdapter
+import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
+
 
 class AccessFragment : Fragment(R.layout.fragment_access) {
 
     private lateinit var binding: FragmentAccessBinding
+    private val createSpace = Firebase.firestore.collection("create")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -19,7 +26,19 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         binding = FragmentAccessBinding.bind(view)
 
         binding.tvCreateSpace.setOnClickListener {
-            findNavController().navigate(R.id.action_accessFragment_to_generateFragment)
+            val groupName = binding.tvGroupName.text.toString()
+            val selectedDays = binding.spDays.selectedItem.toString()
+            val selectBeginTime = binding.spStartTime.selectedItem.toString()
+            val selectEndTime = binding.spEndTime.selectedItem.toString()
+            val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime)
+
+            // Usar um CoroutineScope para criar o espaço e obter o ID gerado
+            CoroutineScope(Dispatchers.Main).launch {
+                val spaceId = createSpace(space)
+                val bundle = Bundle()
+                bundle.putString("spaceId", spaceId)
+                findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
+            }
         }
 
         val daysArray = resources.getStringArray(R.array.days).toList()
@@ -55,4 +74,10 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         }
 
     }
+    private suspend fun createSpace(space: Space): String {
+        val result = createSpace.add(space).await()
+        createSpace.document(result.id).update("id", result.id).await()
+        return result.id
+    }
+
 }

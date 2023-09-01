@@ -4,6 +4,8 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.databinding.ActivityGalleryBinding
 
 class GalleryActivity : AppCompatActivity() {
@@ -26,15 +28,33 @@ class GalleryActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-        // Recupera a Uri passada como extra do Intent
-        val photoUriString = intent.getStringExtra("photoUri")
-        val photoUri = Uri.parse(photoUriString)
+        val groupId = intent.getStringExtra("groupId")
 
-        // Crie um novo PhotoItem com a Uri da foto tirada
-        val photoItem = PhotoItem(photoUri, "Gustavo Padilha")
-        // Atualize a lista de fotos no adaptador usando submitList
-        galleryAdapter.submitList(galleryAdapter.currentList + photoItem)
-    }
+        if (groupId != null) {
+            val firestore = Firebase.firestore
+            firestore.collection("photos")
+                .whereEqualTo("groupId", groupId)
+                .get()
+                .addOnSuccessListener { documents ->
+                    val photoItems = mutableListOf<PhotoItem>()
+                    for (document in documents) {
+                        val photoUriString = document.getString("photoUri")
+                        val photoUri = Uri.parse(photoUriString)
+                        val photoItem = PhotoItem(
+                            photoUri,
+                            "Gustavo Padilha"
+                        ) // Defina o nome do usuário apropriado
+                        photoItems.add(photoItem)
+                    }
+                    // Atualize a lista de fotos no adaptador usando submitList
+                    galleryAdapter.submitList(photoItems)
+                }
+                .addOnFailureListener { exception ->
+                    // Lidar com falha na recuperação dos dados
+                }
+        }
+
+        }
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()

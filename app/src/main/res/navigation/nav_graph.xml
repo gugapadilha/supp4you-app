@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_detailsFragment_to_generateFragment"
             app:destination="@id/generateFragment" />
+        <action
+            android:id="@+id/action_detailsFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/accessFragment"
@@ -45,7 +48,11 @@
         tools:layout="@layout/fragment_access">
         <action
             android:id="@+id/action_accessFragment_to_generateFragment"
-            app:destination="@id/generateFragment" />
+            app:destination="@id/generateFragment" >
+            <argument
+                android:name="spaceId"
+                app:argType="string" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/generateFragment"
