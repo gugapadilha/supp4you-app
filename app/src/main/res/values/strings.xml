@@ -61,6 +61,8 @@
     <string name="write_your_name">Write your name!</string>
     <string name="write_your_group_name">Write your group name</string>
     <string name="write_the_code_here">Write the code here!</string>
+    <string name="enter_access_code">Enter Access Code</string>
+    <string name="write_the_generate_code">Write the generate code!</string>
 
     //Days
     <string-array name="days">

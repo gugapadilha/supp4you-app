@@ -156,29 +156,34 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             val enterSpaceButton = view.findViewById<Button>(R.id.tv_enter_space)
             enterSpaceButton.setOnClickListener {
-                enteredToken = view.findViewById<EditText>(R.id.ed_token).text.toString()
                 val codeEditText = view.findViewById<EditText>(R.id.ed_token)
                 val code = codeEditText.text.toString()
 
-                // Implementar a verificação do código de acesso aqui
+                // Verificar se o campo de código está vazio
+                if (code.isBlank()) {
+                    // Exibir uma mensagem de erro caso o campo esteja vazio
+                    Toast.makeText(requireContext(), "You have to write a valid code!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Implementar a verificação do código de acesso aqui
 
-                val groupDocumentRef = Firebase.firestore.collection("create").document(code)
-                groupDocumentRef.get().addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val document = task.result
-                        if (document.exists()) {
-                            // Código de acesso é válido, redirecionar para a tela de conversa
-                            val intent = Intent(requireContext(), CameraActivity::class.java)
-                            intent.putExtra("groupId", enteredToken)
-                            startActivity(intent)
-                            dismiss()
+                    val groupDocumentRef = Firebase.firestore.collection("create").document(code)
+                    groupDocumentRef.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val document = task.result
+                            if (document.exists()) {
+                                // Código de acesso é válido, redirecionar para a tela de conversa
+                                val intent = Intent(requireContext(), CameraActivity::class.java)
+                                intent.putExtra("groupId", enteredToken)
+                                startActivity(intent)
+                                dismiss()
+                            } else {
+                                // Código de acesso inválido, exibir Toast
+                                Toast.makeText(requireContext(), "Invalid code", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
-                            // Código de acesso inválido, exibir Toast
-                            Toast.makeText(requireContext(), "Codigo inexistente", Toast.LENGTH_SHORT).show()
+                            // Lidar com erros
+                            Toast.makeText(requireContext(), "Code might be wrong", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        // Lidar com erros
-                        Toast.makeText(requireContext(), "Erro ao verificar o código", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
