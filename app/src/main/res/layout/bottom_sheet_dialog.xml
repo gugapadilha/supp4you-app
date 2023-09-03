@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -21,24 +23,38 @@
         android:id="@+id/ed_token"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textColorHint="@color/sub_text"
         android:textColor="@color/white"
-        android:hint="@string/y46rgsf842"/>
+        android:imeOptions="actionDone"
+        android:singleLine="true"
+        android:hint="@string/ex_qkielnmzkct86"/>
     <View
         android:id="@+id/view2"
         android:layout_width="300dp"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray" />
 
-    <androidx.constraintlayout.utils.widget.MotionButton
-        android:id="@+id/tv_enter_space"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="30dp"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/sub_bar"
-        android:hint="Enter Access Code" />
+        android:layout_weight="1"
+        android:gravity="center_vertical">
+
+        <androidx.constraintlayout.utils.widget.MotionButton
+            android:id="@+id/tv_enter_space"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/sub_bar"
+            android:hint="@string/enter_access_code"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="MissingConstraints" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

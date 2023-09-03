@@ -34,20 +34,19 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.tvContinue.setOnClickListener {
-            // Verifique se spaceId não é nulo
             spaceId?.let { id ->
                 val intent = Intent(requireContext(), CameraActivity::class.java)
-                intent.putExtra("groupId", id) // Passe o ID para CameraActivity
+                intent.putExtra("groupId", id) // Passing ID to CameraActivity
                 startActivity(intent)
             }
         }
 
         binding.back.setOnClickListener {
-            requireActivity().onBackPressed() // Volta para a tela anterior
+            requireActivity().onBackPressed()
         }
 
         binding.backIcon.setOnClickListener {
-            requireActivity().onBackPressed() // Volta para a tela anterior
+            requireActivity().onBackPressed()
         }
     }
 

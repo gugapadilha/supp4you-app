@@ -34,7 +34,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
-    private var isSignOutDialogShowing = false // Variável para controlar o estado do diálogo
+    private var isSignOutDialogShowing = false
     private val personCollectionRef = Firebase.firestore.collection("persons")
 
     override fun onCreateView(
@@ -156,30 +156,30 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             val enterSpaceButton = view.findViewById<Button>(R.id.tv_enter_space)
             enterSpaceButton.setOnClickListener {
-                enteredToken = view.findViewById<EditText>(R.id.ed_token).text.toString()
                 val codeEditText = view.findViewById<EditText>(R.id.ed_token)
                 val code = codeEditText.text.toString()
 
-                // Implementar a verificação do código de acesso aqui
+                if (code.isNotEmpty()) {
+                    enteredToken = code
 
-                val groupDocumentRef = Firebase.firestore.collection("create").document(code)
-                groupDocumentRef.get().addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val document = task.result
-                        if (document.exists()) {
-                            // Código de acesso é válido, redirecionar para a tela de conversa
-                            val intent = Intent(requireContext(), CameraActivity::class.java)
-                            intent.putExtra("groupId", enteredToken)
-                            startActivity(intent)
-                            dismiss()
+                    val groupDocumentRef = Firebase.firestore.collection("create").document(code)
+                    groupDocumentRef.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val document = task.result
+                            if (document.exists()) {
+                                val intent = Intent(requireContext(), CameraActivity::class.java)
+                                intent.putExtra("groupId", enteredToken)
+                                startActivity(intent)
+                                dismiss()
+                            } else {
+                                Toast.makeText(requireContext(), "Code does not exist", Toast.LENGTH_SHORT).show()
+                            }
                         } else {
-                            // Código de acesso inválido, exibir Toast
-                            Toast.makeText(requireContext(), "Codigo inexistente", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireContext(), "Error when validate code", Toast.LENGTH_SHORT).show()
                         }
-                    } else {
-                        // Lidar com erros
-                        Toast.makeText(requireContext(), "Erro ao verificar o código", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    Toast.makeText(requireContext(), "You should insert a generate code", Toast.LENGTH_SHORT).show()
                 }
             }
 

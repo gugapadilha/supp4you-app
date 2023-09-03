@@ -43,14 +43,14 @@ class GalleryActivity : AppCompatActivity() {
                         val photoItem = PhotoItem(
                             photoUri,
                             "Gustavo Padilha"
-                        ) // Defina o nome do usuário apropriado
+                        )
                         photoItems.add(photoItem)
                     }
-                    // Atualize a lista de fotos no adaptador usando submitList
+                    // Att photo list in adapter using submitList
                     galleryAdapter.submitList(photoItems)
                 }
                 .addOnFailureListener { exception ->
-                    // Lidar com falha na recuperação dos dados
+
                 }
         }
 
@@ -59,13 +59,12 @@ class GalleryActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()
 
-        // Use LinearLayoutManager with vertical orientation
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvGallery.layoutManager = layoutManager
 
         binding.rvGallery.adapter = galleryAdapter
 
-        val initialPhotoList: List<PhotoItem> = emptyList() // Lista vazia inicial
+        val initialPhotoList: List<PhotoItem> = emptyList()
         galleryAdapter.submitList(initialPhotoList)
     }
 

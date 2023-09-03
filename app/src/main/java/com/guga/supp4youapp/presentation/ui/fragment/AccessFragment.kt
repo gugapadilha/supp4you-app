@@ -32,7 +32,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectEndTime = binding.spEndTime.selectedItem.toString()
             val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime)
 
-            // Usar um CoroutineScope para criar o espaço e obter o ID gerado
+            // Using a  CoroutineScope to create space and get generated id
             CoroutineScope(Dispatchers.Main).launch {
                 val spaceId = createSpace(space)
                 val bundle = Bundle()
@@ -49,14 +49,11 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (adapterView != null) {
                     val selectedItem = adapterView.getItemAtPosition(position)
-//                    val selectedText = "You selected $selectedItem"
-//                    val context = requireActivity()
-//                    Toast.makeText(context, selectedText, Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                // Lógica para quando nada é selecionado
+
             }
         }
 
@@ -66,11 +63,11 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         binding.spEndTime.adapter = timeAdapter
 
         binding.back.setOnClickListener {
-            requireActivity().onBackPressed() // Volta para a tela anterior
+            requireActivity().onBackPressed()
         }
 
         binding.backIcon.setOnClickListener {
-            requireActivity().onBackPressed() // Volta para a tela anterior
+            requireActivity().onBackPressed()
         }
 
     }

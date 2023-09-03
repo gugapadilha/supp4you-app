@@ -79,6 +79,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/write_the_code_here"
         android:imeOptions="actionDone"
+        android:singleLine="true"
         android:textColor="@color/white"
         android:textColorHint="@color/grey_300"
         android:textSize="14sp"
@@ -147,4 +148,3 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_share" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
