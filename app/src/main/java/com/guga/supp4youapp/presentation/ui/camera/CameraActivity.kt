@@ -39,6 +39,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var takenPhotoUri: Uri
     private lateinit var groupId: String
+    private lateinit var name: String
     private var photoTaken = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,8 @@ class CameraActivity : AppCompatActivity() {
         }
         groupId = intent.getStringExtra("groupId") ?: ""
         val enteredToken = intent.getStringExtra("groupId")
+        name = intent.getStringExtra("personName").toString()
+
 
         viewBinding.takeShotButton.setOnClickListener {
             Log.d("Debug", "groupId before takePhoto: $groupId")
@@ -85,6 +88,7 @@ class CameraActivity : AppCompatActivity() {
             if (photoTaken) {
                 val intent = Intent(this, GalleryActivity::class.java)
                 intent.putExtra("groupId", groupId)
+                intent.putExtra("personName", name) // Use o mesmo nome aqui
                 startActivity(intent)
                 viewBinding.reshot.visibility = View.GONE
             } else {
@@ -192,9 +196,10 @@ class CameraActivity : AppCompatActivity() {
         val imageCapture = imageCapture ?: return
 
         // Create time stamped name and MediaStore entry.
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
+        val photoName = intent.getStringExtra("personName")
+
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, photoName) // Use o nome formatado
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Supp4You")
@@ -212,6 +217,7 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
+                    // Lida com o erro
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
@@ -221,10 +227,13 @@ class CameraActivity : AppCompatActivity() {
                         showPhoto(takenPhotoUri)
                         photoTaken = true
 
+                        // Move a criação do documento aqui, após a foto ser tirada com sucesso
                         val firestore = Firebase.firestore
                         val photoData = hashMapOf(
                             "photoUri" to takenPhotoUri.toString(),
-                            "groupId" to groupId
+                            "groupId" to groupId,
+                            "personName" to name,
+                            "photoName" to photoName // Use o nome da foto
                         )
                         firestore.collection("photos").add(photoData)
 
