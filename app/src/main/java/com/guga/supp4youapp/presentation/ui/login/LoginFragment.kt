@@ -33,7 +33,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         val user = auth.currentUser
         if (user != null) {
-            // Navega para o DetailsFragment se o usuário estiver autenticado
             findNavController().navigate(R.id.detailsFragment)
         }
 

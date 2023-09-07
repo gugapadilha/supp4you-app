@@ -88,6 +88,8 @@
             android:layout_height="wrap_content"
             android:hint="@string/write_your_group_name"
             android:textColor="@color/white"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:textColorHint="@color/grey_300"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@+id/view2"

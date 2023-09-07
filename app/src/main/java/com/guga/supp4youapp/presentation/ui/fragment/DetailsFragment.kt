@@ -1,6 +1,7 @@
 package com.guga.supp4youapp.presentation.ui.fragment
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -34,8 +35,12 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
     private lateinit var auth: FirebaseAuth
-    private var isSignOutDialogShowing = false // Variável para controlar o estado do diálogo
-    private val personCollectionRef = Firebase.firestore.collection("persons")
+    private var isSignOutDialogShowing = false
+    private val personCollectionRef = Firebase.firestore.collection("photos")
+    private var personName: String = ""
+    private var takenPhotoUri: Uri? = null // Adicione isso
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,19 +57,26 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         auth = Firebase.auth
 
         binding.tvLoginspace.setOnClickListener {
-            val bottomSheetFragment = MyBottomSheetDialogFragment()
-            bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
             val name = binding.textView.text.toString()
-            val person = Person(name, "")
-            savePerson(person)
+            if (name.isNotEmpty()) {
+                personName = name
 
+                // Gere um nome exclusivo para a foto usando um timestamp
+                val timestamp = System.currentTimeMillis()
+                val photoName = "$personName"
+
+                // Capture a foto e obtenha a URI
+                takePhotoAndGetUri(photoName)
+            } else {
+                Toast.makeText(requireContext(), "Enter a name first", Toast.LENGTH_SHORT).show()
+            }
         }
+
 
         binding.tvCreatespace.setOnClickListener {
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
             val name = binding.textView.text.toString()
-            val person = Person(name, "")
-            savePerson(person)
+            personName = name
 
         }
 
@@ -74,24 +86,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         binding.backIcon.setOnClickListener {
             showSignOutConfirmationDialog()
-        }
-    }
-
-    private fun savePerson(person: Person) = CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val docRef = personCollectionRef.add(person).await()
-            withContext(Dispatchers.Main){
-                Toast.makeText(context, "Successfully saved data", Toast.LENGTH_SHORT).show()
-                val bundle = Bundle()
-                bundle.putString("spaceId", docRef.id)
-                val detailsFragment = DetailsFragment()
-                detailsFragment.arguments = bundle
-            }
-
-        } catch (e: Exception){
-            withContext(Dispatchers.Main){
-                Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -144,8 +138,33 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
+    private fun takePhotoAndGetUri(photoName: String) {
+        // ... O código para capturar a foto
+
+        // Configurar a URI da foto capturada na instância da MyBottomSheetDialogFragment
+        val bottomSheetFragment = MyBottomSheetDialogFragment()
+        val args = Bundle()
+        args.putString("personName", personName)
+        args.putString("photoName", photoName)
+        args.putParcelable("takenPhotoUri", takenPhotoUri) // Configurar a URI aqui
+        bottomSheetFragment.arguments = args
+
+        bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+    }
+
     class MyBottomSheetDialogFragment : BottomSheetDialogFragment() {
         private var enteredToken: String? = null
+        private var personName: String? = null
+        private var photoName: String? = null
+        private var takenPhotoUri: Uri? = null // Adicione isso
+
+
+        // Método para configurar os argumentos
+        fun setArguments(personName: String, photoName: String, takenPhotoUri: Uri) {
+            this.personName = personName
+            this.photoName = photoName
+            this.takenPhotoUri = takenPhotoUri // Configure o takenPhotoUri
+        }
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -156,35 +175,65 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             val enterSpaceButton = view.findViewById<Button>(R.id.tv_enter_space)
             enterSpaceButton.setOnClickListener {
-                enteredToken = view.findViewById<EditText>(R.id.ed_token).text.toString()
                 val codeEditText = view.findViewById<EditText>(R.id.ed_token)
                 val code = codeEditText.text.toString()
 
-                // Implementar a verificação do código de acesso aqui
+                if (code.isNotEmpty()) {
+                    enteredToken = code
 
-                val groupDocumentRef = Firebase.firestore.collection("create").document(code)
-                groupDocumentRef.get().addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val document = task.result
-                        if (document.exists()) {
-                            // Código de acesso é válido, redirecionar para a tela de conversa
-                            val intent = Intent(requireContext(), CameraActivity::class.java)
-                            intent.putExtra("groupId", enteredToken)
-                            startActivity(intent)
-                            dismiss()
-                        } else {
-                            // Código de acesso inválido, exibir Toast
-                            Toast.makeText(requireContext(), "Codigo inexistente", Toast.LENGTH_SHORT).show()
+                    // Acessar os argumentos configurados
+                    val personName = arguments?.getString("personName")
+                    val photoName = arguments?.getString("photoName")
+
+                    if (personName != null && photoName != null) {
+                        // Use personName e photoName conforme necessário
+
+                        val groupDocumentRef = Firebase.firestore.collection("create").document(code)
+                        groupDocumentRef.get().addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val document = task.result
+                                if (document.exists()) {
+                                    // Use o photoName como um identificador exclusivo no Firestore
+                                    val firestore = Firebase.firestore
+                                    val photoData = hashMapOf(
+                                        "photoUri" to takenPhotoUri.toString(),
+                                        "groupId" to enteredToken,
+                                        "personName" to personName,
+                                        "photoName" to photoName // Use o photoName como um identificador exclusivo
+                                    )
+
+                                    val intent = Intent(requireContext(), CameraActivity::class.java)
+                                    intent.putExtra("groupId", enteredToken)
+                                    intent.putExtra("personName", personName)
+                                    intent.putExtra("photoName", photoName)
+                                    startActivity(intent)
+                                    dismiss()
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Code does not exist",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Error when validating the code",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     } else {
-                        // Lidar com erros
-                        Toast.makeText(requireContext(), "Erro ao verificar o código", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Please enter a valid name", Toast.LENGTH_SHORT).show()
                     }
+                } else {
+                    Toast.makeText(requireContext(), "You should insert a generated code", Toast.LENGTH_SHORT).show()
                 }
             }
 
             return view
         }
     }
+
 
 }

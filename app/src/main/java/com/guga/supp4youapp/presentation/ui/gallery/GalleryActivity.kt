@@ -40,32 +40,36 @@ class GalleryActivity : AppCompatActivity() {
                     for (document in documents) {
                         val photoUriString = document.getString("photoUri")
                         val photoUri = Uri.parse(photoUriString)
+
+                        // Obtenha o personName associado a esta foto
+                        val personName = document.getString("personName") ?: "Unknown User"
+
                         val photoItem = PhotoItem(
                             photoUri,
-                            "Gustavo Padilha"
-                        ) // Defina o nome do usuário apropriado
+                            personName // Use o personName específico para esta foto
+                        )
                         photoItems.add(photoItem)
                     }
                     // Atualize a lista de fotos no adaptador usando submitList
                     galleryAdapter.submitList(photoItems)
                 }
                 .addOnFailureListener { exception ->
-                    // Lidar com falha na recuperação dos dados
+                    // Trate a falha ao recuperar as fotos.
                 }
         }
+
 
         }
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()
 
-        // Use LinearLayoutManager with vertical orientation
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.rvGallery.layoutManager = layoutManager
 
         binding.rvGallery.adapter = galleryAdapter
 
-        val initialPhotoList: List<PhotoItem> = emptyList() // Lista vazia inicial
+        val initialPhotoList: List<PhotoItem> = emptyList()
         galleryAdapter.submitList(initialPhotoList)
     }
 

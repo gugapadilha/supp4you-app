@@ -37,8 +37,9 @@ class CameraActivity : AppCompatActivity() {
     private var imageCapture: ImageCapture? = null
     private var isFlashEnabled = false
     private lateinit var cameraExecutor: ExecutorService
-    private lateinit var takenPhotoUri: Uri // Nova variável para armazenar a Uri da foto tirada
-    private lateinit var groupId: String // Nova variável para armazenar a Uri da foto tirada
+    private lateinit var takenPhotoUri: Uri
+    private lateinit var groupId: String
+    private lateinit var name: String
     private var photoTaken = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,14 +54,16 @@ class CameraActivity : AppCompatActivity() {
         }
         groupId = intent.getStringExtra("groupId") ?: ""
         val enteredToken = intent.getStringExtra("groupId")
+        name = intent.getStringExtra("personName").toString()
+
 
         viewBinding.takeShotButton.setOnClickListener {
             Log.d("Debug", "groupId before takePhoto: $groupId")
-            takePhoto(enteredToken) // Move isso para o clique do botão da câmera
+            takePhoto(enteredToken)
         }
 
         viewBinding.flipCameraButton.setOnClickListener {
-            flipCamera() // Adicione isso para o clique do botão de virar a câmera
+            flipCamera()
         }
 
         viewBinding.flashButton.setOnClickListener {
@@ -72,11 +75,11 @@ class CameraActivity : AppCompatActivity() {
         }
 
         viewBinding.back.setOnClickListener {
-            onBackPressed() // Volta para a tela anterior
+            onBackPressed()
         }
 
         viewBinding.backIcon.setOnClickListener {
-            onBackPressed() // Volta para a tela anterior
+            onBackPressed()
         }
 
 
@@ -84,7 +87,8 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.continueButton.setOnClickListener {
             if (photoTaken) {
                 val intent = Intent(this, GalleryActivity::class.java)
-                intent.putExtra("groupId", groupId) // Passar o groupId corretamente
+                intent.putExtra("groupId", groupId)
+                intent.putExtra("personName", name) // Use o mesmo nome aqui
                 startActivity(intent)
                 viewBinding.reshot.visibility = View.GONE
             } else {
@@ -108,9 +112,9 @@ class CameraActivity : AppCompatActivity() {
         applyFlash()
 
         val flashIcon = if (isFlashEnabled) {
-            R.drawable.ic_baseline_flash_on_24 // Ícone de flash ligado
+            R.drawable.ic_baseline_flash_on_24
         } else {
-            R.drawable.ic_baseline_flash_off_24 // Ícone de flash desligado
+            R.drawable.ic_baseline_flash_off_24
         }
 
         viewBinding.flashButton.setImageResource(flashIcon)
@@ -192,9 +196,10 @@ class CameraActivity : AppCompatActivity() {
         val imageCapture = imageCapture ?: return
 
         // Create time stamped name and MediaStore entry.
-        val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US).format(System.currentTimeMillis())
+        val photoName = intent.getStringExtra("personName")
+
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.DISPLAY_NAME, photoName) // Use o nome formatado
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Supp4You")
@@ -212,6 +217,7 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
+                    // Lida com o erro
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
@@ -219,13 +225,15 @@ class CameraActivity : AppCompatActivity() {
                     savedUri?.let {
                         takenPhotoUri = savedUri
                         showPhoto(takenPhotoUri)
-                        photoTaken = true // Foto tirada
+                        photoTaken = true
 
-                        // Adicione o código para armazenar a URI da foto no Firestore aqui
+                        // Move a criação do documento aqui, após a foto ser tirada com sucesso
                         val firestore = Firebase.firestore
                         val photoData = hashMapOf(
                             "photoUri" to takenPhotoUri.toString(),
-                            "groupId" to groupId
+                            "groupId" to groupId,
+                            "personName" to name,
+                            "photoName" to photoName // Use o nome da foto
                         )
                         firestore.collection("photos").add(photoData)
 
