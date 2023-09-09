@@ -74,10 +74,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
 
         binding.tvCreatespace.setOnClickListener {
-            findNavController().navigate(R.id.action_detailsFragment_to_accessFragment)
             val name = binding.textView.text.toString()
             personName = name
 
+            // Crie um Bundle para passar o nome para a AccessFragment
+            val bundle = Bundle()
+            bundle.putString("personName", personName)
+
+            findNavController().navigate(R.id.action_detailsFragment_to_accessFragment, bundle)
         }
 
         binding.back.setOnClickListener {

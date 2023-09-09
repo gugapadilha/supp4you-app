@@ -11,13 +11,12 @@ import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentGenerateBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
 
-
 class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
     private var _binding: FragmentGenerateBinding? = null
     private val binding get() = _binding!!
     private var spaceId: String? = null
-
+    private var personName: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +27,9 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
         val code = validateCode()
         binding.tvEntercode.text = code
         spaceId = arguments?.getString("spaceId")
+        personName = arguments?.getString("personName")
         binding.tvEntercode.text = spaceId
+
         return binding.root
     }
 
@@ -37,6 +38,7 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
             spaceId?.let { id ->
                 val intent = Intent(requireContext(), CameraActivity::class.java)
                 intent.putExtra("groupId", id) // Passing ID to CameraActivity
+                intent.putExtra("personName", personName) // Passing the name to CameraActivity
                 startActivity(intent)
             }
         }
