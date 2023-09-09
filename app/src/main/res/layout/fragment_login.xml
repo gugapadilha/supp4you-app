@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.ui.MainActivity"
-    android:background="@color/home">
+    android:background="@color/dark_gray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -135,7 +135,7 @@
             android:id="@+id/tv_login"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/sub_bar"
+            android:backgroundTint="@color/home"
             android:text="@string/log_in"
             android:layout_marginTop="20dp"
             android:textColor="@color/white"

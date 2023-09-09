@@ -6,11 +6,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.ui.MainActivity"
-    android:background="@color/home">
+    android:background="@color/dark_gray">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/home"
+    android:background="@color/dark_gray"
     tools:context=".presentation.ui.register.RegisterFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -174,7 +174,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:backgroundTint="@color/sub_bar"
+        android:backgroundTint="@color/home"
         android:text="@string/log_in"
         android:textColor="@color/white"
         app:cornerRadius="5dp"
