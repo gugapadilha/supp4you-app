@@ -162,10 +162,10 @@
             android:id="@+id/cl_btn_google"
             android:layout_width="150dp"
             android:layout_height="50dp"
-            android:layout_marginStart="40dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/btn_border"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/tv_login"
+            app:layout_constraintStart_toStartOf="@+id/tv_login"
             app:layout_constraintTop_toBottomOf="@+id/tv_continue_with">
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -191,52 +191,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_btn_facebook"
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/btn_border"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cl_btn_google"
-            app:layout_constraintTop_toBottomOf="@+id/tv_continue_with">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/appCompatImageView2"
-                android:layout_width="32dp"
-                android:layout_height="33dp"
-                android:layout_marginStart="10dp"
-                android:src="@drawable/ic_facebook_logo"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:text="@string/facebook"
-                android:textColor="@color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/appCompatImageView2"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <TextView
             android:id="@+id/tv_createnow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:text="@string/don_t_have_account_create_now"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/cl_btn_facebook"
+            app:layout_constraintEnd_toEndOf="@+id/cl_btn_google"
             app:layout_constraintStart_toStartOf="@+id/cl_btn_google"
-            app:layout_constraintTop_toBottomOf="@+id/cl_btn_facebook" />
+            app:layout_constraintTop_toBottomOf="@+id/cl_btn_google" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
