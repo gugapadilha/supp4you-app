@@ -23,6 +23,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
 import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
@@ -41,6 +42,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var groupId: String
     private lateinit var name: String
     private var photoTaken = false
+    private var isPhotoBeingTaken = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +60,13 @@ class CameraActivity : AppCompatActivity() {
 
 
         viewBinding.takeShotButton.setOnClickListener {
-            Log.d("Debug", "groupId before takePhoto: $groupId")
-            takePhoto(enteredToken)
+            if (!photoTaken) {
+                takePhoto(enteredToken)
+                photoTaken = true
+            }
         }
 
-        viewBinding.flipCameraButton.setOnClickListener {
+            viewBinding.flipCameraButton.setOnClickListener {
             flipCamera()
         }
 
@@ -88,7 +92,7 @@ class CameraActivity : AppCompatActivity() {
             if (photoTaken) {
                 val intent = Intent(this, GalleryActivity::class.java)
                 intent.putExtra("groupId", groupId)
-                intent.putExtra("personName", name) // Use o mesmo nome aqui
+                intent.putExtra("personName", name)
                 startActivity(intent)
                 viewBinding.reshot.visibility = View.GONE
             } else {
@@ -192,11 +196,19 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun takePhoto(enteredToken: String?) {
+        if (isPhotoBeingTaken) {
+            // Já estamos tirando uma foto, não faça nada
+            return
+        }
+
+        // Defina isPhotoBeingTaken como true para evitar que outra foto seja tirada até que a atual seja salva
+        isPhotoBeingTaken = true
+
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
         // Create time stamped name and MediaStore entry.
-        val photoName = intent.getStringExtra("personName")
+        val photoName = UUID.randomUUID().toString()
 
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, photoName) // Use o nome formatado
@@ -211,13 +223,16 @@ class CameraActivity : AppCompatActivity() {
             contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
         ).build()
 
-        // Set up image capture listener, which is triggered after photo has
-        // been taken
+        // Resto do código para tirar a foto...
+
         imageCapture.takePicture(outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     // Lida com o erro
+
+                    // Defina isPhotoBeingTaken como false em caso de erro
+                    isPhotoBeingTaken = false
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
@@ -227,22 +242,19 @@ class CameraActivity : AppCompatActivity() {
                         showPhoto(takenPhotoUri)
                         photoTaken = true
 
-                        // Move a criação do documento aqui, após a foto ser tirada com sucesso
-                        val firestore = Firebase.firestore
-                        val photoData = hashMapOf(
-                            "photoUri" to takenPhotoUri.toString(),
-                            "groupId" to groupId,
-                            "personName" to name,
-                            "photoName" to photoName // Use o nome da foto
-                        )
-                        firestore.collection("photos").add(photoData)
+                        // Chamamos o método para fazer o upload da foto para o Firebase Storage
+                        uploadPhoto(takenPhotoUri)
 
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     }
+
+                    // Defina isPhotoBeingTaken como false após a foto ter sido salva
+                    isPhotoBeingTaken = false
                 }
             })
     }
+
 
     private fun showRecentPhotos() {
         pickImagesLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
@@ -274,6 +286,54 @@ class CameraActivity : AppCompatActivity() {
 
         }, ContextCompat.getMainExecutor(this))
     }
+
+    private fun uploadPhoto(photoUri: Uri) {
+        val storage = Firebase.storage
+        val storageRef = storage.reference
+        val photoName = intent.getStringExtra("personName")
+
+        // Crie uma referência no Firebase Storage com um nome único para a foto
+        val photoRef = storageRef.child("photos/${UUID.randomUUID()}/$photoName.jpg")
+
+        // Realize o upload da foto
+        val uploadTask = photoRef.putFile(photoUri)
+
+        uploadTask.addOnSuccessListener { taskSnapshot ->
+            // O upload da foto foi bem-sucedido, você pode obter a URL de download aqui
+            photoRef.downloadUrl.addOnSuccessListener { uri ->
+                // A URI da foto que você deve salvar no Firestore
+                val photoUriString = uri.toString()
+
+                // Agora você pode salvar esta URI no Firestore como fez antes
+                savePhotoUriToFirestore(photoUriString)
+            }
+        }.addOnFailureListener { exception ->
+            // Trate falhas no upload aqui
+        }
+    }
+
+    private fun savePhotoUriToFirestore(photoUri: String) {
+        val firestore = Firebase.firestore
+        val groupId = intent.getStringExtra("groupId")
+        val name = intent.getStringExtra("personName")
+
+        val photoData = hashMapOf(
+            "photoUri" to photoUri,
+            "groupId" to groupId,
+            "personName" to name,
+            // Outros dados associados à foto, se houver
+        )
+
+        firestore.collection("photos")
+            .add(photoData)
+            .addOnSuccessListener { documentReference ->
+                // Foto e dados salvos com sucesso no Firestore
+            }
+            .addOnFailureListener { exception ->
+                // Trate a falha ao salvar no Firestore
+            }
+    }
+
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
