@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/home">
+    android:background="@color/dark_gray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.ui.MainActivity"
-    android:background="@color/home">
+    android:background="@color/dark_gray">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_head"
@@ -134,7 +134,7 @@
         android:layout_width="300dp"
         android:layout_height="48dp"
         android:layout_marginTop="20dp"
-        android:backgroundTint="@color/sub_bar"
+        android:backgroundTint="@color/home"
         android:text="@string/create_space"
         android:textColor="@color/white"
         app:cornerRadius="5dp"
@@ -149,7 +149,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/sub_bar"
+        android:backgroundTint="@color/home"
         android:text="@string/login_space"
         android:textColor="@color/white"
         app:cornerRadius="5dp"

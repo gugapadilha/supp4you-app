@@ -24,6 +24,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentAccessBinding.bind(view)
+        val personName = arguments?.getString("personName")
 
         binding.tvCreateSpace.setOnClickListener {
             val groupName = binding.tvGroupName.text.toString()
@@ -32,11 +33,15 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectEndTime = binding.spEndTime.selectedItem.toString()
             val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime)
 
-            // Using a  CoroutineScope to create space and get generated id
+            // Usando um CoroutineScope para criar o espaço e obter o ID gerado
             CoroutineScope(Dispatchers.Main).launch {
                 val spaceId = createSpace(space)
+
+                // Criar um Bundle para passar o nome para a GenerateFragment
                 val bundle = Bundle()
                 bundle.putString("spaceId", spaceId)
+                bundle.putString("personName", personName) // Adicionar o nome aqui
+
                 findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
             }
         }

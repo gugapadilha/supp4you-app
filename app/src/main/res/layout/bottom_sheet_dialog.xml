@@ -47,7 +47,7 @@
             android:id="@+id/tv_enter_space"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/sub_bar"
+            android:backgroundTint="@color/home"
             android:hint="@string/enter_access_code"
             android:textColor="@color/white"
             android:textColorHint="@color/white"
