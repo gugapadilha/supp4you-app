@@ -41,6 +41,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var takenPhotoUri: Uri
     private lateinit var groupId: String
     private lateinit var name: String
+    private lateinit var groupName: String
     private var photoTaken = false
     private var isPhotoBeingTaken = false
 
@@ -57,7 +58,7 @@ class CameraActivity : AppCompatActivity() {
         groupId = intent.getStringExtra("groupId") ?: ""
         val enteredToken = intent.getStringExtra("groupId")
         name = intent.getStringExtra("personName").toString()
-        val groupName = intent.getStringExtra("groupName")
+        groupName = intent.getStringExtra("groupName").toString()
         viewBinding.tvGroup.text = "$groupName"
 
         viewBinding.takeShotButton.setOnClickListener {
@@ -94,6 +95,7 @@ class CameraActivity : AppCompatActivity() {
                 val intent = Intent(this, GalleryActivity::class.java)
                 intent.putExtra("groupId", groupId)
                 intent.putExtra("personName", name)
+                intent.putExtra("groupName", groupName)
                 startActivity(intent)
                 viewBinding.reshot.visibility = View.GONE
             } else {
