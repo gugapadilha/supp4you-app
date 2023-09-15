@@ -57,7 +57,8 @@ class CameraActivity : AppCompatActivity() {
         groupId = intent.getStringExtra("groupId") ?: ""
         val enteredToken = intent.getStringExtra("groupId")
         name = intent.getStringExtra("personName").toString()
-
+        val groupName = intent.getStringExtra("groupName")
+        viewBinding.tvGroup.text = "$groupName"
 
         viewBinding.takeShotButton.setOnClickListener {
             if (!photoTaken) {

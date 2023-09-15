@@ -41,6 +41,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
                 val bundle = Bundle()
                 bundle.putString("spaceId", spaceId)
                 bundle.putString("personName", personName) // Adicionar o nome aqui
+                bundle.putString("groupName", groupName)
 
                 findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
             }
