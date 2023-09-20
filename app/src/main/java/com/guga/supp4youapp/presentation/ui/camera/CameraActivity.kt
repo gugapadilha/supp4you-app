@@ -128,6 +128,25 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.reshot.setOnClickListener {
             hidePhoto()
         }
+
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
+        }
+        groupId = intent.getStringExtra("groupId") ?: ""
+        name = intent.getStringExtra("personName").toString()
+
+        // Recupere o nome do grupo usando o groupId
+        fetchGroupName(groupId)
+
+        viewBinding.takeShotButton.setOnClickListener {
+            if (!photoTaken) {
+                takePhoto(enteredToken)
+                photoTaken = true
+            }
+        }
+
     }
 
     private val pickImagesLauncher = registerForActivityResult(
@@ -359,7 +378,24 @@ class CameraActivity : AppCompatActivity() {
                 // Trate a falha ao salvar no Firestore
             }
     }
+    private fun fetchGroupName(groupId: String) {
+        val firestore = Firebase.firestore
 
+        firestore.collection("create")
+            .document(groupId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val groupName = document.getString("groupName")
+                    viewBinding.tvGroup.text = groupName
+                } else {
+                    // Trate o caso em que o documento não existe
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Trate a falha na consulta ao Firestore
+            }
+    }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
