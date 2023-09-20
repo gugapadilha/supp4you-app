@@ -29,6 +29,46 @@ class GalleryActivity : AppCompatActivity() {
             onBackPressed()
         }
 
+            binding.swipeRefreshLayout.setOnRefreshListener {
+                val groupId = intent.getStringExtra("groupId")
+                if (groupId != null) {
+                    val firestore = Firebase.firestore
+                    firestore.collection("photos")
+                        .whereEqualTo("groupId", groupId)
+                        .get()
+                        .addOnSuccessListener { documents ->
+                            val photoItems = mutableListOf<PhotoItem>()
+                            for (document in documents) {
+                                val photoUriString = document.getString("photoUri")
+
+                                // Verifique se a URL da foto não é nula ou vazia
+                                if (!photoUriString.isNullOrBlank()) {
+                                    val photoUri = Uri.parse(photoUriString)
+
+                                    // Obtenha o nome do usuário associado a esta foto
+                                    val personName = document.getString("personName") ?: "Unknown User"
+
+                                    val photoItem = PhotoItem(
+                                        photoUri,
+                                        personName // Use o nome do usuário específico para esta foto
+                                    )
+                                    photoItems.add(photoItem)
+                                }
+                            }
+                            // Atualize a lista de fotos no adaptador usando submitList
+                            galleryAdapter.submitList(photoItems)
+
+                            // Pare a animação de atualização do SwipeRefreshLayout
+                            binding.swipeRefreshLayout.isRefreshing = false
+                        }
+                        .addOnFailureListener { exception ->
+                            // Trate a falha ao recuperar as fotos do Firestore.
+                            // Pare a animação de atualização do SwipeRefreshLayout em caso de erro
+                            binding.swipeRefreshLayout.isRefreshing = false
+                        }
+                }
+            }
+
         val groupId = intent.getStringExtra("groupId")
         groupName = intent.getStringExtra("groupName").toString()
         binding.tvGroup.text = "$groupName"

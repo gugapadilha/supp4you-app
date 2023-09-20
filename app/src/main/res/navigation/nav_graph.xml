@@ -65,6 +65,9 @@
         <action
             android:id="@+id/action_generateFragment_to_cameraActivity2"
             app:destination="@id/cameraActivity" />
+        <action
+            android:id="@+id/action_generateFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
     </fragment>
     <activity
         android:id="@+id/cameraActivity"
