@@ -38,6 +38,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         binding = FragmentLoginBinding.bind(view)
         auth = Firebase.auth
+        binding.progressBar.visibility = View.GONE
 
         val user = auth.currentUser
         if (user != null) {
@@ -53,6 +54,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             val email = binding.edEmail.text.toString()
             val password = binding.edPassword.text.toString()
             if (checkAllFields()){
+                binding.progressBar.visibility = View.VISIBLE
+
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener{
                     if (it.isSuccessful){
                         Toast.makeText(requireContext(), "Successfully sign in", Toast.LENGTH_SHORT).show()
@@ -62,6 +65,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                         Toast.makeText(requireContext(), "Invalid Credencials", Toast.LENGTH_SHORT).show()
                         Log.e("error: ", it.exception.toString())
                     }
+                    binding.progressBar.visibility = View.GONE
+
                 }
             }
         }
@@ -79,6 +84,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         }
 
         binding.clBtnGoogle.setOnClickListener {
+            binding.progressBar.visibility = View.VISIBLE
+
             // Iniciar o processo de login com o Google
             signInWithGoogle()
         }

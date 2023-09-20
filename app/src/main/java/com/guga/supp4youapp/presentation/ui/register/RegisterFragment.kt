@@ -39,23 +39,31 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         binding = FragmentRegisterBinding.bind(view)
 
         auth = Firebase.auth
-
+        binding.progressBar.visibility = View.GONE
         binding.tvLogin.setOnClickListener {
             val username = binding.edEmail.text.toString()
             val password = binding.edPassword.text.toString()
 
             if (checkAllFields()) {
+                // Mostrar a ProgressBar antes de iniciar a criação da conta
+                binding.progressBar.visibility = View.VISIBLE
+
                 auth.createUserWithEmailAndPassword(username, password).addOnCompleteListener{
                     if (it.isSuccessful){
                         auth.signOut()
                         Toast.makeText(requireContext(), "Account created successfully", Toast.LENGTH_SHORT).show()
-                    }else {
+                    } else {
                         Log.e("error: ", it.exception.toString())
                     }
+
+                    // Ocultar a ProgressBar após a conclusão da criação da conta
+                    binding.progressBar.visibility = View.GONE
+
+                    findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
                 }
-                findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
             }
         }
+
 
         registerViewModel.visiblePassword.observe(viewLifecycleOwner) { visible ->
             changeIconVisibility(
@@ -82,6 +90,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
 
         binding.clBtnGoogle.setOnClickListener {
+            // Mostrar a ProgressBar antes de iniciar o processo de login com o Google
+            binding.progressBar.visibility = View.VISIBLE
+
             // Iniciar o processo de login com o Google
             signInWithGoogle()
         }

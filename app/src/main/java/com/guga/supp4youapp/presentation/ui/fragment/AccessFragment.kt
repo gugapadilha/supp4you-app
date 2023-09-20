@@ -33,9 +33,14 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectEndTime = binding.spEndTime.selectedItem.toString()
             val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime)
 
+            binding.progressBar.visibility = View.VISIBLE
+
             // Usando um CoroutineScope para criar o espaço e obter o ID gerado
             CoroutineScope(Dispatchers.Main).launch {
                 val spaceId = createSpace(space)
+
+                delay(1000)
+                binding.progressBar.visibility = View.GONE
 
                 // Criar um Bundle para passar o nome para a GenerateFragment
                 val bundle = Bundle()
