@@ -12,6 +12,7 @@ class GalleryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityGalleryBinding
     private lateinit var galleryAdapter: GalleryAdapter
+    private lateinit var groupName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +30,8 @@ class GalleryActivity : AppCompatActivity() {
         }
 
         val groupId = intent.getStringExtra("groupId")
+        groupName = intent.getStringExtra("groupName").toString()
+        binding.tvGroup.text = "$groupName"
 
     // Recupere as fotos do Firestore
         if (groupId != null) {

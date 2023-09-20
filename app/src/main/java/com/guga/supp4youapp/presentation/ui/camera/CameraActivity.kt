@@ -4,9 +4,12 @@ import android.Manifest
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
@@ -21,6 +24,7 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -41,6 +45,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var takenPhotoUri: Uri
     private lateinit var groupId: String
     private lateinit var name: String
+    private lateinit var groupName: String
     private var photoTaken = false
     private var isPhotoBeingTaken = false
 
@@ -57,7 +62,8 @@ class CameraActivity : AppCompatActivity() {
         groupId = intent.getStringExtra("groupId") ?: ""
         val enteredToken = intent.getStringExtra("groupId")
         name = intent.getStringExtra("personName").toString()
-
+        groupName = intent.getStringExtra("groupName").toString()
+        viewBinding.tvGroup.text = "$groupName"
 
         viewBinding.takeShotButton.setOnClickListener {
             if (!photoTaken) {
@@ -86,19 +92,39 @@ class CameraActivity : AppCompatActivity() {
             onBackPressed()
         }
 
-
-
         viewBinding.continueButton.setOnClickListener {
             if (photoTaken) {
-                val intent = Intent(this, GalleryActivity::class.java)
-                intent.putExtra("groupId", groupId)
-                intent.putExtra("personName", name)
-                startActivity(intent)
-                viewBinding.reshot.visibility = View.GONE
+                // Defina a cor cinza para a ProgressBar
+                val grayColor = ContextCompat.getColor(this, R.color.gray_200) // Substitua R.color.gray pela sua cor cinza
+
+                // Configure a cor da ProgressBar
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    viewBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(grayColor)
+                } else {
+                    val wrapDrawable = DrawableCompat.wrap(viewBinding.progressBar.indeterminateDrawable)
+                    DrawableCompat.setTint(wrapDrawable, grayColor)
+                    viewBinding.progressBar.indeterminateDrawable = DrawableCompat.unwrap(wrapDrawable)
+                }
+
+                viewBinding.progressBar.visibility = View.VISIBLE
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val intent = Intent(this, GalleryActivity::class.java)
+                    intent.putExtra("groupId", groupId)
+                    intent.putExtra("personName", name)
+                    intent.putExtra("groupName", groupName)
+                    startActivity(intent)
+                    viewBinding.reshot.visibility = View.GONE
+                    viewBinding.progressBar.visibility = View.GONE
+                }, 1000)
             } else {
                 Toast.makeText(this, "You have to take a picture first before continue!", Toast.LENGTH_SHORT).show()
             }
         }
+
+        viewBinding.reshot.setOnClickListener {
+            hidePhoto()
+        }
+
         viewBinding.reshot.setOnClickListener {
             hidePhoto()
         }
