@@ -122,13 +122,11 @@ class CameraActivity : AppCompatActivity() {
         }
 
         viewBinding.reshot.setOnClickListener {
+            // Ao clicar em "reshot", oculte a foto
             hidePhoto()
+            // Defina photoTaken como falso para permitir tirar uma nova foto
+            photoTaken = false
         }
-
-        viewBinding.reshot.setOnClickListener {
-            hidePhoto()
-        }
-
         if (allPermissionsGranted()) {
             startCamera()
         } else {
@@ -143,7 +141,9 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.takeShotButton.setOnClickListener {
             if (!photoTaken) {
                 takePhoto(enteredToken)
-                photoTaken = true
+            } else {
+                // Se uma foto já foi tirada, apenas oculte a foto anterior
+                hidePhoto()
             }
         }
 
