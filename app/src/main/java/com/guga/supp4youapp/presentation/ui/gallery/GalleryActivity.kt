@@ -72,14 +72,16 @@ class GalleryActivity : AppCompatActivity() {
                 val photoItems = mutableListOf<PhotoItem>()
                 for (document in documents) {
                     val photoUriString = document.getString("photoUri")
+                    val isDeleted = document.getBoolean("isDeleted") ?: false // Obtém o status de exclusão
 
-                    if (!photoUriString.isNullOrBlank()) {
+                    if (!photoUriString.isNullOrBlank() && !isDeleted) {
                         val photoUri = Uri.parse(photoUriString)
                         val personName = document.getString("personName") ?: "Unknown User"
 
                         val photoItem = PhotoItem(
                             photoUri,
-                            personName
+                            personName,
+                            isDeleted // Define o status de exclusão no PhotoItem
                         )
                         photoItems.add(photoItem)
                     }
