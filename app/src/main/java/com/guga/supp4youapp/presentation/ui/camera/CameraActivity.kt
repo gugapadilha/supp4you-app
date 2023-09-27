@@ -183,7 +183,7 @@ class CameraActivity : AppCompatActivity() {
 
         val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
-        val beginTime = LocalTime.parse(selectBeginTime, formatter)
+            val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val endTime = LocalTime.parse(selectEndTime, formatter)
 
         // Converte as horas em LocalDateTime para comparar apenas as horas

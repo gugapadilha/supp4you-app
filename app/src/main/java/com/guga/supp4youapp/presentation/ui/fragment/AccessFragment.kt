@@ -52,7 +52,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
                 bundle.putString("personName", personName)
                 bundle.putString("groupName", groupName)
                 bundle.putString("selectBeginTime", selectBeginTime) // Adicione o horário de início
-                bundle.putString("selectDays", selectedDays) // Adicione os dias selecionados
+                bundle.putString("selectDays", selectedDays) // Adicione os dias selecion   ados
                 bundle.putString("selectEndTime", selectEndTime) // Adicione o horário de término
                 bundle.putLong("timestamp", currentTimestamp) // Adicione o timestamp
 
