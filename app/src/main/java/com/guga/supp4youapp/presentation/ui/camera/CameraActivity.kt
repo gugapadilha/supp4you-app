@@ -48,6 +48,10 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var groupId: String
     private lateinit var name: String
     private lateinit var groupName: String
+    private var selectedDays: String? = null
+    private var selectBeginTime: String? = null
+    private var selectEndTime: String? = null
+    private var timeStamp: Long? = null
     private var photoTaken = false
     private var isPhotoBeingTaken = false
     private var lastTakenPhotoUri: Uri? = null
@@ -66,6 +70,10 @@ class CameraActivity : AppCompatActivity() {
         val enteredToken = intent.getStringExtra("groupId")
         name = intent.getStringExtra("personName").toString()
         groupName = intent.getStringExtra("groupName").toString()
+        selectedDays = intent?.getStringExtra("selectDays").toString()
+        selectBeginTime = intent?.getStringExtra("selectBeginTime").toString()
+        selectEndTime = intent?.getStringExtra("selectEndTime").toString()
+        timeStamp = intent?.getLongExtra("timestamp", 0L)
         viewBinding.tvGroup.text = "$groupName"
 
         viewBinding.takeShotButton.setOnClickListener {
