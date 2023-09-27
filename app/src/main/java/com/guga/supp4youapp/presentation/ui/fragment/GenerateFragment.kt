@@ -18,6 +18,10 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
     private var spaceId: String? = null
     private var personName: String? = null
     private var groupName: String? = null
+    private var selectedDays: String? = null
+    private var selectBeginTime: String? = null
+    private var selectEndTime: String? = null
+    private var timeStamp: Long? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,6 +34,10 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
         spaceId = arguments?.getString("spaceId")
         personName = arguments?.getString("personName")
         groupName = arguments?.getString("groupName")
+        selectedDays = arguments?.getString("selectDays")
+        selectBeginTime = arguments?.getString("selectBeginTime")
+        selectEndTime = arguments?.getString("selectEndTime")
+        timeStamp = arguments?.getLong("timestamp")
         binding.tvEntercode.text = spaceId
 
         return binding.root
@@ -42,6 +50,10 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
                 intent.putExtra("groupId", id) // Passing ID to CameraActivity
                 intent.putExtra("personName", personName) // Passing the name to CameraActivity
                 intent.putExtra("groupName", groupName)
+                intent.putExtra("selectDays", selectedDays)
+                intent.putExtra("selectBeginTime", selectBeginTime)
+                intent.putExtra("selectEndTime", selectEndTime)
+                intent.putExtra("timeStamp", timeStamp)
                 startActivity(intent)
             }
         }

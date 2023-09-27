@@ -32,6 +32,9 @@ import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
 import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.ExecutorService
 
@@ -41,7 +44,6 @@ class CameraActivity : AppCompatActivity() {
     private var currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var imageCapture: ImageCapture? = null
     private var isFlashEnabled = false
-    private lateinit var cameraExecutor: ExecutorService
     private lateinit var takenPhotoUri: Uri
     private lateinit var groupId: String
     private lateinit var name: String
@@ -160,12 +162,18 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    private val pickImagesLauncher = registerForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia()
-    ) { uris: List<Uri>? ->
-        uris?.let {
-            Toast.makeText(this, "Files selected: ${uris.size}", Toast.LENGTH_SHORT).show()
-        }
+    // Função para verificar se o horário atual está dentro do intervalo permitido
+    private fun isCurrentTimeWithinInterval(selectBeginTime: String, selectEndTime: String): Boolean {
+        // Obtém a hora atual no fuso horário do Brasil (Horário de Brasília)
+        val currentTime = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
+
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+
+        val beginTime = LocalDateTime.parse(selectBeginTime, formatter)
+        val endTime = LocalDateTime.parse(selectEndTime, formatter)
+
+        // Verifica se a hora atual está entre o horário de início e término
+        return currentTime.isAfter(beginTime) && currentTime.isBefore(endTime)
     }
     private fun toggleFlash() {
         isFlashEnabled = !isFlashEnabled
@@ -316,11 +324,6 @@ class CameraActivity : AppCompatActivity() {
                     isPhotoBeingTaken = false
                 }
             })
-    }
-
-
-    private fun showRecentPhotos() {
-        pickImagesLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     private fun deletePhotoFromStorage(uri: Uri) {

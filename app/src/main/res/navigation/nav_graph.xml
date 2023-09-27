@@ -63,7 +63,7 @@
         android:label="GenerateFragment"
         tools:layout="@layout/fragment_generate">
         <action
-            android:id="@+id/action_generateFragment_to_cameraActivity2"
+            android:id="@+id/action_generateFragment_to_cameraActivity"
             app:destination="@id/cameraActivity" />
         <action
             android:id="@+id/action_generateFragment_to_detailsFragment"
