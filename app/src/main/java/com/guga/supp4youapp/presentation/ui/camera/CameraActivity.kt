@@ -33,6 +33,7 @@ import com.guga.supp4youapp.databinding.ActivityCameraBinding
 import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -73,7 +74,7 @@ class CameraActivity : AppCompatActivity() {
         selectedDays = intent?.getStringExtra("selectDays").toString()
         selectBeginTime = intent?.getStringExtra("selectBeginTime").toString()
         selectEndTime = intent?.getStringExtra("selectEndTime").toString()
-        timeStamp = intent?.getLongExtra("timestamp", 0L)
+        timeStamp = intent?.getLongExtra("timestamp" , 0L)
         viewBinding.tvGroup.text = "$groupName"
 
         viewBinding.takeShotButton.setOnClickListener {
@@ -105,32 +106,38 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.continueButton.setOnClickListener {
             if (photoTaken) {
-                // Defina a cor cinza para a ProgressBar
-                val grayColor = ContextCompat.getColor(this, R.color.gray_200) // Substitua R.color.gray pela sua cor cinza
+                // Verifique se o horário atual está dentro do intervalo permitido
+                if (isCurrentTimeWithinInterval(selectBeginTime!!, selectEndTime!!)) {
+                    // Defina a cor cinza para a ProgressBar
+                    val grayColor = ContextCompat.getColor(this, R.color.gray_200) // Substitua R.color.gray pela sua cor cinza
 
-                // Configure a cor da ProgressBar
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    viewBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(grayColor)
+                    // Configure a cor da ProgressBar
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        viewBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(grayColor)
+                    } else {
+                        val wrapDrawable = DrawableCompat.wrap(viewBinding.progressBar.indeterminateDrawable)
+                        DrawableCompat.setTint(wrapDrawable, grayColor)
+                        viewBinding.progressBar.indeterminateDrawable = DrawableCompat.unwrap(wrapDrawable)
+                    }
+
+                    viewBinding.progressBar.visibility = View.VISIBLE
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val intent = Intent(this, GalleryActivity::class.java)
+                        intent.putExtra("groupId", groupId)
+                        intent.putExtra("personName", name)
+                        intent.putExtra("groupName", groupName)
+                        startActivity(intent)
+                        viewBinding.reshot.visibility = View.GONE
+                        viewBinding.progressBar.visibility = View.GONE
+                    }, 1000)
                 } else {
-                    val wrapDrawable = DrawableCompat.wrap(viewBinding.progressBar.indeterminateDrawable)
-                    DrawableCompat.setTint(wrapDrawable, grayColor)
-                    viewBinding.progressBar.indeterminateDrawable = DrawableCompat.unwrap(wrapDrawable)
+                    Toast.makeText(this, "Unavailable Time", Toast.LENGTH_SHORT).show()
                 }
-
-                viewBinding.progressBar.visibility = View.VISIBLE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    val intent = Intent(this, GalleryActivity::class.java)
-                    intent.putExtra("groupId", groupId)
-                    intent.putExtra("personName", name)
-                    intent.putExtra("groupName", groupName)
-                    startActivity(intent)
-                    viewBinding.reshot.visibility = View.GONE
-                    viewBinding.progressBar.visibility = View.GONE
-                }, 1000)
             } else {
                 Toast.makeText(this, "You have to take a picture first before continue!", Toast.LENGTH_SHORT).show()
             }
         }
+
 
         viewBinding.reshot.setOnClickListener {
             if (photoTaken) {
@@ -170,19 +177,20 @@ class CameraActivity : AppCompatActivity() {
 
     }
 
-    // Função para verificar se o horário atual está dentro do intervalo permitido
     private fun isCurrentTimeWithinInterval(selectBeginTime: String, selectEndTime: String): Boolean {
         // Obtém a hora atual no fuso horário do Brasil (Horário de Brasília)
         val currentTime = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
 
         val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
-        val beginTime = LocalDateTime.parse(selectBeginTime, formatter)
-        val endTime = LocalDateTime.parse(selectEndTime, formatter)
+        val beginTime = LocalTime.parse(selectBeginTime, formatter)
+        val endTime = LocalTime.parse(selectEndTime, formatter)
 
-        // Verifica se a hora atual está entre o horário de início e término
-        return currentTime.isAfter(beginTime) && currentTime.isBefore(endTime)
+        // Converte as horas em LocalDateTime para comparar apenas as horas
+        val currentLocalDateTime = currentTime.toLocalTime()
+        return currentLocalDateTime.isAfter(beginTime) && currentLocalDateTime.isBefore(endTime)
     }
+
     private fun toggleFlash() {
         isFlashEnabled = !isFlashEnabled
         applyFlash()
