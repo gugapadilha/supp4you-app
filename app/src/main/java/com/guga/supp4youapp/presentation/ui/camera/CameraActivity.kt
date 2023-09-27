@@ -48,6 +48,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var groupName: String
     private var photoTaken = false
     private var isPhotoBeingTaken = false
+    private var lastTakenPhotoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,12 +123,41 @@ class CameraActivity : AppCompatActivity() {
         }
 
         viewBinding.reshot.setOnClickListener {
-            hidePhoto()
+            if (photoTaken) {
+                // Oculte a foto
+                hidePhoto()
+
+                // Defina photoTaken como falso para permitir tirar uma nova foto
+                photoTaken = false
+
+                // Exclua a foto anterior do armazenamento
+                lastTakenPhotoUri?.let { uri ->
+                    deletePhotoFromStorage(uri)
+                    lastTakenPhotoUri = null
+                }
+            }
         }
 
-        viewBinding.reshot.setOnClickListener {
-            hidePhoto()
+        if (allPermissionsGranted()) {
+            startCamera()
+        } else {
+            requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
         }
+        groupId = intent.getStringExtra("groupId") ?: ""
+        name = intent.getStringExtra("personName").toString()
+
+        // Recupere o nome do grupo usando o groupId
+        fetchGroupName(groupId)
+
+        viewBinding.takeShotButton.setOnClickListener {
+            if (!photoTaken) {
+                takePhoto(enteredToken)
+            } else {
+                // Se uma foto já foi tirada, apenas oculte a foto anterior
+                hidePhoto()
+            }
+        }
+
     }
 
     private val pickImagesLauncher = registerForActivityResult(
@@ -227,6 +257,10 @@ class CameraActivity : AppCompatActivity() {
             return
         }
 
+        lastTakenPhotoUri?.let { uri ->
+            deletePhotoFromStorage(lastTakenPhotoUri!!)
+        }
+
         // Defina isPhotoBeingTaken como true para evitar que outra foto seja tirada até que a atual seja salva
         isPhotoBeingTaken = true
 
@@ -268,6 +302,9 @@ class CameraActivity : AppCompatActivity() {
                         showPhoto(takenPhotoUri)
                         photoTaken = true
 
+                        // Atualize lastTakenPhotoUri com a URI da nova foto
+                        lastTakenPhotoUri = takenPhotoUri
+
                         // Chamamos o método para fazer o upload da foto para o Firebase Storage
                         uploadPhoto(takenPhotoUri)
 
@@ -284,6 +321,63 @@ class CameraActivity : AppCompatActivity() {
 
     private fun showRecentPhotos() {
         pickImagesLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun deletePhotoFromStorage(uri: Uri) {
+        // Extraia o caminho do URI
+        val path = uri.path
+
+        if (path != null) {
+            val storage = Firebase.storage
+            val storageRef = storage.reference
+
+            // O caminho do Firebase Storage é armazenado na URI, por exemplo: "/photos/12345.jpg"
+            val photoRef = storageRef.child(path)
+
+            photoRef.delete()
+                .addOnSuccessListener {
+                    // A foto anterior foi excluída com sucesso
+                    Log.d(TAG, "Photo deleted successfully.")
+
+                    // Exclua a referência da foto do Firestore após a exclusão bem-sucedida do armazenamento
+                    val photoUriString = uri.toString()
+                    deletePhotoFromFirestore(photoUriString)
+                }
+                .addOnFailureListener { exception ->
+                    // Trate falhas na exclusão da foto anterior aqui
+                    Log.e(TAG, "Error deleting photo: $exception")
+                }
+        }
+    }
+
+
+    private fun deletePhotoFromFirestore(photoUri: String) {
+        val firestore = Firebase.firestore
+
+        // Consulte o Firestore para encontrar o documento com base na photoUri
+        firestore.collection("photos")
+            .whereEqualTo("photoUri", photoUri)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    // Exclua o documento correspondente
+                    firestore.collection("photos")
+                        .document(document.id)
+                        .delete()
+                        .addOnSuccessListener {
+                            // Documento excluído com sucesso
+                            Log.d(TAG, "Document deleted successfully.")
+                        }
+                        .addOnFailureListener { exception ->
+                            // Trate a falha na exclusão do documento
+                            Log.e(TAG, "Error deleting document: $exception")
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Trate a falha na consulta ao Firestore
+                Log.e(TAG, "Error querying Firestore: $exception")
+            }
     }
 
     private fun startCamera() {
@@ -317,25 +411,52 @@ class CameraActivity : AppCompatActivity() {
         val storage = Firebase.storage
         val storageRef = storage.reference
         val photoName = intent.getStringExtra("personName")
+        val groupId = intent.getStringExtra("groupId")
 
-        // Crie uma referência no Firebase Storage com um nome único para a foto
-        val photoRef = storageRef.child("photos/${UUID.randomUUID()}/$photoName.jpg")
+        // Consulta para definir isDeleted como true para fotos antigas do usuário
+        val firestore = Firebase.firestore
+        firestore.collection("photos")
+            .whereEqualTo("groupId", groupId)
+            .whereEqualTo("personName", name)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val oldPhotoUriString = document.getString("photoUri")
+                    if (!oldPhotoUriString.isNullOrBlank()) {
+                        // Define isDeleted como true para fotos antigas do usuário
+                        val docRef = firestore.collection("photos").document(document.id)
+                        docRef.update("isDeleted", true)
+                            .addOnSuccessListener {
+                                // isDeleted definido como true com sucesso
+                            }
+                            .addOnFailureListener { exception ->
+                                // Trate a falha ao definir isDeleted como true
+                            }
+                    }
+                }
 
-        // Realize o upload da foto
-        val uploadTask = photoRef.putFile(photoUri)
+                // Crie uma referência no Firebase Storage com um nome único para a foto
+                val photoRef = storageRef.child("photos/${UUID.randomUUID()}/$photoName.jpg")
 
-        uploadTask.addOnSuccessListener { taskSnapshot ->
-            // O upload da foto foi bem-sucedido, você pode obter a URL de download aqui
-            photoRef.downloadUrl.addOnSuccessListener { uri ->
-                // A URI da foto que você deve salvar no Firestore
-                val photoUriString = uri.toString()
+                // Realize o upload da nova foto com isDeleted como false
+                val uploadTask = photoRef.putFile(photoUri)
 
-                // Agora você pode salvar esta URI no Firestore como fez antes
-                savePhotoUriToFirestore(photoUriString)
+                uploadTask.addOnSuccessListener { taskSnapshot ->
+                    // O upload da foto foi bem-sucedido, você pode obter a URL de download aqui
+                    photoRef.downloadUrl.addOnSuccessListener { uri ->
+                        // A URI da foto que você deve salvar no Firestore
+                        val photoUriString = uri.toString()
+
+                        // Agora você pode salvar esta URI no Firestore como fez antes
+                        savePhotoUriToFirestore(photoUriString)
+                    }
+                }.addOnFailureListener { exception ->
+                    // Trate falhas no upload aqui
+                }
             }
-        }.addOnFailureListener { exception ->
-            // Trate falhas no upload aqui
-        }
+            .addOnFailureListener { exception ->
+                // Trate falhas na consulta ao Firestore
+            }
     }
 
     private fun savePhotoUriToFirestore(photoUri: String) {
@@ -359,7 +480,24 @@ class CameraActivity : AppCompatActivity() {
                 // Trate a falha ao salvar no Firestore
             }
     }
+    private fun fetchGroupName(groupId: String) {
+        val firestore = Firebase.firestore
 
+        firestore.collection("create")
+            .document(groupId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val groupName = document.getString("groupName")
+                    viewBinding.tvGroup.text = groupName
+                } else {
+                    // Trate o caso em que o documento não existe
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Trate a falha na consulta ao Firestore
+            }
+    }
 
     private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
         ContextCompat.checkSelfPermission(
