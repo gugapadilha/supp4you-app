@@ -49,6 +49,7 @@ class CameraActivity : AppCompatActivity() {
     private var isPhotoBeingTaken = false
     private var lastTakenPhotoUri: Uri? = null
     private var countdownTimer: CountDownTimer? = null
+    private var remainingTimeMillis: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,8 +170,10 @@ class CameraActivity : AppCompatActivity() {
             }
         }
 
-        countdownTimer = object : CountDownTimer(Long.MAX_VALUE, 1000) {
+        updateRemainingTimeMillis()
+        countdownTimer = object : CountDownTimer(remainingTimeMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                remainingTimeMillis = millisUntilFinished
                 updateCountdownTimer()
             }
 
@@ -180,48 +183,44 @@ class CameraActivity : AppCompatActivity() {
         }
         countdownTimer?.start()
 
-
     }
 
-    private fun updateCountdownTimer() {
+    private fun updateRemainingTimeMillis() {
         val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
-        // Obtenha o horário atual no fuso horário do Brasil (Horário de Brasília)
-        val currentTimeInBrasilia = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
-        val currentTime = LocalTime.of(currentTimeInBrasilia.hour, currentTimeInBrasilia.minute)
+        // Obtenha a data e hora atual no fuso horário do Brasil (Horário de Brasília)
+        val currentDateTimeInBrasilia = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
+        val currentDateTime = LocalDateTime.ofInstant(currentDateTimeInBrasilia.toInstant(), ZoneId.of("America/Sao_Paulo"))
 
         val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val endTime = LocalTime.parse(selectEndTime, formatter)
 
-        // Calcule a diferença entre o horário atual no fuso horário do Brasil e UTC em milissegundos
-        val brazilZoneOffset = currentTimeInBrasilia.offset
-        val utcZoneOffset = ZoneOffset.UTC
-        val zoneOffsetDifferenceMillis = brazilZoneOffset.totalSeconds * 1000L - utcZoneOffset.totalSeconds * 1000L
+        // Crie um LocalDateTime para representar o início e o fim do intervalo
+        val beginDateTime = currentDateTime.withHour(beginTime.hour).withMinute(beginTime.minute)
+        val endDateTime = currentDateTime.withHour(endTime.hour).withMinute(endTime.minute)
 
-        // Ajuste a hora de início e término com base na diferença de fuso horário
-        val adjustedBeginTime = beginTime.plusHours(zoneOffsetDifferenceMillis / 3600000)
-        val adjustedEndTime = endTime.plusHours(zoneOffsetDifferenceMillis / 3600000)
-
-        val remainingTime: Duration
-        if (currentTime.isBefore(adjustedBeginTime)) {
-            // O horário atual é anterior ao horário de início
-            remainingTime = Duration.between(currentTime, adjustedBeginTime)
-        } else if (currentTime.isAfter(adjustedEndTime)) {
-            // O horário atual é posterior ao horário de término
-            remainingTime = Duration.ZERO // O tempo restante é zero
+        // Verifique se o horário atual está dentro do intervalo permitido
+        if (currentDateTime.isAfter(beginDateTime) && currentDateTime.isBefore(endDateTime)) {
+            // A hora atual está dentro do intervalo permitido
+            // Nesse caso, defina remainingTimeMillis como zero para indicar que você pode tirar a foto agora
+            remainingTimeMillis = 0
         } else {
-            // O horário atual está dentro do intervalo permitido
-            remainingTime = Duration.between(currentTime, adjustedEndTime)
+            // Caso contrário, calcule o tempo restante até o início do intervalo
+            val nextBeginDateTime = beginDateTime.plusDays(1)
+            val remainingDuration = Duration.between(currentDateTime, nextBeginDateTime)
+            remainingTimeMillis = remainingDuration.toMillis()
         }
+    }
 
-        val hours = remainingTime.toHours()
-        val minutes = (remainingTime.toMinutes() % 60).toInt()
-        val seconds = (remainingTime.seconds % 60).toInt()
+
+    private fun updateCountdownTimer() {
+        val seconds = (remainingTimeMillis / 1000 % 60).toInt()
+        val minutes = ((remainingTimeMillis / 1000) / 60 % 60).toInt()
+        val hours = ((remainingTimeMillis / 1000) / 3600).toInt()
 
         val formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds)
         viewBinding.timestamp.text = "Locked for $formattedTime"
     }
-
 
 
     private fun isCurrentTimeWithinInterval(selectBeginTime: String, selectEndTime: String): Boolean {
