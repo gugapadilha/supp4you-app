@@ -160,15 +160,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         private var enteredToken: String? = null
         private var personName: String? = null
         private var photoName: String? = null
-        private var takenPhotoUri: Uri? = null // Adicione isso
-
-
-        // Método para configurar os argumentos
-        fun setArguments(personName: String, photoName: String, takenPhotoUri: Uri) {
-            this.personName = personName
-            this.photoName = photoName
-            this.takenPhotoUri = takenPhotoUri // Configure o takenPhotoUri
-        }
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -184,56 +175,48 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
                 if (code.isNotEmpty()) {
                     enteredToken = code
-
-                    // Acessar os argumentos configurados
                     val personName = arguments?.getString("personName")
                     val photoName = arguments?.getString("photoName")
+                    val groupDocumentRef = Firebase.firestore.collection("create").document(code)
+                    groupDocumentRef.get().addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val document = task.result
+                            if (document.exists()) {
+                                // O documento da sala foi encontrado
+                                val selectBeginTimeFromFirestore = document.getString("selectBeginTime")
+                                val selectEndTimeFromFirestore = document.getString("selectEndTime")
 
-                    if (personName != null && photoName != null) {
-                        // Use personName e photoName conforme necessário
+                                // Agora você tem os valores de selectBeginTime e selectEndTime do Firestore
+                                // Você pode passá-los para CameraActivity
+                                val intent = Intent(requireContext(), CameraActivity::class.java)
+                                intent.putExtra("groupId", enteredToken)
+                                intent.putExtra("personName", personName)
+                                intent.putExtra("photoName", photoName)
+                                intent.putExtra("selectBeginTime", selectBeginTimeFromFirestore)
+                                intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
 
-                        val groupDocumentRef = Firebase.firestore.collection("create").document(code)
-                        groupDocumentRef.get().addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val document = task.result
-                                if (document.exists()) {
-                                    // Use o photoName como um identificador exclusivo no Firestore
-                                    val firestore = Firebase.firestore
-                                    val photoData = hashMapOf(
-                                        "photoUri" to takenPhotoUri.toString(),
-                                        "groupId" to enteredToken,
-                                        "personName" to personName,
-                                        "photoName" to photoName // Use o photoName como um identificador exclusivo
-                                    )
-
-                                    val intent = Intent(requireContext(), CameraActivity::class.java)
-                                    intent.putExtra("groupId", enteredToken)
-                                    intent.putExtra("personName", personName)
-                                    intent.putExtra("photoName", photoName)
-                                    startActivity(intent)
-                                    dismiss()
-                                } else {
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Code does not exist",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                startActivity(intent)
+                                dismiss()
                             } else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Error when validating the code",
+                                    "Code does not exist",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "Error when validating the code",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
-                    } else {
-                        Toast.makeText(requireContext(), "Please enter a valid name", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     Toast.makeText(requireContext(), "You should insert a generated code", Toast.LENGTH_SHORT).show()
                 }
             }
+
 
             return view
         }

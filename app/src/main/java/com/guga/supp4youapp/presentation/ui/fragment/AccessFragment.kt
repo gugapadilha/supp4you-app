@@ -13,6 +13,8 @@ import com.guga.supp4youapp.databinding.FragmentAccessBinding
 import com.guga.supp4youapp.presentation.ui.adapter.CustomSpinnerAdapter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 
 class AccessFragment : Fragment(R.layout.fragment_access) {
@@ -31,7 +33,9 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectedDays = binding.spDays.selectedItem.toString()
             val selectBeginTime = binding.spStartTime.selectedItem.toString()
             val selectEndTime = binding.spEndTime.selectedItem.toString()
-            val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime)
+            val currentTimestamp = System.currentTimeMillis() // Obter o timestamp atual
+
+            val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime, currentTimestamp)
 
             binding.progressBar.visibility = View.VISIBLE
 
@@ -45,8 +49,13 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
                 // Criar um Bundle para passar o nome para a GenerateFragment
                 val bundle = Bundle()
                 bundle.putString("spaceId", spaceId)
-                bundle.putString("personName", personName) // Adicionar o nome aqui
+                bundle.putString("personName", personName)
                 bundle.putString("groupName", groupName)
+                bundle.putString("selectBeginTime", selectBeginTime) // Adicione o horário de início
+                bundle.putString("selectDays", selectedDays) // Adicione os dias selecion   ados
+                bundle.putString("selectEndTime", selectEndTime) // Adicione o horário de término
+                bundle.putLong("timestamp", currentTimestamp) // Adicione o timestamp
+
 
                 findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
             }

@@ -4,6 +4,7 @@ data class Space(
    var groupName: String,
    var selectDays: String,
    var selectBeginTime: String,
-   var selectEndTime: String
+   var selectEndTime: String,
+   var timesTamp: Long
 )
 

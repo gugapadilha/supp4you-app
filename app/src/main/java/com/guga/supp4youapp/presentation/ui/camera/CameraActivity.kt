@@ -6,15 +6,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,9 +27,9 @@ import com.google.firebase.storage.ktx.storage
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.ActivityCameraBinding
 import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
-import java.text.SimpleDateFormat
+import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.concurrent.ExecutorService
 
 class CameraActivity : AppCompatActivity() {
 
@@ -41,14 +37,19 @@ class CameraActivity : AppCompatActivity() {
     private var currentCameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private var imageCapture: ImageCapture? = null
     private var isFlashEnabled = false
-    private lateinit var cameraExecutor: ExecutorService
     private lateinit var takenPhotoUri: Uri
     private lateinit var groupId: String
     private lateinit var name: String
     private lateinit var groupName: String
+    private var selectedDays: String? = null
+    private var selectBeginTime: String? = null
+    private var selectEndTime: String? = null
+    private var timeStamp: Long? = 0
     private var photoTaken = false
     private var isPhotoBeingTaken = false
     private var lastTakenPhotoUri: Uri? = null
+    private var countdownTimer: CountDownTimer? = null
+    private var remainingTimeMillis: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +65,10 @@ class CameraActivity : AppCompatActivity() {
         val enteredToken = intent.getStringExtra("groupId")
         name = intent.getStringExtra("personName").toString()
         groupName = intent.getStringExtra("groupName").toString()
+        selectedDays = intent?.getStringExtra("selectDays").toString()
+        selectBeginTime = intent?.getStringExtra("selectBeginTime").toString()
+        selectEndTime = intent?.getStringExtra("selectEndTime").toString()
+        timeStamp = intent?.getLongExtra("timestamp" , 0L)
         viewBinding.tvGroup.text = "$groupName"
 
         viewBinding.takeShotButton.setOnClickListener {
@@ -95,32 +100,39 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.continueButton.setOnClickListener {
             if (photoTaken) {
-                // Defina a cor cinza para a ProgressBar
-                val grayColor = ContextCompat.getColor(this, R.color.gray_200) // Substitua R.color.gray pela sua cor cinza
+                // Verifique se o horário atual está dentro do intervalo permitido
+                if (isCurrentTimeWithinInterval(selectBeginTime!!, selectEndTime!!)) {
+                    // Defina a cor cinza para a ProgressBar
+                    val grayColor = ContextCompat.getColor(this, R.color.gray_200) // Substitua R.color.gray pela sua cor cinza
 
-                // Configure a cor da ProgressBar
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    viewBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(grayColor)
+                    // Configure a cor da ProgressBar
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        viewBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(grayColor)
+                    } else {
+                        val wrapDrawable = DrawableCompat.wrap(viewBinding.progressBar.indeterminateDrawable)
+                        DrawableCompat.setTint(wrapDrawable, grayColor)
+                        viewBinding.progressBar.indeterminateDrawable = DrawableCompat.unwrap(wrapDrawable)
+                    }
+
+                    viewBinding.progressBar.visibility = View.VISIBLE
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val intent = Intent(this, GalleryActivity::class.java)
+                        intent.putExtra("groupId", groupId)
+                        intent.putExtra("personName", name)
+                        intent.putExtra("groupName", groupName)
+                        startActivity(intent)
+                        viewBinding.reshot.visibility = View.GONE
+                        viewBinding.progressBar.visibility = View.GONE
+                    }, 1000)
                 } else {
-                    val wrapDrawable = DrawableCompat.wrap(viewBinding.progressBar.indeterminateDrawable)
-                    DrawableCompat.setTint(wrapDrawable, grayColor)
-                    viewBinding.progressBar.indeterminateDrawable = DrawableCompat.unwrap(wrapDrawable)
+                    Toast.makeText(this, "Unavailable Time", Toast.LENGTH_SHORT).show()
                 }
-
-                viewBinding.progressBar.visibility = View.VISIBLE
-                Handler(Looper.getMainLooper()).postDelayed({
-                    val intent = Intent(this, GalleryActivity::class.java)
-                    intent.putExtra("groupId", groupId)
-                    intent.putExtra("personName", name)
-                    intent.putExtra("groupName", groupName)
-                    startActivity(intent)
-                    viewBinding.reshot.visibility = View.GONE
-                    viewBinding.progressBar.visibility = View.GONE
-                }, 1000)
             } else {
                 Toast.makeText(this, "You have to take a picture first before continue!", Toast.LENGTH_SHORT).show()
             }
         }
+
+        updateCountdownTimer()
 
         viewBinding.reshot.setOnClickListener {
             if (photoTaken) {
@@ -158,15 +170,110 @@ class CameraActivity : AppCompatActivity() {
             }
         }
 
+        updateRemainingTimeMillis()
+        countdownTimer = object : CountDownTimer(remainingTimeMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                remainingTimeMillis = millisUntilFinished
+                updateCountdownTimer()
+            }
+
+            override fun onFinish() {
+                // Este método será chamado quando o contador regressivo for concluído, se necessário
+            }
+        }
+        countdownTimer?.start()
+        updateTimestamp()
+
     }
 
-    private val pickImagesLauncher = registerForActivityResult(
-        ActivityResultContracts.PickMultipleVisualMedia()
-    ) { uris: List<Uri>? ->
-        uris?.let {
-            Toast.makeText(this, "Files selected: ${uris.size}", Toast.LENGTH_SHORT).show()
+    private fun updateTimestamp() {
+        // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
+        val currentDateTime = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+        val beginTime = LocalTime.parse(selectBeginTime, formatter)
+        val currentLocalTime = currentDateTime.toLocalTime()
+        val secondsUntilBeginTime = Duration.between(currentLocalTime, beginTime).seconds
+
+        // Atualize o timestamp com base no tempo restante até o início do intervalo
+        timeStamp = secondsUntilBeginTime
+        updateCountdownTimers()
+        countdownTimer?.start()
+
+    }
+
+    private fun updateCountdownTimers() {
+        val seconds = (timeStamp?.rem(60))?.toInt()
+        val minutes = ((timeStamp?.div(60))?.rem(60))?.toInt()
+        val hours = (timeStamp?.div(3600))?.toInt()
+
+        val formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds)
+        viewBinding.timestamp.text = "Locked for $formattedTime"
+    }
+
+    private fun updateRemainingTimeMillis() {
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+
+        // Obtenha a data e hora atual no fuso horário do Brasil (Horário de Brasília)
+        val currentDateTimeInBrasilia = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
+        val currentDateTime = LocalDateTime.ofInstant(currentDateTimeInBrasilia.toInstant(), ZoneId.of("America/Sao_Paulo"))
+
+        val beginTime = LocalTime.parse(selectBeginTime, formatter)
+        val endTime = LocalTime.parse(selectEndTime, formatter)
+
+        // Crie um LocalDateTime para representar o início e o fim do intervalo
+        val beginDateTime = currentDateTime.withHour(beginTime.hour).withMinute(beginTime.minute)
+        val endDateTime = currentDateTime.withHour(endTime.hour).withMinute(endTime.minute)
+
+        // Verifique se o horário atual está dentro do intervalo permitido
+        if (currentDateTime.isAfter(beginDateTime) && currentDateTime.isBefore(endDateTime)) {
+            // A hora atual está dentro do intervalo permitido
+            // Calcule o tempo restante até o final do intervalo
+            val remainingDuration = Duration.between(currentDateTime, endDateTime)
+            remainingTimeMillis = remainingDuration.toMillis()
+        } else if (currentDateTime.isBefore(beginDateTime)) {
+            // A hora atual está antes do início do intervalo
+            // Calcule o tempo restante até o início do intervalo
+            val remainingDuration = Duration.between(currentDateTime, beginDateTime)
+            remainingTimeMillis = remainingDuration.toMillis()
+        } else {
+            // A hora atual está após o final do intervalo, então calcule o tempo restante até o próximo dia
+            val nextBeginDateTime = beginDateTime.plusDays(1)
+            val remainingDuration = Duration.between(currentDateTime, nextBeginDateTime)
+            remainingTimeMillis = remainingDuration.toMillis()
         }
     }
+
+    private fun updateCountdownTimer() {
+        val seconds = (remainingTimeMillis / 1000 % 60).toInt()
+        val minutes = ((remainingTimeMillis / 1000) / 60 % 60).toInt()
+        val hours = ((remainingTimeMillis / 1000) / 3600).toInt()
+
+        val formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds)
+        viewBinding.timestamp.text = "Locked for $formattedTime"
+    }
+
+
+    private fun isCurrentTimeWithinInterval(selectBeginTime: String, selectEndTime: String): Boolean {
+        // Obtém a hora atual no fuso horário do Brasil (Horário de Brasília)
+        val currentTime = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
+
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+
+        val beginTime = LocalTime.parse(selectBeginTime, formatter)
+        val endTime = LocalTime.parse(selectEndTime, formatter)
+
+        // Verifique se o intervalo cruza a meia-noite
+        if (beginTime.isAfter(endTime)) {
+            // Se o intervalo cruza a meia-noite, verifique se o horário atual é depois de beginTime
+            // OU antes de endTime para determinar se está dentro do intervalo.
+            return currentTime.toLocalTime().isAfter(beginTime) || currentTime.toLocalTime().isBefore(endTime)
+        } else {
+            // Se o intervalo não cruza a meia-noite, verifique se o horário atual está entre beginTime e endTime.
+            return currentTime.toLocalTime().isAfter(beginTime) && currentTime.toLocalTime().isBefore(endTime)
+        }
+    }
+
+
     private fun toggleFlash() {
         isFlashEnabled = !isFlashEnabled
         applyFlash()
@@ -316,11 +423,6 @@ class CameraActivity : AppCompatActivity() {
                     isPhotoBeingTaken = false
                 }
             })
-    }
-
-
-    private fun showRecentPhotos() {
-        pickImagesLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
     private fun deletePhotoFromStorage(uri: Uri) {
@@ -519,8 +621,11 @@ class CameraActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
+        countdownTimer?.cancel()
+
     }
 
     companion object {
