@@ -44,7 +44,7 @@ class CameraActivity : AppCompatActivity() {
     private var selectedDays: String? = null
     private var selectBeginTime: String? = null
     private var selectEndTime: String? = null
-    private var timeStamp: Long? = null
+    private var timeStamp: Long? = 0
     private var photoTaken = false
     private var isPhotoBeingTaken = false
     private var lastTakenPhotoUri: Uri? = null
@@ -182,7 +182,32 @@ class CameraActivity : AppCompatActivity() {
             }
         }
         countdownTimer?.start()
+        updateTimestamp()
 
+    }
+
+    private fun updateTimestamp() {
+        // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
+        val currentDateTime = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
+        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+        val beginTime = LocalTime.parse(selectBeginTime, formatter)
+        val currentLocalTime = currentDateTime.toLocalTime()
+        val secondsUntilBeginTime = Duration.between(currentLocalTime, beginTime).seconds
+
+        // Atualize o timestamp com base no tempo restante até o início do intervalo
+        timeStamp = secondsUntilBeginTime
+        updateCountdownTimers()
+        countdownTimer?.start()
+
+    }
+
+    private fun updateCountdownTimers() {
+        val seconds = (timeStamp?.rem(60))?.toInt()
+        val minutes = ((timeStamp?.div(60))?.rem(60))?.toInt()
+        val hours = (timeStamp?.div(3600))?.toInt()
+
+        val formattedTime = String.format(Locale.US, "%02d:%02d:%02d", hours, minutes, seconds)
+        viewBinding.timestamp.text = "Locked for $formattedTime"
     }
 
     private fun updateRemainingTimeMillis() {
@@ -202,16 +227,21 @@ class CameraActivity : AppCompatActivity() {
         // Verifique se o horário atual está dentro do intervalo permitido
         if (currentDateTime.isAfter(beginDateTime) && currentDateTime.isBefore(endDateTime)) {
             // A hora atual está dentro do intervalo permitido
-            // Nesse caso, defina remainingTimeMillis como zero para indicar que você pode tirar a foto agora
-            remainingTimeMillis = 0
+            // Calcule o tempo restante até o final do intervalo
+            val remainingDuration = Duration.between(currentDateTime, endDateTime)
+            remainingTimeMillis = remainingDuration.toMillis()
+        } else if (currentDateTime.isBefore(beginDateTime)) {
+            // A hora atual está antes do início do intervalo
+            // Calcule o tempo restante até o início do intervalo
+            val remainingDuration = Duration.between(currentDateTime, beginDateTime)
+            remainingTimeMillis = remainingDuration.toMillis()
         } else {
-            // Caso contrário, calcule o tempo restante até o início do intervalo
+            // A hora atual está após o final do intervalo, então calcule o tempo restante até o próximo dia
             val nextBeginDateTime = beginDateTime.plusDays(1)
             val remainingDuration = Duration.between(currentDateTime, nextBeginDateTime)
             remainingTimeMillis = remainingDuration.toMillis()
         }
     }
-
 
     private fun updateCountdownTimer() {
         val seconds = (remainingTimeMillis / 1000 % 60).toInt()
