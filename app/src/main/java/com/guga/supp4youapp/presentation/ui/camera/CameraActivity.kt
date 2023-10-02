@@ -259,13 +259,20 @@ class CameraActivity : AppCompatActivity() {
 
         val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
 
-            val beginTime = LocalTime.parse(selectBeginTime, formatter)
+        val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val endTime = LocalTime.parse(selectEndTime, formatter)
 
-        // Converte as horas em LocalDateTime para comparar apenas as horas
-        val currentLocalDateTime = currentTime.toLocalTime()
-        return currentLocalDateTime.isAfter(beginTime) && currentLocalDateTime.isBefore(endTime)
+        // Verifique se o intervalo cruza a meia-noite
+        if (beginTime.isAfter(endTime)) {
+            // Se o intervalo cruza a meia-noite, verifique se o horário atual é depois de beginTime
+            // OU antes de endTime para determinar se está dentro do intervalo.
+            return currentTime.toLocalTime().isAfter(beginTime) || currentTime.toLocalTime().isBefore(endTime)
+        } else {
+            // Se o intervalo não cruza a meia-noite, verifique se o horário atual está entre beginTime e endTime.
+            return currentTime.toLocalTime().isAfter(beginTime) && currentTime.toLocalTime().isBefore(endTime)
+        }
     }
+
 
     private fun toggleFlash() {
         isFlashEnabled = !isFlashEnabled
