@@ -3,6 +3,7 @@ package com.guga.supp4youapp.presentation.ui.fragment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
@@ -216,9 +218,24 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                     Toast.makeText(requireContext(), "You should insert a generated code", Toast.LENGTH_SHORT).show()
                 }
             }
+            // Referência ao documento que você deseja excluir
+            val db = FirebaseFirestore.getInstance()
+            val documentReference = db.collection("create").document("gJSWyyKRwO0vJYaip1jY")
 
+            // Excluir o documento permanentemente
+            documentReference.delete()
+                .addOnSuccessListener {
+                    // O documento foi excluído com sucesso
+                    Log.e("Firestore", "DELETADO COM SUCESSO: ")
+                }
+                .addOnFailureListener { e ->
+                    // Ocorreu um erro ao excluir o documento
+                    Log.e("Firestore", "Erro ao excluir o documento: $e")
+                }
 
             return view
+
+
         }
     }
 
