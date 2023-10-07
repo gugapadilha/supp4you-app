@@ -3,7 +3,6 @@ package com.guga.supp4youapp.presentation.ui.fragment
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +13,6 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -23,14 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
-import com.guga.supp4youapp.data.remote.database.Person
 import com.guga.supp4youapp.databinding.FragmentDetailsBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class DetailsFragment : Fragment(R.layout.fragment_details) {
 
@@ -187,6 +182,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                 // O documento da sala foi encontrado
                                 val selectBeginTimeFromFirestore = document.getString("selectBeginTime")
                                 val selectEndTimeFromFirestore = document.getString("selectEndTime")
+                                val selectDaysFromFirestore = document.getString("selectDays")
 
                                 // Agora você tem os valores de selectBeginTime e selectEndTime do Firestore
                                 // Você pode passá-los para CameraActivity
@@ -196,13 +192,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                 intent.putExtra("photoName", photoName)
                                 intent.putExtra("selectBeginTime", selectBeginTimeFromFirestore)
                                 intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
+                                intent.putExtra("selectDays", selectDaysFromFirestore)
 
                                 startActivity(intent)
                                 dismiss()
                             } else {
                                 Toast.makeText(
                                     requireContext(),
-                                    "Code does not exist",
+                                    "Code does not exist anymore",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -218,24 +215,61 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                     Toast.makeText(requireContext(), "You should insert a generated code", Toast.LENGTH_SHORT).show()
                 }
             }
-            // Referência ao documento que você deseja excluir
-            val db = FirebaseFirestore.getInstance()
-            val documentReference = db.collection("create").document("gJSWyyKRwO0vJYaip1jY")
-
-            // Excluir o documento permanentemente
-            documentReference.delete()
-                .addOnSuccessListener {
-                    // O documento foi excluído com sucesso
-                    Log.e("Firestore", "DELETADO COM SUCESSO: ")
-                }
-                .addOnFailureListener { e ->
-                    // Ocorreu um erro ao excluir o documento
-                    Log.e("Firestore", "Erro ao excluir o documento: $e")
-                }
-
+            checkGroupsForAutoDeletion()
             return view
+        }
+        private fun checkGroupsForAutoDeletion() {
+            val db = FirebaseFirestore.getInstance()
+            val collectionReference = db.collection("create")
 
+            // Data atual
+            val currentDate = Date()
 
+            collectionReference.get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    for (document in task.result) {
+                        val timestamp = document.getLong("timesTamp")
+                        val selectDays = document.getString("selectDays")
+
+                        if (timestamp != null && selectDays != null) {
+                            // Calcular a data de criação do grupo
+                            val creationDate = Date(timestamp)
+
+                            // Calcular a diferença em dias entre a data atual e a data de criação
+                            val daysDifference = TimeUnit.MILLISECONDS.toDays(currentDate.time - creationDate.time)
+
+                            // Obter o número de dias a partir da função mapDaysToNumber
+                            val numberOfDays = mapDaysToNumber(selectDays)
+
+                            // Verificar se a diferença é maior ou igual ao número de dias em selectDays
+                            if (daysDifference >= numberOfDays) {
+                                // Excluir o grupo
+                                val documentReference = collectionReference.document(document.id)
+                                documentReference.delete()
+                                    .addOnSuccessListener {
+                                        Toast.makeText(requireContext(), "Group doesnt exist anymore", Toast.LENGTH_SHORT).show()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(requireContext(), "Error deleting group: $e", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Error while searching group: ${task.exception}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        private fun mapDaysToNumber(daysString: String): Long {
+            when (daysString) {
+                "1 Days" -> return 1
+                "3 Days" -> return 3
+                "7 Days" -> return 7
+                "30 Days" -> return 30
+                "Unlimited" -> return Long.MAX_VALUE
+                else -> return 0
+            }
         }
     }
 

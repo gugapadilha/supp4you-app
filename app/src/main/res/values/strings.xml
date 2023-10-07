@@ -66,6 +66,7 @@
 
     //Days
     <string-array name="days">
+        <item>1 Days</item>
         <item>3 Days</item>
         <item>7 Days</item>
         <item>30 Days</item>
