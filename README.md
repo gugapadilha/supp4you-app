@@ -8,15 +8,20 @@
   
   <strong> Main Project Feature: </strong>
   + Images;
+  + Photos;
   + Lists;
   + Catalog;
   + Validation;
   + Details;
-  + Displays.
+  + Navigation;
+  + Log in/Log out;
+  + Google auth.
   
   <strong>Technologies Used: </strong>
    + Kotlin
-   + Android 
+   + Android
+   + Unit Tests
+   + Integration Tests
   
    ### Images Mobile Project:
   
