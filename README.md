@@ -2,7 +2,7 @@
 
   > Status: Finished ✔️
   
-  ### The general objective of this application is to develop mobile software that allows the user to create groups and define their specific theme (enabling creators to select specific characteristics that users who want in the group must follow) such as: how many days the group will be available and what will be the default time for users to take a photo (taking into consideration the overall goal of this group's theme). It will be possible to join these groups through a random code that will be generated whenever a group is created, that is, when a user wants to be part of that group, he will just enter this code and he will join it automatically. About the architecture I'm using Kotlin, Android, MVVM, Clean Architecture, Dagger-Hilt, Nav Graph, CameraX, Solid, Firebase(Firestore/Storage)
+  ### The application allows groups and define their specific theme (enabling creators to select specific characteristics that users who want in the group must follow) such as: how many days the group will be available and what will be the default time for users to take a photo (taking into consideration the overall goal of this group's theme). It will be possible to join these groups through a random code that will be generated whenever a group is created, that is, when a user wants to be part of that group, he will just enter this code and he will join it automatically. About the architecture I'm using Kotlin, Android, MVVM, Clean Architecture, Dagger-Hilt, Nav Graph, CameraX, Solid, Firebase(Firestore/Storage)
   
   <br>
   
