@@ -12,8 +12,10 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageView
         android:id="@+id/photoImageView"
@@ -117,38 +119,6 @@
         android:src="@drawable/baseline_settings_backup_restore_24"
         app:layout_constraintBottom_toTopOf="@+id/continueButton"
         app:layout_constraintEnd_toEndOf="@+id/continueButton" />
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/participantsContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/takeShotButton"
-        app:layout_constraintEnd_toStartOf="@+id/takeShotButton"
-        app:layout_constraintTop_toTopOf="@id/takeShotButton">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/participantsNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:includeFontPadding="false"
-            android:text="1"
-            android:textColor="@color/white"
-            android:textSize="30sp"
-            tools:ignore="HardcodedText" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/participantsLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:text="@string/participants"
-            android:textColor="@color/white"
-            android:textSize="11sp" />
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/takeShotButton"
