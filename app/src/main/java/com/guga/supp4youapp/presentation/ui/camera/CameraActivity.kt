@@ -185,6 +185,72 @@ class CameraActivity : AppCompatActivity() {
         updateTimestamp()
 
     }
+    private fun takePhoto(enteredToken: String?) {
+        if (isPhotoBeingTaken) {
+            // Já estamos tirando uma foto, não faça nada
+            return
+        }
+
+        lastTakenPhotoUri?.let { uri ->
+            deletePhotoFromStorage(lastTakenPhotoUri!!)
+        }
+
+        // Defina isPhotoBeingTaken como true para evitar que outra foto seja tirada até que a atual seja salva
+        isPhotoBeingTaken = true
+
+        // Get a stable reference of the modifiable image capture use case
+        val imageCapture = imageCapture ?: return
+
+        // Create time stamped name and MediaStore entry.
+        val photoName = UUID.randomUUID().toString()
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, photoName) // Use o nome formatado
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Supp4You")
+            }
+        }
+
+        // Create output options object which contains file + metadata
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
+        ).build()
+
+        // Resto do código para tirar a foto...
+
+        imageCapture.takePicture(outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                    // Lida com o erro
+
+                    // Defina isPhotoBeingTaken como false em caso de erro
+                    isPhotoBeingTaken = false
+                }
+
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = output.savedUri
+                    savedUri?.let {
+                        takenPhotoUri = savedUri
+                        showPhoto(takenPhotoUri)
+                        photoTaken = true
+
+                        // Atualize lastTakenPhotoUri com a URI da nova foto
+                        lastTakenPhotoUri = takenPhotoUri
+
+                        // Chamamos o método para fazer o upload da foto para o Firebase Storage
+                        uploadPhoto(takenPhotoUri)
+
+                        val msg = "Photo capture succeeded: ${output.savedUri}"
+                        Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+                    }
+
+                    // Defina isPhotoBeingTaken como false após a foto ter sido salva
+                    isPhotoBeingTaken = false
+                }
+            })
+    }
 
     private fun updateTimestamp() {
         // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
@@ -366,72 +432,6 @@ class CameraActivity : AppCompatActivity() {
         startCamera()
     }
 
-    private fun takePhoto(enteredToken: String?) {
-        if (isPhotoBeingTaken) {
-            // Já estamos tirando uma foto, não faça nada
-            return
-        }
-
-        lastTakenPhotoUri?.let { uri ->
-            deletePhotoFromStorage(lastTakenPhotoUri!!)
-        }
-
-        // Defina isPhotoBeingTaken como true para evitar que outra foto seja tirada até que a atual seja salva
-        isPhotoBeingTaken = true
-
-        // Get a stable reference of the modifiable image capture use case
-        val imageCapture = imageCapture ?: return
-
-        // Create time stamped name and MediaStore entry.
-        val photoName = UUID.randomUUID().toString()
-
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, photoName) // Use o nome formatado
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Supp4You")
-            }
-        }
-
-        // Create output options object which contains file + metadata
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(
-            contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
-        ).build()
-
-        // Resto do código para tirar a foto...
-
-        imageCapture.takePicture(outputOptions,
-            ContextCompat.getMainExecutor(this),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onError(exc: ImageCaptureException) {
-                    // Lida com o erro
-
-                    // Defina isPhotoBeingTaken como false em caso de erro
-                    isPhotoBeingTaken = false
-                }
-
-                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    val savedUri = output.savedUri
-                    savedUri?.let {
-                        takenPhotoUri = savedUri
-                        showPhoto(takenPhotoUri)
-                        photoTaken = true
-
-                        // Atualize lastTakenPhotoUri com a URI da nova foto
-                        lastTakenPhotoUri = takenPhotoUri
-
-                        // Chamamos o método para fazer o upload da foto para o Firebase Storage
-                        uploadPhoto(takenPhotoUri)
-
-                        val msg = "Photo capture succeeded: ${output.savedUri}"
-                        Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-                    }
-
-                    // Defina isPhotoBeingTaken como false após a foto ter sido salva
-                    isPhotoBeingTaken = false
-                }
-            })
-    }
 
     private fun deletePhotoFromStorage(uri: Uri) {
         // Extraia o caminho do URI

@@ -1,8 +1,10 @@
 package com.guga.supp4youapp.presentation.ui.fragment
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,6 +47,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
+        // Recupere o nome do usuário dos SharedPreferences
+
         return binding.root
     }
 
@@ -53,26 +57,40 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         auth = Firebase.auth
 
+        // Recupere o nome do usuário dos SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+
+        val savedName = sharedPreferences.getString("personName", "")
+
+    // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
+        if (savedName != null && savedName.isNotEmpty()) {
+            binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
+        }
+
         binding.tvLoginspace.setOnClickListener {
             val name = binding.textView.text.toString()
             if (name.isNotEmpty()) {
                 personName = name
 
-                // Gere um nome exclusivo para a foto usando um timestamp
-                val timestamp = System.currentTimeMillis()
-                val photoName = "$personName"
+                // Salve o nome do usuário nos SharedPreferences
+                val editor = sharedPreferences.edit()
+                editor.putString("personName", personName)
+                editor.apply()
 
-                // Capture a foto e obtenha a URI
-                takePhotoAndGetUri(photoName)
+                takePhotoAndGetUri(personName)
             } else {
                 Toast.makeText(requireContext(), "Enter a name first", Toast.LENGTH_SHORT).show()
             }
         }
 
-
         binding.tvCreatespace.setOnClickListener {
             val name = binding.textView.text.toString()
             personName = name
+
+            // Salve o nome do usuário nos SharedPreferences
+            val editor = sharedPreferences.edit()
+            editor.putString("personName", personName)
+            editor.apply()
 
             // Crie um Bundle para passar o nome para a AccessFragment
             val bundle = Bundle()
@@ -80,6 +98,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment, bundle)
         }
+
 
         binding.back.setOnClickListener {
             showSignOutConfirmationDialog()
@@ -133,6 +152,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     override fun onResume() {
         super.onResume()
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val savedName = sharedPreferences.getString("personName", "")
+
+        // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
+        if (savedName != null && savedName.isNotEmpty()) {
+            binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
+        }
         isSignOutDialogShowing = false
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
