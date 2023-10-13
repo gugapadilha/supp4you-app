@@ -220,6 +220,22 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                 intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
                                 intent.putExtra("selectDays", selectDaysFromFirestore)
 
+                                // Após verificar que o código do grupo existe e obter o ID do grupo
+                                val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                                val groupId = enteredToken
+
+                                // Verificar se há um URI de foto associado ao grupo nos SharedPreferences
+                                val savedPhotoUriString = sharedPreferences.getString(groupId, null)
+
+                                if (savedPhotoUriString != null) {
+                                    val savedPhotoUri = Uri.parse(savedPhotoUriString)
+                                    // Passar o URI da foto para a CameraActivity
+                                    intent.putExtra("photoUri", savedPhotoUri.toString())
+                                }
+
+                                startActivity(intent)
+                                dismiss()
+
                                 startActivity(intent)
                                 dismiss()
                             } else {

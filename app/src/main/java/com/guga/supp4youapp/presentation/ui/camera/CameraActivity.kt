@@ -2,6 +2,7 @@ package com.guga.supp4youapp.presentation.ui.camera
 
 import android.Manifest
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
@@ -21,6 +22,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -70,6 +72,22 @@ class CameraActivity : AppCompatActivity() {
         selectEndTime = intent?.getStringExtra("selectEndTime").toString()
         timeStamp = intent?.getLongExtra("timestamp" , 0L)
         viewBinding.tvGroup.text = "$groupName"
+
+        val photoUri = intent.getStringExtra("photoUri")
+        if (photoUri != null) {
+            val savedPhotoUri = Uri.parse(photoUri)
+            // Carregue o URI da foto na ImageView (photoImageView)
+            // Certifique-se de que photoImageView seja visível
+            viewBinding.photoImageView.visibility = View.VISIBLE
+            // Use alguma biblioteca de carregamento de imagem, como Glide ou Picasso, para carregar a imagem na ImageView
+            // Exemplo com Glide:
+            Glide.with(this).load(savedPhotoUri).into(viewBinding.photoImageView)
+        } else {
+            // Caso contrário, a ImageView deve permanecer vazia
+            viewBinding.photoImageView.visibility = View.GONE
+        }
+
+
 
         viewBinding.takeShotButton.setOnClickListener {
             if (!photoTaken) {
@@ -131,7 +149,13 @@ class CameraActivity : AppCompatActivity() {
                 Toast.makeText(this, "You have to take a picture first before continue!", Toast.LENGTH_SHORT).show()
             }
         }
-
+        if (savedInstanceState != null) {
+            // Restaurar a URI da foto do estado anterior, se existir
+            takenPhotoUri = savedInstanceState.getParcelable(SAVED_INSTANCE_STATE_URI) ?: Uri.EMPTY
+            if (takenPhotoUri != Uri.EMPTY) {
+                showPhoto(takenPhotoUri)
+            }
+        }
         updateCountdownTimer()
 
         viewBinding.reshot.setOnClickListener {
@@ -185,6 +209,13 @@ class CameraActivity : AppCompatActivity() {
         updateTimestamp()
 
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Salvar a URI da foto no estado da instância
+        outState.putParcelable(SAVED_INSTANCE_STATE_URI, takenPhotoUri)
+    }
+
     private fun takePhoto(enteredToken: String?) {
         if (isPhotoBeingTaken) {
             // Já estamos tirando uma foto, não faça nada
@@ -205,7 +236,7 @@ class CameraActivity : AppCompatActivity() {
         val photoName = UUID.randomUUID().toString()
 
         val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, photoName) // Use o nome formatado
+            put(MediaStore.MediaColumns.DISPLAY_NAME, photoName)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Supp4You")
@@ -232,6 +263,7 @@ class CameraActivity : AppCompatActivity() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
                     savedUri?.let {
+                        // Atualize takenPhotoUri com a URI da nova foto
                         takenPhotoUri = savedUri
                         showPhoto(takenPhotoUri)
                         photoTaken = true
@@ -251,6 +283,8 @@ class CameraActivity : AppCompatActivity() {
                 }
             })
     }
+
+
 
     private fun updateTimestamp() {
         // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
@@ -638,6 +672,7 @@ class CameraActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "guga"
+        private const val SAVED_INSTANCE_STATE_URI = "saved_instance_state_uri"
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
         private val REQUIRED_PERMISSIONS = mutableListOf(
             Manifest.permission.CAMERA
