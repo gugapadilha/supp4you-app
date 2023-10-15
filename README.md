@@ -36,3 +36,4 @@
 ![Screenshot_1696872600](https://github.com/gugapadilha/supp4you-app/assets/79876042/59198eef-9189-4921-a132-aca58e380ab1)
 ![Screenshot_1696872614](https://github.com/gugapadilha/supp4you-app/assets/79876042/d85081df-9272-45a9-b56b-f903aefc3d10)
 ![Screenshot_1696872655](https://github.com/gugapadilha/supp4you-app/assets/79876042/f4dc0150-8bd5-4771-9577-a346f1251b31)
+![Screenshot_1696872665](https://github.com/gugapadilha/supp4you-app/assets/79876042/425303a4-9a86-4030-a5cd-f1394f39752b)
