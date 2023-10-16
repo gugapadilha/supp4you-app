@@ -28,10 +28,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
-    private lateinit var binding: FragmentRegisterBinding
+    lateinit var binding: FragmentRegisterBinding
     private val registerViewModel: RegisterViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
-    private val RC_SIGN_IN = 9001
+    val RC_SIGN_IN = 9001
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -166,7 +166,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         passwordField.setSelection(passwordField.text!!.length)
     }
 
-    private fun checkAllFields() : Boolean {
+    fun checkAllFields() : Boolean {
         val email = binding.edEmail.text.toString()
 
         if (binding.edEmail.text.toString() == ""){
