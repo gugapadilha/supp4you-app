@@ -1,8 +1,14 @@
 package com.guga.supp4youapp.presentation.ui.fragment
 
 import android.app.AlertDialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Button
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.testing.launchFragment
@@ -10,6 +16,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.firebase.FirebaseApp
 import com.guga.supp4youapp.R
+import junit.framework.TestCase.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,6 +60,72 @@ class DetailsFragmentTest {
 
             //Assert
             verify(fragmentTransaction)
+        }
+    }
+
+    @Test
+    fun testOnResumeWithSavedName() {
+
+        //Arrange
+        val sharedPreferences = mock(SharedPreferences::class.java)
+        val editor = mock(SharedPreferences.Editor::class.java)
+        val callback = mock(OnBackPressedCallback::class.java)
+
+        `when`(sharedPreferences.getString("personName", "")).thenReturn(testPersonName)
+
+        `when`(editor.putString(eq("personName"), eq(testPersonName))).thenReturn(editor)
+        `when`(sharedPreferences.edit()).thenReturn(editor)
+
+        val scenario = launchFragment<DetailsFragment>()
+
+        //Act
+        scenario.onFragment { fragment ->
+            val context = mock(Context::class.java)
+
+            `when`(context.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)).thenReturn(sharedPreferences)
+
+            val activity = mock(FragmentActivity::class.java)
+            fragment.onAttach(context)
+            fragment.onAttach(activity)
+
+            //Assert
+            assertNotNull(activity)
+            assertNotNull(context)
+        }
+    }
+
+    @Test
+    fun testOnDestroyView() {
+
+        //Arrange
+        val scenario = launchFragment<DetailsFragment>()
+
+        //Act
+        scenario.onFragment { fragment ->
+            val initialBinding = fragment._binding
+
+            fragment.onDestroyView()
+
+            //Assert
+            assert(fragment._binding == null)
+            assertTrue(initialBinding != null)
+        }
+    }
+
+    @Test
+    fun testOnPauseView() {
+
+        //Arrange
+        val scenario = launchFragment<DetailsFragment>()
+
+        //Act
+        scenario.onFragment { fragment ->
+            val initialBinding = fragment._binding
+
+            fragment.onPause()
+
+            //Assert
+            assertTrue(initialBinding != null)
         }
     }
 

@@ -31,8 +31,8 @@ import java.util.concurrent.TimeUnit
 
 class DetailsFragment : Fragment(R.layout.fragment_details) {
 
-    private var _binding: FragmentDetailsBinding? = null
-    private val binding get() = _binding!!
+    var _binding: FragmentDetailsBinding? = null
+    val binding get() = _binding!!
     lateinit var auth: FirebaseAuth
     private var isSignOutDialogShowing = false
     private var personName: String = ""
