@@ -34,7 +34,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     var _binding: FragmentDetailsBinding? = null
     val binding get() = _binding!!
     lateinit var auth: FirebaseAuth
-    private var isSignOutDialogShowing = false
+    var isSignOutDialogShowing = false
     private var personName: String = ""
     private var takenPhotoUri: Uri? = null // Adicione isso
 
@@ -257,7 +257,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             checkGroupsForAutoDeletion()
             return view
         }
-        private fun checkGroupsForAutoDeletion() {
+         fun checkGroupsForAutoDeletion() {
             val db = FirebaseFirestore.getInstance()
             val collectionReference = db.collection("create")
 
@@ -300,7 +300,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             }
         }
 
-        private fun mapDaysToNumber(daysString: String): Long {
+        fun mapDaysToNumber(daysString: String): Long {
             when (daysString) {
                 "1 Days" -> return 1
                 "3 Days" -> return 3

@@ -135,6 +135,7 @@ class RegisterFragmentTest {
 
             //Assert
             assertFalse(R.layout.fragment_register.equals(layout2))
+
         }
     }
 }
