@@ -33,9 +33,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var auth: FirebaseAuth
+    lateinit var auth: FirebaseAuth
     private var isSignOutDialogShowing = false
-    private val personCollectionRef = Firebase.firestore.collection("photos")
     private var personName: String = ""
     private var takenPhotoUri: Uri? = null // Adicione isso
 
@@ -109,7 +108,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
-    private fun showSignOutConfirmationDialog() {
+    fun showSignOutConfirmationDialog() {
         isSignOutDialogShowing = true
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_confirm_sign_out, null)
@@ -165,10 +164,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
-    private fun takePhotoAndGetUri(photoName: String) {
-        // ... O código para capturar a foto
+    fun takePhotoAndGetUri(photoName: String) {
 
-        // Configurar a URI da foto capturada na instância da MyBottomSheetDialogFragment
         val bottomSheetFragment = MyBottomSheetDialogFragment()
         val args = Bundle()
         args.putString("personName", personName)

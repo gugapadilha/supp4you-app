@@ -24,13 +24,15 @@ class RegisterFragmentTest {
 
     @Test
     fun testCheckAllFields_WithInvalidEmail() {
+        //Arrange
         val scenario = launchFragmentInContainer<RegisterFragment>()
         val emailText = "invalidemail"
 
+        //Act
         scenario.onFragment { registerFragment ->
-            // Simular entrada de e-mail inválido
             registerFragment.binding.edEmail.text = SpannableStringBuilder.valueOf(emailText)
             val result = registerFragment.checkAllFields()
+            //Assert
             assertFalse(result)
         }
     }
@@ -38,90 +40,101 @@ class RegisterFragmentTest {
 
     @Test
     fun testCheckAllFields_WithShortPassword() {
+        //Arrange
         val scenario = launchFragmentInContainer<RegisterFragment>()
         val email = "test@example.com"
         val password = "123"
 
+        //Act
         scenario.onFragment { registerFragment ->
-            // Simular senha curta
             registerFragment.binding.edEmail.text = SpannableStringBuilder.valueOf(email)
             registerFragment.binding.edPassword.text = SpannableStringBuilder.valueOf(password)
             val result = registerFragment.checkAllFields()
+            //Assert
             assertFalse(result)
         }
     }
 
     @Test
     fun testCheckAllFields_WithEmptyFields() {
+        //Ararnge
         val scenario = launchFragmentInContainer<RegisterFragment>()
         val email = ""
         val password = ""
         val repeatPassword = ""
+
+        //Act
         scenario.onFragment { registerFragment ->
-            // Simular campos vazios
             registerFragment.binding.edEmail.text = SpannableStringBuilder.valueOf(email)
             registerFragment.binding.edPassword.text = SpannableStringBuilder.valueOf(password)
             registerFragment.binding.edRepeatPassword.text = SpannableStringBuilder.valueOf(repeatPassword)
             val result = registerFragment.checkAllFields()
+
+            //Assert
             assertFalse(result)
         }
     }
 
     @Test
     fun testCheckAllFields_WithMatchingPasswords() {
+        //Arrange
         val scenario = launchFragmentInContainer<RegisterFragment>()
         val email = "test@example.com"
         val password = "password123"
         val repeatPassword = "password123"
 
+        //Act
         scenario.onFragment { registerFragment ->
-            // Simular senhas correspondentes
             registerFragment.binding.edEmail.text = SpannableStringBuilder.valueOf(email)
             registerFragment.binding.edPassword.text = SpannableStringBuilder.valueOf(password)
             registerFragment.binding.edRepeatPassword.text = SpannableStringBuilder.valueOf(repeatPassword)
             val result = registerFragment.checkAllFields()
+
+            //Assert
             assertTrue(result)
         }
     }
 
     @Test
     fun testSignInWithGoogle_Success() {
+        //Arrange
         val scenario = launchFragmentInContainer<RegisterFragment>()
         val layout = R.layout.fragment_register
         val layout2 = R.layout.fragment_login
+
+        //Act
         scenario.onFragment { registerFragment ->
             val requestCode = registerFragment.RC_SIGN_IN
-            val resultCode = android.app.Activity.RESULT_OK  // Simular um resultado bem-sucedido
+            val resultCode = android.app.Activity.RESULT_OK
             val data = android.content.Intent()
-            // Simular o resultado bem-sucedido ao fazer login com o Google
             val fakeGoogleSignInAccount = GoogleSignIn.getLastSignedInAccount(registerFragment.requireContext())
             data.putExtra("fakeGoogleSignInAccount", fakeGoogleSignInAccount)
 
-            // Simular o processo de login com o Google
             registerFragment.onActivityResult(requestCode, resultCode, data)
 
-            // Verificar se o usuário é redirecionado para a tela de login após o login bem-sucedido
+            //Assert
             assertTrue(R.layout.fragment_register.equals(layout))
         }
     }
 
     @Test
     fun testSignInWithGoogle_Failure() {
+        //Arrange
         val scenario = launchFragmentInContainer<RegisterFragment>()
         val layout = R.layout.fragment_register
         val layout2 = R.layout.fragment_login
+
+        //Act
         scenario.onFragment { registerFragment ->
             val requestCode = registerFragment.RC_SIGN_IN
-            val resultCode = android.app.Activity.RESULT_CANCELED  // Simular um resultado malsucedido
+            val resultCode = android.app.Activity.RESULT_CANCELED
             val data = android.content.Intent()
 
-            // Simular o processo de login com o Google com falha
+
             registerFragment.onActivityResult(requestCode, resultCode, data)
 
-            // Verificar se o usuário permanece na tela de registro após o login com falha
+            //Assert
             assertFalse(R.layout.fragment_register.equals(layout2))
-
-
         }
     }
 }

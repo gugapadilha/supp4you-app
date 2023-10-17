@@ -21,7 +21,6 @@ class MainActivityTest {
     fun setUp() {
         // Inicialize o Firebase sombreado
         // Arrange
-
         FirebaseApp.initializeApp(RuntimeEnvironment.application)
 
         //Act
