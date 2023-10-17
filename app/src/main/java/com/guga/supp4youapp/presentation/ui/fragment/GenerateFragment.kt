@@ -14,7 +14,7 @@ import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
 class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
     private var _binding: FragmentGenerateBinding? = null
-    private val binding get() = _binding!!
+    val binding get() = _binding!!
     private var spaceId: String? = null
     private var personName: String? = null
     private var groupName: String? = null
