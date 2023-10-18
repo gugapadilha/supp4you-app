@@ -286,7 +286,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                 val documentReference = collectionReference.document(document.id)
                                 documentReference.delete()
                                     .addOnSuccessListener {
-                                        Toast.makeText(requireContext(), "Group doesnt exist anymore", Toast.LENGTH_SHORT).show()
                                     }
                                     .addOnFailureListener { e ->
                                         Toast.makeText(requireContext(), "Error deleting group: $e", Toast.LENGTH_SHORT).show()

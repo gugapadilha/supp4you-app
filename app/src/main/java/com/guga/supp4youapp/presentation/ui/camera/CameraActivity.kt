@@ -289,7 +289,7 @@ class CameraActivity : AppCompatActivity() {
     private fun updateTimestamp() {
         // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
         val currentDateTime = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
-        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US) // Altere o formato para "HH:mm"
         val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val currentLocalTime = currentDateTime.toLocalTime()
         val secondsUntilBeginTime = Duration.between(currentLocalTime, beginTime).seconds
@@ -302,6 +302,7 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
+
     private fun updateCountdownTimers() {
         val seconds = (timeStamp?.rem(60))?.toInt()
         val minutes = ((timeStamp?.div(60))?.rem(60))?.toInt()
@@ -312,7 +313,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun updateRemainingTimeMillis() {
-        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US) // Use "HH:mm" para um formato de 24 horas
 
         // Obtenha a data e hora atual no fuso horário do Brasil (Horário de Brasília)
         val currentDateTimeInBrasilia = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
@@ -343,7 +344,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
 
-
     private fun updateCountdownTimer() {
         if (remainingTimeMillis == 0L) {
             // Está dentro do intervalo permitido, exiba a mensagem desejada
@@ -359,13 +359,11 @@ class CameraActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun isCurrentTimeWithinInterval(selectBeginTime: String, selectEndTime: String): Boolean {
         // Obtém a hora atual no fuso horário do Brasil (Horário de Brasília)
         val currentTime = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
 
-        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.US)
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US) // Altere o formato para "HH:mm"
 
         val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val endTime = LocalTime.parse(selectEndTime, formatter)
@@ -380,6 +378,7 @@ class CameraActivity : AppCompatActivity() {
             return currentTime.toLocalTime().isAfter(beginTime) && currentTime.toLocalTime().isBefore(endTime)
         }
     }
+
 
 
     private fun toggleFlash() {

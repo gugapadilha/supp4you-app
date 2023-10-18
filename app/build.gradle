@@ -120,6 +120,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:2.38.1"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
+    implementation 'com.google.android.material:material:1.4.0'
 
     //Firestore
     implementation 'com.google.firebase:firebase-firestore-ktx:24.7.1'

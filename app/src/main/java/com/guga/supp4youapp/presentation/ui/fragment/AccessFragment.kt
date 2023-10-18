@@ -1,10 +1,14 @@
 package com.guga.supp4youapp.presentation.ui.fragment
 
+import android.app.AlertDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
@@ -13,14 +17,16 @@ import com.guga.supp4youapp.databinding.FragmentAccessBinding
 import com.guga.supp4youapp.presentation.ui.adapter.CustomSpinnerAdapter
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AccessFragment : Fragment(R.layout.fragment_access) {
 
     private lateinit var binding: FragmentAccessBinding
     private val createSpace = Firebase.firestore.collection("create")
+    private val selectedTime: Calendar = Calendar.getInstance()
+    private var beginTime: String? = null
+    private var endTime: String? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -31,11 +37,11 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         binding.tvCreateSpace.setOnClickListener {
             val groupName = binding.tvGroupName.text.toString()
             val selectedDays = binding.spDays.selectedItem.toString()
-            val selectBeginTime = binding.spStartTime.selectedItem.toString()
-            val selectEndTime = binding.spEndTime.selectedItem.toString()
+            val selectBeginTime = beginTime
+            val selectEndTime = endTime
             val currentTimestamp = System.currentTimeMillis() // Obter o timestamp atual
 
-            val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime, currentTimestamp)
+            val space = Space(groupName, selectedDays, selectBeginTime!!, selectEndTime!!, currentTimestamp)
 
             binding.progressBar.visibility = View.VISIBLE
 
@@ -52,10 +58,9 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
                 bundle.putString("personName", personName)
                 bundle.putString("groupName", groupName)
                 bundle.putString("selectBeginTime", selectBeginTime) // Adicione o horário de início
-                bundle.putString("selectDays", selectedDays) // Adicione os dias selecion   ados
+                bundle.putString("selectDays", selectedDays) // Adicione os dias selecionados
                 bundle.putString("selectEndTime", selectEndTime) // Adicione o horário de término
                 bundle.putLong("timestamp", currentTimestamp) // Adicione o timestamp
-
 
                 findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
             }
@@ -77,10 +82,19 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             }
         }
 
-        val timesArray = resources.getStringArray(R.array.times).toList()
-        val timeAdapter = CustomSpinnerAdapter(requireContext(), timesArray)
-        binding.spStartTime.adapter = timeAdapter
-        binding.spEndTime.adapter = timeAdapter
+        binding.spStartTime.setOnClickListener {
+            showTimePickerDialog { time ->
+                beginTime = time
+                binding.spStartTime.text = time
+            }
+        }
+
+        binding.spEndTime.setOnClickListener {
+            showTimePickerDialog { time ->
+                endTime = time
+                binding.spEndTime.text = time
+            }
+        }
 
         binding.back.setOnClickListener {
             requireActivity().onBackPressed()
@@ -90,11 +104,34 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             requireActivity().onBackPressed()
         }
 
+        if (beginTime != null) {
+            binding.spStartTime.text = beginTime
+        }
+
+        if (endTime != null) {
+            binding.spEndTime.text = endTime
+        }
     }
+
+    private fun showTimePickerDialog(callback: (String) -> Unit) {
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            { _, hourOfDay, minute ->
+                val horaFormatada = String.format("%02d:%02d", hourOfDay, minute)
+                callback(horaFormatada)
+            },
+            selectedTime.get(Calendar.HOUR_OF_DAY),
+            selectedTime.get(Calendar.MINUTE),
+            true
+        )
+
+        timePickerDialog.show()
+    }
+
+
     suspend fun createSpace(space: Space): String {
         val result = createSpace.add(space).await()
         createSpace.document(result.id).update("id", result.id).await()
         return result.id
     }
-
 }
