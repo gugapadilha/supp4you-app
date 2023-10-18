@@ -5,6 +5,7 @@ import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -41,30 +42,36 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectEndTime = endTime
             val currentTimestamp = System.currentTimeMillis() // Obter o timestamp atual
 
-            val space = Space(groupName, selectedDays, selectBeginTime!!, selectEndTime!!, currentTimestamp)
+            if (groupName.isNotEmpty()) { // Verifique se o nome do grupo não está vazio
+                val space = Space(groupName, selectedDays, selectBeginTime!!, selectEndTime!!, currentTimestamp)
 
-            binding.progressBar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
 
-            // Usando um CoroutineScope para criar o espaço e obter o ID gerado
-            CoroutineScope(Dispatchers.Main).launch {
-                val spaceId = createSpace(space)
+                // Usando um CoroutineScope para criar o espaço e obter o ID gerado
+                CoroutineScope(Dispatchers.Main).launch {
+                    val spaceId = createSpace(space)
 
-                delay(1000)
-                binding.progressBar.visibility = View.GONE
+                    delay(1000)
+                    binding.progressBar.visibility = View.GONE
 
-                // Criar um Bundle para passar o nome para a GenerateFragment
-                val bundle = Bundle()
-                bundle.putString("spaceId", spaceId)
-                bundle.putString("personName", personName)
-                bundle.putString("groupName", groupName)
-                bundle.putString("selectBeginTime", selectBeginTime) // Adicione o horário de início
-                bundle.putString("selectDays", selectedDays) // Adicione os dias selecionados
-                bundle.putString("selectEndTime", selectEndTime) // Adicione o horário de término
-                bundle.putLong("timestamp", currentTimestamp) // Adicione o timestamp
+                    // Criar um Bundle para passar o nome para a GenerateFragment
+                    val bundle = Bundle()
+                    bundle.putString("spaceId", spaceId)
+                    bundle.putString("personName", personName)
+                    bundle.putString("groupName", groupName)
+                    bundle.putString("selectBeginTime", selectBeginTime) // Adicione o horário de início
+                    bundle.putString("selectDays", selectedDays) // Adicione os dias selecionados
+                    bundle.putString("selectEndTime", selectEndTime) // Adicione o horário de término
+                    bundle.putLong("timestamp", currentTimestamp) // Adicione o timestamp
 
-                findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
+                    findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
+                }
+            } else {
+                // Exiba uma mensagem de erro, pois o nome do grupo está vazio
+                Toast.makeText(requireContext(), "You need to enter a group name", Toast.LENGTH_SHORT).show()
             }
         }
+
 
         val daysArray = resources.getStringArray(R.array.days).toList()
         val customAdapter = CustomSpinnerAdapter(requireContext(), daysArray)
