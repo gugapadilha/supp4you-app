@@ -28,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private lateinit var binding: FragmentLoginBinding
+    lateinit var binding: FragmentLoginBinding
     private val loginViewModel: LoginViewModel by viewModels()
     private lateinit var auth: FirebaseAuth
     private val RC_SIGN_IN = 9001
@@ -135,7 +135,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
 
-    private fun changeIconVisibility(
+    fun changeIconVisibility(
         passwordField: AppCompatEditText,
         textVisibility: AppCompatTextView,
         visible: Boolean
@@ -160,7 +160,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         passwordField.setSelection(passwordField.text!!.length)
     }
 
-    private fun checkAllFields() : Boolean {
+    fun checkAllFields() : Boolean {
         val email = binding.edEmail.text.toString()
 
         if (binding.edEmail.text.toString() == "") {

@@ -1,8 +1,10 @@
 package com.guga.supp4youapp.presentation.ui.fragment
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,11 +31,10 @@ import java.util.concurrent.TimeUnit
 
 class DetailsFragment : Fragment(R.layout.fragment_details) {
 
-    private var _binding: FragmentDetailsBinding? = null
-    private val binding get() = _binding!!
-    private lateinit var auth: FirebaseAuth
-    private var isSignOutDialogShowing = false
-    private val personCollectionRef = Firebase.firestore.collection("photos")
+    var _binding: FragmentDetailsBinding? = null
+    val binding get() = _binding!!
+    lateinit var auth: FirebaseAuth
+    var isSignOutDialogShowing = false
     private var personName: String = ""
     private var takenPhotoUri: Uri? = null // Adicione isso
 
@@ -45,6 +46,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
+        // Recupere o nome do usuário dos SharedPreferences
+
         return binding.root
     }
 
@@ -53,26 +56,40 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         auth = Firebase.auth
 
+        // Recupere o nome do usuário dos SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+
+        val savedName = sharedPreferences.getString("personName", "")
+
+    // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
+        if (savedName != null && savedName.isNotEmpty()) {
+            binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
+        }
+
         binding.tvLoginspace.setOnClickListener {
             val name = binding.textView.text.toString()
             if (name.isNotEmpty()) {
                 personName = name
 
-                // Gere um nome exclusivo para a foto usando um timestamp
-                val timestamp = System.currentTimeMillis()
-                val photoName = "$personName"
+                // Salve o nome do usuário nos SharedPreferences
+                val editor = sharedPreferences.edit()
+                editor.putString("personName", personName)
+                editor.apply()
 
-                // Capture a foto e obtenha a URI
-                takePhotoAndGetUri(photoName)
+                takePhotoAndGetUri(personName)
             } else {
                 Toast.makeText(requireContext(), "Enter a name first", Toast.LENGTH_SHORT).show()
             }
         }
 
-
         binding.tvCreatespace.setOnClickListener {
             val name = binding.textView.text.toString()
             personName = name
+
+            // Salve o nome do usuário nos SharedPreferences
+            val editor = sharedPreferences.edit()
+            editor.putString("personName", personName)
+            editor.apply()
 
             // Crie um Bundle para passar o nome para a AccessFragment
             val bundle = Bundle()
@@ -80,6 +97,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment, bundle)
         }
+
 
         binding.back.setOnClickListener {
             showSignOutConfirmationDialog()
@@ -90,7 +108,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
     }
 
-    private fun showSignOutConfirmationDialog() {
+    fun showSignOutConfirmationDialog() {
         isSignOutDialogShowing = true
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_confirm_sign_out, null)
@@ -133,16 +151,21 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
     override fun onResume() {
         super.onResume()
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val savedName = sharedPreferences.getString("personName", "")
+
+        // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
+        if (savedName != null && savedName.isNotEmpty()) {
+            binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
+        }
         isSignOutDialogShowing = false
 
         requireActivity().onBackPressedDispatcher.addCallback(this) {
         }
     }
 
-    private fun takePhotoAndGetUri(photoName: String) {
-        // ... O código para capturar a foto
+    fun takePhotoAndGetUri(photoName: String) {
 
-        // Configurar a URI da foto capturada na instância da MyBottomSheetDialogFragment
         val bottomSheetFragment = MyBottomSheetDialogFragment()
         val args = Bundle()
         args.putString("personName", personName)
@@ -194,6 +217,22 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                 intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
                                 intent.putExtra("selectDays", selectDaysFromFirestore)
 
+                                // Após verificar que o código do grupo existe e obter o ID do grupo
+                                val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                                val groupId = enteredToken
+
+                                // Verificar se há um URI de foto associado ao grupo nos SharedPreferences
+                                val savedPhotoUriString = sharedPreferences.getString(groupId, null)
+
+                                if (savedPhotoUriString != null) {
+                                    val savedPhotoUri = Uri.parse(savedPhotoUriString)
+                                    // Passar o URI da foto para a CameraActivity
+                                    intent.putExtra("photoUri", savedPhotoUri.toString())
+                                }
+
+                                startActivity(intent)
+                                dismiss()
+
                                 startActivity(intent)
                                 dismiss()
                             } else {
@@ -218,7 +257,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             checkGroupsForAutoDeletion()
             return view
         }
-        private fun checkGroupsForAutoDeletion() {
+         fun checkGroupsForAutoDeletion() {
             val db = FirebaseFirestore.getInstance()
             val collectionReference = db.collection("create")
 
@@ -261,7 +300,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             }
         }
 
-        private fun mapDaysToNumber(daysString: String): Long {
+        fun mapDaysToNumber(daysString: String): Long {
             when (daysString) {
                 "1 Days" -> return 1
                 "3 Days" -> return 3

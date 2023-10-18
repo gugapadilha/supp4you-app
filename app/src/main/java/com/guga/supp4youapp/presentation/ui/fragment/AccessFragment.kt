@@ -91,7 +91,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         }
 
     }
-    private suspend fun createSpace(space: Space): String {
+    suspend fun createSpace(space: Space): String {
         val result = createSpace.add(space).await()
         createSpace.document(result.id).update("id", result.id).await()
         return result.id
