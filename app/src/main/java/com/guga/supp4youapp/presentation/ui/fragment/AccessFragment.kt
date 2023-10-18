@@ -42,8 +42,10 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectEndTime = endTime
             val currentTimestamp = System.currentTimeMillis() // Obter o timestamp atual
 
-            if (groupName.isNotEmpty()) { // Verifique se o nome do grupo não está vazio
-                val space = Space(groupName, selectedDays, selectBeginTime!!, selectEndTime!!, currentTimestamp)
+            if (groupName.isNotEmpty() && selectBeginTime != null && selectEndTime != null) {
+                // Verifique se o nome do grupo não está vazio e ambos os tempos foram selecionados
+
+                val space = Space(groupName, selectedDays, selectBeginTime, selectEndTime, currentTimestamp)
 
                 binding.progressBar.visibility = View.VISIBLE
 
@@ -67,10 +69,17 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
                     findNavController().navigate(R.id.action_accessFragment_to_generateFragment, bundle)
                 }
             } else {
-                // Exiba uma mensagem de erro, pois o nome do grupo está vazio
-                Toast.makeText(requireContext(), "You need to enter a group name", Toast.LENGTH_SHORT).show()
+                // Exiba uma mensagem de erro se algum dos campos estiver faltando
+                if (groupName.isEmpty()) {
+                    Toast.makeText(requireContext(), "You need to enter a group name", Toast.LENGTH_SHORT).show()
+                } else if (selectBeginTime == null) {
+                    Toast.makeText(requireContext(), "You need to set up the begin time", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "You need to set up the end time", Toast.LENGTH_SHORT).show()
+                }
             }
         }
+
 
 
         val daysArray = resources.getStringArray(R.array.days).toList()

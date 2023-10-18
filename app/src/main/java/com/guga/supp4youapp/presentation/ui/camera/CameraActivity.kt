@@ -401,6 +401,8 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.flipCameraButton.visibility = View.GONE
         viewBinding.photoImageView.setImageURI(takenPhotoUri)
         viewBinding.reshot.visibility = View.VISIBLE
+        viewBinding.takeShotButton.visibility = View.GONE
+
     }
 
     private fun hidePhoto() {
@@ -410,6 +412,8 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.flashButton.visibility = View.VISIBLE
         viewBinding.flipCameraButton.visibility = View.VISIBLE
         viewBinding.reshot.visibility = View.GONE
+        viewBinding.takeShotButton.visibility = View.VISIBLE
+
     }
 
 
