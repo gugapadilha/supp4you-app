@@ -216,6 +216,7 @@ class CameraActivity : AppCompatActivity() {
         outState.putParcelable(SAVED_INSTANCE_STATE_URI, takenPhotoUri)
     }
 
+
     private fun takePhoto(enteredToken: String?) {
         if (isPhotoBeingTaken) {
             // Já estamos tirando uma foto, não faça nada

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentGenerateBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
+import java.security.MessageDigest
 
 class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
@@ -29,8 +30,6 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentGenerateBinding.inflate(inflater, container, false)
-        val code = validateCode()
-        binding.tvEntercode.text = code
         spaceId = arguments?.getString("spaceId")
         personName = arguments?.getString("personName")
         groupName = arguments?.getString("groupName")
@@ -66,7 +65,6 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
             requireActivity().onBackPressed()
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
