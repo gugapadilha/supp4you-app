@@ -6,8 +6,8 @@
         <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/grey_200</item>
-        <item name="colorSecondaryVariant">@color/grey_200</item>
+        <item name="colorSecondary">@color/home</item>
+        <item name="colorSecondaryVariant">@color/home</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">@color/black</item>
@@ -37,4 +37,5 @@
     <style name="Theme.SplashScreen" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="android:windowBackground">@drawable/splash_bg</item>
     </style>
+
 </resources>

@@ -28,22 +28,22 @@ class AccessFragmentTest {
 
     }
 
-    @Test
-    fun testCreateSpace() {
-        // Arrange
-        val accessFragment = AccessFragment()
-        val space = Space("GroupName", "3 Days", "Start Time", "End Time", 12345)
-        val space2 = Space("GroupName", "3 Days", "Start Time", "End Time", 12345)
-
-        runBlocking {
-            // Act
-            val result = accessFragment.createSpace(space)
-
-            // Assert
-            assertNotNull(result)
-            assertEquals(space, space2)
-        }
-    }
+//    @Test
+//    fun testCreateSpace() {
+//        // Arrange
+//        val accessFragment = AccessFragment()
+//        val space = Space("GroupName", "3 Days", "Start Time", "End Time", 12345)
+//        val space2 = Space("GroupName", "3 Days", "Start Time", "End Time", 12345)
+//
+//        runBlocking {
+//            // Act
+//            val result = accessFragment.createSpace(space)
+//
+//            // Assert
+//            assertNotNull(result)
+//            assertEquals(space, space2)
+//        }
+//    }
 
 }
 

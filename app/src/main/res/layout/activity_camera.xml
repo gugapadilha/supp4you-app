@@ -12,10 +12,10 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/photoImageView"
@@ -113,12 +113,13 @@
         android:id="@+id/reshot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="40dp"
         android:background="@color/transparent"
-        android:visibility="gone"
         android:src="@drawable/baseline_settings_backup_restore_24"
-        app:layout_constraintBottom_toTopOf="@+id/continueButton"
-        app:layout_constraintEnd_toEndOf="@+id/continueButton" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/takeShotButton"
@@ -137,6 +138,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginHorizontal="6dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="55dp"
         android:background="@drawable/background_rounded_button_disabled"
         android:drawableEnd="@drawable/ic_arrow_foward"
         android:drawableTint="@color/grey_300"
@@ -144,10 +147,8 @@
         android:text="@string/continue_btn"
         android:textAllCaps="false"
         android:textColor="@color/grey_300"
-        app:layout_constraintBottom_toBottomOf="@+id/takeShotButton"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/takeShotButton"
-        app:layout_constraintTop_toTopOf="@+id/takeShotButton"
         tools:ignore="MissingConstraints" />
 
     <ProgressBar
