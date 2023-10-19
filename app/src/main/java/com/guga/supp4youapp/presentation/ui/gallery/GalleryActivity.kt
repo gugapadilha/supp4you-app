@@ -36,6 +36,7 @@ class GalleryActivity : AppCompatActivity() {
             }
         }
 
+
         val groupId = intent.getStringExtra("groupId")
         if (groupId != null) {
             fetchGroupName(groupId)
@@ -52,6 +53,7 @@ class GalleryActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     val groupName = document.getString("groupName")
+                    binding.groupCode.text = "Code: $groupId" // Atualiza o TextView com o groupId
                     binding.tvGroup.text = groupName
                 } else {
                     // Trate o caso em que o documento não existe
@@ -61,6 +63,7 @@ class GalleryActivity : AppCompatActivity() {
                 // Trate a falha na consulta ao Firestore
             }
     }
+
 
     private fun fetchPhotos(groupId: String) {
         val firestore = Firebase.firestore
