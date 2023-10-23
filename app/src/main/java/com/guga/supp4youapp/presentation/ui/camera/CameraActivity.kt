@@ -87,8 +87,6 @@ class CameraActivity : AppCompatActivity() {
             viewBinding.photoImageView.visibility = View.GONE
         }
 
-
-
         viewBinding.takeShotButton.setOnClickListener {
             if (!photoTaken) {
                 takePhoto(enteredToken)
@@ -174,11 +172,6 @@ class CameraActivity : AppCompatActivity() {
             }
         }
 
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            requestPermissionsLauncher.launch(REQUIRED_PERMISSIONS)
-        }
         groupId = intent.getStringExtra("groupId") ?: ""
         name = intent.getStringExtra("personName").toString()
 

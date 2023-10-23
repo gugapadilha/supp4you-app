@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentGenerateBinding
@@ -54,6 +55,21 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
                 intent.putExtra("selectEndTime", selectEndTime)
                 intent.putExtra("timeStamp", timeStamp)
                 startActivity(intent)
+            }
+        }
+        binding.tvShare.setOnClickListener {
+            spaceId?.let { id ->
+                val whatsappIntent = Intent(Intent.ACTION_SEND)
+                whatsappIntent.type = "text/plain"
+                val text = "Would you like to join $groupName? The code is: $id"
+                whatsappIntent.setPackage("com.whatsapp")
+
+                whatsappIntent.putExtra(Intent.EXTRA_TEXT, text)
+                try {
+                    startActivity(whatsappIntent)
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "WhatsApp can not be open", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 
