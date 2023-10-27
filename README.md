@@ -10,7 +10,7 @@
   + Images;
   + Photos;
   + Lists;
-  + Catalog;
+  + Groups;
   + Validation;
   + Details;
   + Navigation;
