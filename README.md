@@ -21,6 +21,7 @@
    + Kotlin
    + Android
    + XML
+   + Jacoco
    + Unit Tests
    + Integration Tests
   
