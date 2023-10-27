@@ -20,6 +20,7 @@
   <strong>Technologies Used: </strong>
    + Kotlin
    + Android
+   + XML
    + Unit Tests
    + Integration Tests
   
