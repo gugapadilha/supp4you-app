@@ -28,6 +28,7 @@
         android:textColor="@color/white"
         android:imeOptions="actionDone"
         android:singleLine="true"
+        android:maxLength="4"
         android:inputType="number"
         android:hint="@string/ex_qkielnmzkct86"/>
     <View

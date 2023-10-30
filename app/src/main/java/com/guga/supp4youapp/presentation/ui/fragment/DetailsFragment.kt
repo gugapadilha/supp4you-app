@@ -25,6 +25,7 @@ import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentDetailsBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
+import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
 import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -61,7 +62,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         val savedName = sharedPreferences.getString("personName", "")
 
-    // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
+        // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
         if (savedName != null && savedName.isNotEmpty()) {
             binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
         }
@@ -175,7 +176,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
     }
-
     class MyBottomSheetDialogFragment : BottomSheetDialogFragment() {
         private var enteredToken: String? = null
         private var personName: String? = null
@@ -202,39 +202,54 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                         if (task.isSuccessful) {
                             val document = task.result
                             if (document.exists()) {
-                                // O documento da sala foi encontrado
-                                val selectBeginTimeFromFirestore = document.getString("selectBeginTime")
+                                val selectBeginTimeFromFirestore =
+                                    document.getString("selectBeginTime")
                                 val selectEndTimeFromFirestore = document.getString("selectEndTime")
                                 val selectDaysFromFirestore = document.getString("selectDays")
 
-                                // Agora você tem os valores de selectBeginTime e selectEndTime do Firestore
-                                // Você pode passá-los para CameraActivity
-                                val intent = Intent(requireContext(), CameraActivity::class.java)
-                                intent.putExtra("groupId", enteredToken)
-                                intent.putExtra("personName", personName)
-                                intent.putExtra("photoName", photoName)
-                                intent.putExtra("selectBeginTime", selectBeginTimeFromFirestore)
-                                intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
-                                intent.putExtra("selectDays", selectDaysFromFirestore)
+                                // Verifique se o dia atual já terminou com base no endTime do Firestore
+                                if (isCurrentTimeAfterEndTime(selectEndTimeFromFirestore)) {
+                                    // O dia atual terminou, então remova o URI da foto dos SharedPreferences
+                                    clearPhotoUriFromSharedPreferences(code)
 
-                                // Após verificar que o código do grupo existe e obter o ID do grupo
-                                val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
-                                val groupId = enteredToken
-
-                                // Verificar se há um URI de foto associado ao grupo nos SharedPreferences
-                                val savedPhotoUriString = sharedPreferences.getString(groupId, null)
-
-                                if (savedPhotoUriString != null) {
-                                    val savedPhotoUri = Uri.parse(savedPhotoUriString)
-                                    // Passar o URI da foto para a CameraActivity
-                                    intent.putExtra("photoUri", savedPhotoUri.toString())
+                                    // Além disso, você pode excluir qualquer URI da foto no Firestore se necessário
+                                    // clearPhotoUriFromFirestore(code)
                                 }
 
-                                startActivity(intent)
-                                dismiss()
+                                // Continuar com a lógica de verificar se há um URI de foto nos SharedPreferences
+                                val sharedPreferences = requireContext().getSharedPreferences(
+                                    "MyPreferences",
+                                    Context.MODE_PRIVATE
+                                )
+                                val photoUriString = sharedPreferences.getString(code, null)
 
-                                startActivity(intent)
-                                dismiss()
+                                // Verifique se a foto do usuário já existe no grupo
+                                val firestore = Firebase.firestore
+                                firestore.collection("photos")
+                                    .whereEqualTo("groupId", code)
+                                    .whereEqualTo("personName", personName)
+                                    .get()
+                                    .addOnSuccessListener { userPhotosQuerySnapshot ->
+                                        if (!userPhotosQuerySnapshot.isEmpty) {
+                                            // O usuário atual já tirou uma foto no grupo, redirecione para a GalleryActivity
+                                            val intent = Intent(requireContext(), GalleryActivity::class.java)
+                                            intent.putExtra("groupId", code)
+                                            intent.putExtra("personName", personName)
+                                            intent.putExtra("photoName", photoName)
+                                            startActivity(intent)
+                                        } else {
+                                            // O usuário atual não tirou uma foto anteriormente, redirecione-o para a CameraActivity
+                                            val intent = Intent(requireContext(), CameraActivity::class.java)
+                                            intent.putExtra("groupId", enteredToken)
+                                            intent.putExtra("personName", personName)
+                                            intent.putExtra("photoName", photoName)
+                                            intent.putExtra("selectBeginTime", selectBeginTimeFromFirestore)
+                                            intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
+                                            intent.putExtra("selectDays", selectDaysFromFirestore)
+                                            startActivity(intent)
+                                        }
+                                        dismiss()
+                                    }
                             } else {
                                 Toast.makeText(
                                     requireContext(),
@@ -251,44 +266,61 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                         }
                     }
                 } else {
-                    Toast.makeText(requireContext(), "You should insert a generated code", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "You should insert a generated code",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
+
             checkGroupsForAutoDeletion()
             return view
         }
-         fun checkGroupsForAutoDeletion() {
+        fun checkGroupsForAutoDeletion() {
             val db = FirebaseFirestore.getInstance()
             val collectionReference = db.collection("create")
 
-            // Data atual
+            val currentTime = Calendar.getInstance()
             val currentDate = Date()
 
             collectionReference.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     for (document in task.result) {
                         val timestamp = document.getLong("timesTamp")
+                        val selectBeginTime = document.getString("selectBeginTime")
+                        val selectEndTime = document.getString("selectEndTime")
                         val selectDays = document.getString("selectDays")
+                        val groupId = document.id
 
                         if (timestamp != null && selectDays != null) {
-                            // Calcular a data de criação do grupo
                             val creationDate = Date(timestamp)
-
-                            // Calcular a diferença em dias entre a data atual e a data de criação
                             val daysDifference = TimeUnit.MILLISECONDS.toDays(currentDate.time - creationDate.time)
-
-                            // Obter o número de dias a partir da função mapDaysToNumber
                             val numberOfDays = mapDaysToNumber(selectDays)
+                            val expirationDate = Calendar.getInstance()
+                            expirationDate.time = creationDate
+                            expirationDate.add(Calendar.DAY_OF_YEAR, numberOfDays.toInt())
 
-                            // Verificar se a diferença é maior ou igual ao número de dias em selectDays
                             if (daysDifference >= numberOfDays) {
-                                // Excluir o grupo
-                                val documentReference = collectionReference.document(document.id)
+                                // Se a data de expiração foi atingida, exclua o documento e marque as fotos como ocultas
+                                val documentReference = collectionReference.document(groupId)
                                 documentReference.delete()
                                     .addOnSuccessListener {
+                                        // Documento excluído com sucesso
+                                        markPhotosAsHidden(groupId)
                                     }
                                     .addOnFailureListener { e ->
-                                        Toast.makeText(requireContext(), "Error deleting group: $e", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(requireContext(), "Error deleting document: $e", Toast.LENGTH_SHORT).show()
+                                    }
+                            } else if (isCurrentTimeAfterBeginTime(selectBeginTime)) {
+                                // Se a data atual for posterior ao próximo selectBeginTime, atualize isDeleted
+                                val documentReference = collectionReference.document(groupId)
+                                documentReference.update("isDeleted", true)
+                                    .addOnSuccessListener {
+                                        // Atualização do campo isDeleted para true com sucesso
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(requireContext(), "Error updating isDeleted: $e", Toast.LENGTH_SHORT).show()
                                     }
                             }
                         }
@@ -299,6 +331,27 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             }
         }
 
+        private fun isCurrentTimeAfterBeginTime(beginTime: String?): Boolean {
+            if (beginTime != null) {
+                val currentTime = Calendar.getInstance()
+                val beginTimeParts = beginTime.split(":")
+                if (beginTimeParts.size == 2) {
+                    val beginHour = beginTimeParts[0].toInt()
+                    val beginMinute = beginTimeParts[1].toInt()
+
+                    // Configure a hora e o minuto de beginTime
+                    val beginCalendar = Calendar.getInstance()
+                    beginCalendar.set(Calendar.HOUR_OF_DAY, beginHour)
+                    beginCalendar.set(Calendar.MINUTE, beginMinute)
+                    beginCalendar.set(Calendar.SECOND, 0)
+
+                    return currentTime.after(beginCalendar)
+                }
+            }
+            return false
+        }
+
+
         fun mapDaysToNumber(daysString: String): Long {
             when (daysString) {
                 "1 Days" -> return 1
@@ -308,6 +361,65 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 "Unlimited" -> return Long.MAX_VALUE
                 else -> return 0
             }
+        }
+
+        private fun markPhotosAsHidden(groupId: String) {
+            // Acesse o Firestore e marque as fotos do grupo como ocultas
+            val firestore = FirebaseFirestore.getInstance()
+            val photosCollection = firestore.collection("photos")
+
+            photosCollection
+                .whereEqualTo("groupId", groupId)
+                .get()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        for (document in task.result) {
+                            // Marque cada foto como oculta no Firestore
+                            val docRef = photosCollection.document(document.id)
+                            docRef.update("isDeleted", true)
+                                .addOnSuccessListener {
+                                    // Foto marcada como oculta com sucesso
+                                }
+                                .addOnFailureListener { exception ->
+                                    // Trate a falha ao marcar a foto como oculta
+                                }
+                        }
+                    } else {
+                        Toast.makeText(
+                            requireContext(),
+                            "Error while marking photos as hidden: ${task.exception}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+        }
+
+        private fun isCurrentTimeAfterEndTime(endTime: String?): Boolean {
+            if (endTime != null) {
+                val currentTime = Calendar.getInstance()
+                val endTimeParts = endTime.split(":")
+                if (endTimeParts.size == 2) {
+                    val endHour = endTimeParts[0].toInt()
+                    val endMinute = endTimeParts[1].toInt()
+
+                    // Configure a hora e o minuto de endTime
+                    val endCalendar = Calendar.getInstance()
+                    endCalendar.set(Calendar.HOUR_OF_DAY, endHour)
+                    endCalendar.set(Calendar.MINUTE, endMinute)
+                    endCalendar.set(Calendar.SECOND, 0)
+
+                    return currentTime.after(endCalendar)
+                }
+            }
+            return false
+        }
+
+
+        private fun clearPhotoUriFromSharedPreferences(groupId: String) {
+            val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.remove(groupId)
+            editor.apply()
         }
     }
 

@@ -71,6 +71,25 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
         }
 
+        binding.edResetPassword.setOnClickListener {
+            val email = binding.edEmail.text.toString()
+
+            if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                // Enviar um e-mail para redefinição de senha
+                auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(requireContext(), "Password reset email sent.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to send password reset email.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } else {
+                Toast.makeText(requireContext(), "Please enter a valid email address.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
         binding.visibility.setOnClickListener {
             loginViewModel.changeVisibilityPassowrd()
         }

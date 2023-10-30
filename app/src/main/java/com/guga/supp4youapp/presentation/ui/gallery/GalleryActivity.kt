@@ -36,7 +36,6 @@ class GalleryActivity : AppCompatActivity() {
             }
         }
 
-
         val groupId = intent.getStringExtra("groupId")
         if (groupId != null) {
             fetchGroupName(groupId)
@@ -64,7 +63,6 @@ class GalleryActivity : AppCompatActivity() {
             }
     }
 
-
     private fun fetchPhotos(groupId: String) {
         val firestore = Firebase.firestore
 
@@ -73,11 +71,13 @@ class GalleryActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documents ->
                 val photoItems = mutableListOf<PhotoItem>()
+                val photosToDelete = mutableListOf<String>() // Lista de IDs de fotos a serem excluídas
+
                 for (document in documents) {
                     val photoUriString = document.getString("photoUri")
                     val isDeleted = document.getBoolean("isDeleted") ?: false // Obtém o status de exclusão
 
-                    if (!photoUriString.isNullOrBlank() && !isDeleted) {
+                    if (!photoUriString.isNullOrBlank()) {
                         val photoUri = Uri.parse(photoUriString)
                         val personName = document.getString("personName") ?: "Unknown User"
 
@@ -86,9 +86,29 @@ class GalleryActivity : AppCompatActivity() {
                             personName,
                             isDeleted // Define o status de exclusão no PhotoItem
                         )
-                        photoItems.add(photoItem)
+
+                        if (isDeleted) {
+                            // Se a foto estiver marcada como excluída, adicione-a à lista de fotos para exclusão
+                            photosToDelete.add(document.id)
+                        } else {
+                            // Adicione a foto à lista de fotos a serem exibidas
+                            photoItems.add(photoItem)
+                        }
                     }
                 }
+
+                // Exclua as fotos marcadas para exclusão do Firestore
+                for (photoId in photosToDelete) {
+                    val docRef = firestore.collection("photos").document(photoId)
+                    docRef.delete()
+                        .addOnSuccessListener {
+                            // Foto excluída com sucesso
+                        }
+                        .addOnFailureListener { exception ->
+                            // Trate a falha na exclusão da foto
+                        }
+                }
+
                 galleryAdapter.submitList(photoItems)
                 binding.swipeRefreshLayout.isRefreshing = false
             }
@@ -109,3 +129,4 @@ class GalleryActivity : AppCompatActivity() {
         galleryAdapter.submitList(initialPhotoList)
     }
 }
+

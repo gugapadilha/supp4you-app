@@ -267,6 +267,7 @@ class CameraActivity : AppCompatActivity() {
 
                         // Chamamos o método para fazer o upload da foto para o Firebase Storage
                         uploadPhoto(takenPhotoUri)
+                        savePhotoUriToSharedPreferences(takenPhotoUri, groupId)
 
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
@@ -278,7 +279,12 @@ class CameraActivity : AppCompatActivity() {
             })
     }
 
-
+    private fun savePhotoUriToSharedPreferences(photoUri: Uri, groupId: String) {
+        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(groupId, photoUri.toString())
+        editor.apply()
+    }
 
     private fun updateTimestamp() {
         // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
@@ -609,6 +615,7 @@ class CameraActivity : AppCompatActivity() {
             "photoUri" to photoUri,
             "groupId" to groupId,
             "personName" to name,
+            "isDeleted" to false
             // Outros dados associados à foto, se houver
         )
 
