@@ -18,12 +18,12 @@
   + Google auth.
   
   <strong>Technologies Used: </strong>
-   + Kotlin
-   + Android
-   + XML
-   + Jacoco
-   + Unit Tests
-   + Integration Tests
+   + Kotlin;
+   + Android;
+   + XML;
+   + Jacoco;
+   + Unit Tests;
+   + Integration Tests.
   
    ### Images Mobile Project:
   
