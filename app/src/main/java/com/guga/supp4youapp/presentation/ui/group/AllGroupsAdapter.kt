@@ -12,6 +12,9 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
     inner class GroupViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val groupNameTextView: TextView = itemView.findViewById(R.id.tv_group_name)
         val groupCodeTextView: TextView = itemView.findViewById(R.id.tv_group_code)
+        val beginTime: TextView = itemView.findViewById(R.id.tv_begin_time)
+        val endTime: TextView = itemView.findViewById(R.id.tv_end_time)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
@@ -25,10 +28,9 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
         holder.groupNameTextView.text = "Group: " + group.groupName
         holder.groupCodeTextView.text = "Code: " +String.format("%04d", group.groupCode)
 
-
-                // Define um OnClickListener para lidar com a ação de clicar em um grupo
+        // Define um OnClickListener para lidar com a ação de clicar em um grupo
         holder.itemView.setOnClickListener {
-            // Implemente a ação que você deseja quando um grupo é clicado
+        // Implemente a ação que você deseja quando um grupo é clicado
         }
     }
 
