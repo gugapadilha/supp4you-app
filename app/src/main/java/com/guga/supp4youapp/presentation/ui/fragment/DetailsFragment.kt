@@ -251,7 +251,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                     .get()
                                     .addOnSuccessListener { userPhotosQuerySnapshot ->
                                         if (!userPhotosQuerySnapshot.isEmpty) {
-                                            GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt()))
+                                            GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt(), beginTime = selectBeginTimeFromFirestore!!, endTime = selectEndTimeFromFirestore!!))
                                             GroupManager.saveEnteredGroups(requireContext())
                                             // O usuário atual já tirou uma foto no grupo, redirecione para a GalleryActivity
                                             val intent = Intent(
@@ -263,7 +263,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                             intent.putExtra("photoName", photoName)
                                             startActivity(intent)
                                         } else {
-                                            GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt()))
+                                            GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt(), beginTime = selectBeginTimeFromFirestore!!, endTime = selectEndTimeFromFirestore!!))
                                             GroupManager.saveEnteredGroups(requireContext())
                                             // O usuário atual não tirou uma foto anteriormente, redirecione-o para a CameraActivity
                                             val intent =

@@ -80,16 +80,20 @@ class GalleryActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     val groupName = document.getString("groupName")
+                    val beginTime = document.getString("selectBeginTime")
+                    val endTime = document.getString("selectEndTime")
 
                     // Salva o nome e o código do grupo nos SharedPreferences
                     val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.putString("groupName", groupName)
                     editor.putString("groupCode", groupId)
+                    editor.putString("selectBeginTime", beginTime)
+                    editor.putString("selectEndTime", endTime)
                     editor.apply()
 
                     // Adiciona o grupo ao GroupManager se necessário
-                    GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = groupId!!.toInt()))
+                    GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = groupId!!.toInt(), beginTime = beginTime!!, endTime = endTime!!))
                     GroupManager.saveEnteredGroups(this)
                 } else {
                     // Trate o caso em que o documento não existe

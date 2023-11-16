@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.guga.supp4youapp.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.Adapter<AllGroupsAdapter.GroupViewHolder>() {
 
@@ -27,6 +29,31 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
 
         holder.groupNameTextView.text = "Group: " + group.groupName
         holder.groupCodeTextView.text = "Code: " +String.format("%04d", group.groupCode)
+        // Formatar o horário de início
+        if (!group.beginTime.isNullOrEmpty()) {
+            try {
+                val beginTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val beginTimeDate = beginTimeFormat.parse(group.beginTime)
+                holder.beginTime.text = beginTimeFormat.format(beginTimeDate)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else {
+            holder.beginTime.text = "00:00"
+        }
+
+        // Formatar o horário de término
+        if (!group.endTime.isNullOrEmpty()) {
+            try {
+                val endTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val endTimeDate = endTimeFormat.parse(group.endTime)
+                holder.endTime.text = endTimeFormat.format(endTimeDate)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        } else {
+            holder.endTime.text = "00:00"
+        }
 
         // Define um OnClickListener para lidar com a ação de clicar em um grupo
         holder.itemView.setOnClickListener {
