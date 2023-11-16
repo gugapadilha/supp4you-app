@@ -1,6 +1,7 @@
 package com.guga.supp4youapp.presentation.ui.group
 
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.guga.supp4youapp.databinding.ActivityAllGroupsBinding
@@ -29,5 +30,22 @@ class AllGroupsActivity : AppCompatActivity() {
         binding.backIcon.setOnClickListener {
             onBackPressed()
         }
+
+        binding.helpButton.setOnClickListener{
+            showHelpDialog()
+        }
+    }
+    private fun showHelpDialog() {
+        val dialogMessage = "Here you can see all the groups that you already join and they respective details!"
+
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Tips for you!")
+            .setMessage(dialogMessage)
+            .setPositiveButton("Continue") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        alertDialog.show()
     }
 }
