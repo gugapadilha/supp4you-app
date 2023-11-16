@@ -95,7 +95,15 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
             // Iniciar o processo de login com o Google
             signInWithGoogle()
+
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.progressBar.visibility = View.GONE
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

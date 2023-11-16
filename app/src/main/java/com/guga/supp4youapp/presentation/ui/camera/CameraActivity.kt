@@ -48,12 +48,12 @@ class CameraActivity : AppCompatActivity() {
     private var selectEndTime: String? = null
     private var timeStamp: Long? = 0
     private var photoTaken = false
-    private var isPhotoBeingTaken = false
+    var isPhotoBeingTaken = false
     private var lastTakenPhotoUri: Uri? = null
     private var countdownTimer: CountDownTimer? = null
     private var remainingTimeMillis: Long = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -210,7 +210,7 @@ class CameraActivity : AppCompatActivity() {
     }
 
 
-    private fun takePhoto(enteredToken: String?) {
+    fun takePhoto(enteredToken: String?) {
         if (isPhotoBeingTaken) {
             // Já estamos tirando uma foto, não faça nada
             return

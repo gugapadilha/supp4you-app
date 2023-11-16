@@ -132,7 +132,7 @@
     <androidx.constraintlayout.utils.widget.MotionButton
         android:id="@+id/tv_createspace"
         android:layout_width="300dp"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:backgroundTint="@color/home"
         android:text="@string/create_space"
@@ -148,16 +148,30 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="20dp"
         android:backgroundTint="@color/home"
         android:text="@string/login_space"
         android:textColor="@color/white"
         app:cornerRadius="5dp"
         app:iconGravity="textStart"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/tv_createspace"
         app:layout_constraintStart_toStartOf="@+id/tv_createspace"
         app:layout_constraintTop_toBottomOf="@+id/tv_createspace" />
+
+    <androidx.constraintlayout.utils.widget.MotionButton
+        android:id="@+id/tv_seespace"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@color/home"
+        android:text="See space"
+        android:textColor="@color/white"
+        app:cornerRadius="5dp"
+        app:iconGravity="textStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tv_loginspace"
+        app:layout_constraintStart_toStartOf="@+id/tv_loginspace"
+        app:layout_constraintTop_toBottomOf="@+id/tv_loginspace" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -36,6 +36,11 @@
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
             android:grantUriPermissions="true"
             />
+        <activity android:name=".presentation.ui.group.AllGroupsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"
+            android:grantUriPermissions="true"
+            />
         <activity android:name=".presentation.ui.gallery.GalleryActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"

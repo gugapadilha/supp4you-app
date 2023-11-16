@@ -1,5 +1,6 @@
 package com.guga.supp4youapp.presentation.ui.gallery
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.databinding.ActivityGalleryBinding
+import com.guga.supp4youapp.presentation.ui.group.GroupManager
+import com.guga.supp4youapp.presentation.ui.group.GroupModel
 
 class GalleryActivity : AppCompatActivity() {
 
@@ -33,6 +36,7 @@ class GalleryActivity : AppCompatActivity() {
             if (groupId != null) {
                 fetchGroupName(groupId)
                 fetchPhotos(groupId)
+
             }
         }
 
@@ -40,7 +44,11 @@ class GalleryActivity : AppCompatActivity() {
         if (groupId != null) {
             fetchGroupName(groupId)
             fetchPhotos(groupId)
+
+            saveGroupToSharedPreferences(groupId)
+
         }
+
     }
 
     private fun fetchGroupName(groupId: String) {
@@ -54,6 +62,35 @@ class GalleryActivity : AppCompatActivity() {
                     val groupName = document.getString("groupName")
                     binding.groupCode.text = "Code: $groupId" // Atualiza o TextView com o groupId
                     binding.tvGroup.text = groupName
+                } else {
+                    // Trate o caso em que o documento não existe
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Trate a falha na consulta ao Firestore
+            }
+    }
+
+    private fun saveGroupToSharedPreferences(groupId: String) {
+        val firestore = Firebase.firestore
+
+        firestore.collection("create")
+            .document(groupId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val groupName = document.getString("groupName")
+
+                    // Salva o nome e o código do grupo nos SharedPreferences
+                    val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("groupName", groupName)
+                    editor.putString("groupCode", groupId)
+                    editor.apply()
+
+                    // Adiciona o grupo ao GroupManager se necessário
+                    GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = groupId!!.toInt()))
+                    GroupManager.saveEnteredGroups(this)
                 } else {
                     // Trate o caso em que o documento não existe
                 }
@@ -117,6 +154,7 @@ class GalleryActivity : AppCompatActivity() {
                 binding.swipeRefreshLayout.isRefreshing = false
             }
     }
+
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()

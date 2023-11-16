@@ -108,6 +108,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             // Iniciar o processo de login com o Google
             signInWithGoogle()
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.progressBar.visibility = View.GONE
+
     }
 
     private fun signInWithGoogle() {

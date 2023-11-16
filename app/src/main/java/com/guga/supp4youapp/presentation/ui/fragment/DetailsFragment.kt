@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,10 @@ import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentDetailsBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
 import com.guga.supp4youapp.presentation.ui.gallery.GalleryActivity
-import kotlinx.coroutines.withContext
+import com.guga.supp4youapp.presentation.ui.group.AllGroupsActivity
+import com.guga.supp4youapp.presentation.ui.group.GroupManager
+import com.guga.supp4youapp.presentation.ui.group.GroupModel
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -99,6 +103,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             findNavController().navigate(R.id.action_detailsFragment_to_accessFragment, bundle)
         }
 
+        binding.tvSeespace.setOnClickListener {
+            GroupManager.loadEnteredGroups(requireContext())
+
+            val intent = Intent(requireContext(), AllGroupsActivity::class.java)
+            intent.putExtra("personName", personName)
+            startActivity(intent)
+        }
+
 
         binding.back.setOnClickListener {
             showSignOutConfirmationDialog()
@@ -108,6 +120,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             showSignOutConfirmationDialog()
         }
     }
+
 
     fun showSignOutConfirmationDialog() {
         isSignOutDialogShowing = true
@@ -180,6 +193,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         private var enteredToken: String? = null
         private var personName: String? = null
         private var photoName: String? = null
+        private var lastMarkedBeginTime: Long? = 0L
 
         override fun onCreateView(
             inflater: LayoutInflater,
@@ -202,10 +216,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                         if (task.isSuccessful) {
                             val document = task.result
                             if (document.exists()) {
-                                val selectBeginTimeFromFirestore =
-                                    document.getString("selectBeginTime")
+                                val selectBeginTimeFromFirestore = document.getString("selectBeginTime")
                                 val selectEndTimeFromFirestore = document.getString("selectEndTime")
                                 val selectDaysFromFirestore = document.getString("selectDays")
+                                val groupName = document.getString("groupName")
+                                val createTimestamp = document.getLong("timesTamp")
 
                                 // Verifique se o dia atual já terminou com base no endTime do Firestore
                                 if (isCurrentTimeAfterEndTime(selectEndTimeFromFirestore)) {
@@ -214,6 +229,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
                                     // Além disso, você pode excluir qualquer URI da foto no Firestore se necessário
                                     // clearPhotoUriFromFirestore(code)
+                                }
+                                if (selectBeginTimeFromFirestore != null) {
+                                    checkAndMarkPhotosAsDeleted(code, selectBeginTimeFromFirestore, personName,
+                                        createTimestamp!!
+                                    )
                                 }
 
                                 // Continuar com a lógica de verificar se há um URI de foto nos SharedPreferences
@@ -231,20 +251,34 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                     .get()
                                     .addOnSuccessListener { userPhotosQuerySnapshot ->
                                         if (!userPhotosQuerySnapshot.isEmpty) {
+                                            GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt()))
+                                            GroupManager.saveEnteredGroups(requireContext())
                                             // O usuário atual já tirou uma foto no grupo, redirecione para a GalleryActivity
-                                            val intent = Intent(requireContext(), GalleryActivity::class.java)
+                                            val intent = Intent(
+                                                requireContext(),
+                                                GalleryActivity::class.java
+                                            )
                                             intent.putExtra("groupId", code)
                                             intent.putExtra("personName", personName)
                                             intent.putExtra("photoName", photoName)
                                             startActivity(intent)
                                         } else {
+                                            GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt()))
+                                            GroupManager.saveEnteredGroups(requireContext())
                                             // O usuário atual não tirou uma foto anteriormente, redirecione-o para a CameraActivity
-                                            val intent = Intent(requireContext(), CameraActivity::class.java)
+                                            val intent =
+                                                Intent(requireContext(), CameraActivity::class.java)
                                             intent.putExtra("groupId", enteredToken)
                                             intent.putExtra("personName", personName)
                                             intent.putExtra("photoName", photoName)
-                                            intent.putExtra("selectBeginTime", selectBeginTimeFromFirestore)
-                                            intent.putExtra("selectEndTime", selectEndTimeFromFirestore)
+                                            intent.putExtra(
+                                                "selectBeginTime",
+                                                selectBeginTimeFromFirestore
+                                            )
+                                            intent.putExtra(
+                                                "selectEndTime",
+                                                selectEndTimeFromFirestore
+                                            )
                                             intent.putExtra("selectDays", selectDaysFromFirestore)
                                             startActivity(intent)
                                         }
@@ -277,6 +311,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             checkGroupsForAutoDeletion()
             return view
         }
+
         fun checkGroupsForAutoDeletion() {
             val db = FirebaseFirestore.getInstance()
             val collectionReference = db.collection("create")
@@ -286,6 +321,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
             collectionReference.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    1
                     for (document in task.result) {
                         val timestamp = document.getLong("timesTamp")
                         val selectBeginTime = document.getString("selectBeginTime")
@@ -295,7 +331,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
                         if (timestamp != null && selectDays != null) {
                             val creationDate = Date(timestamp)
-                            val daysDifference = TimeUnit.MILLISECONDS.toDays(currentDate.time - creationDate.time)
+                            val daysDifference =
+                                TimeUnit.MILLISECONDS.toDays(currentDate.time - creationDate.time)
                             val numberOfDays = mapDaysToNumber(selectDays)
                             val expirationDate = Calendar.getInstance()
                             expirationDate.time = creationDate
@@ -310,7 +347,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                         markPhotosAsHidden(groupId)
                                     }
                                     .addOnFailureListener { e ->
-                                        Toast.makeText(requireContext(), "Error deleting document: $e", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Error deleting document: $e",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             } else if (isCurrentTimeAfterBeginTime(selectBeginTime)) {
                                 // Se a data atual for posterior ao próximo selectBeginTime, atualize isDeleted
@@ -320,14 +361,113 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                         // Atualização do campo isDeleted para true com sucesso
                                     }
                                     .addOnFailureListener { e ->
-                                        Toast.makeText(requireContext(), "Error updating isDeleted: $e", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Error updating isDeleted: $e",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             }
                         }
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Error while searching group: ${task.exception}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Error while searching group: ${task.exception}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+            }
+        }
+
+        private fun isAfterLastMarkedBeginTime(beginTime: String?, creationTimestamp: Long): Boolean {
+            if (beginTime != null) {
+                val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+                val currentTime = Calendar.getInstance().time
+                val beginTimeDate = formatter.parse(beginTime)
+
+                val creationTime = Calendar.getInstance()
+                creationTime.timeInMillis = creationTimestamp
+
+                return currentTime.after(beginTimeDate) && currentTime.after(creationTime.time)
+            }
+            return false
+        }
+
+        fun checkAndMarkPhotosAsDeleted(groupId: String, selectBeginTime: String, personName: String?, createTimestamp: Long) {
+            val currentTime = Calendar.getInstance()
+
+            val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val beginTimeDate = Calendar.getInstance().apply {
+                time = Date()
+                val beginTimeParts = selectBeginTime.split(":")
+                if (beginTimeParts.size == 2) {
+                    set(Calendar.HOUR_OF_DAY, beginTimeParts[0].toInt())
+                    set(Calendar.MINUTE, beginTimeParts[1].toInt())
+                    set(Calendar.SECOND, 0)
+                }
+            }.time
+
+            // Obtenha o número de dias restantes com base em `selectDays`
+            val remainingDays = getRemainingDaysFromSelectDays()
+
+            val tomorrow = Calendar.getInstance()
+            tomorrow.add(Calendar.DAY_OF_YEAR, remainingDays.toInt())
+            val tomorrowStart = Calendar.getInstance()
+            tomorrowStart.time = tomorrow.time
+            tomorrowStart.set(Calendar.HOUR_OF_DAY, 0)
+            tomorrowStart.set(Calendar.MINUTE, 0)
+
+            Log.d("MyApp", "currentTime: $currentTime")
+            Log.d("MyApp", "beginTimeDate: $beginTimeDate")
+            Log.d("MyApp", "currentTime.before(beginTimeDate): ${currentTime.before(beginTimeDate)}")
+            Log.d("MyApp", "currentTime.before(beginTimeDate): $selectBeginTime")
+
+            if (isAfterNextBeginTime(selectBeginTime, tomorrowStart.time)) {
+                Log.d("MyApp", "Marking photos as hidden for groupId: $groupId")
+                markPhotosAsHidden(groupId)
+            }
+
+
+        }
+        fun isAfterNextBeginTime(selectBeginTime: String, beginTimeDate: Date): Boolean {
+            val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val currentTime = Calendar.getInstance()
+
+            // Crie uma cópia da data atual para manipulação
+            val currentDate = Calendar.getInstance()
+            currentDate.time = currentTime.time
+
+            // Configure a hora do próximo beginTime na cópia da data atual
+            val beginTimeParts = selectBeginTime.split(":")
+            if (beginTimeParts.size == 2) {
+                currentDate.set(Calendar.HOUR_OF_DAY, beginTimeParts[0].toInt())
+                currentDate.set(Calendar.MINUTE, beginTimeParts[1].toInt())
+                currentDate.set(Calendar.SECOND, 0)
+            }
+
+            // Compare as datas considerando também as horas
+            return currentTime.after(currentDate.time) && currentTime.before(beginTimeDate)
+        }
+
+        fun getRemainingDaysFromSelectDays(): Long {
+            // Você precisa implementar a lógica para calcular os dias restantes com base em `selectDays`
+            // Isso depende de como `selectDays` é configurado, você pode mapear as opções para números de dias.
+            // Vou adicionar um exemplo simples aqui.
+
+            val sharedPreferences = requireContext().getSharedPreferences(
+                "MyPreferences",
+                Context.MODE_PRIVATE
+            )
+            val selectDaysString = sharedPreferences.getString("selectDays", "1 Days")
+
+            return when (selectDaysString) {
+                "1 Days" -> 1
+                "3 Days" -> 3
+                "7 Days" -> 7
+                "30 Days" -> 30
+                "Unlimited" -> Long.MAX_VALUE
+                else -> 0
             }
         }
 
