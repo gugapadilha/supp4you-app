@@ -1,6 +1,5 @@
 package com.guga.supp4youapp.presentation.ui.fragment
 
-import Validator.validateCode
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +10,6 @@ import androidx.fragment.app.Fragment
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.databinding.FragmentGenerateBinding
 import com.guga.supp4youapp.presentation.ui.camera.CameraActivity
-import java.security.MessageDigest
 
 class GenerateFragment : Fragment(R.layout.fragment_generate) {
 
@@ -47,8 +45,8 @@ class GenerateFragment : Fragment(R.layout.fragment_generate) {
         binding.tvContinue.setOnClickListener {
             spaceId?.let { id ->
                 val intent = Intent(requireContext(), CameraActivity::class.java)
-                intent.putExtra("groupId", id) // Passing ID to CameraActivity
-                intent.putExtra("personName", personName) // Passing the name to CameraActivity
+                intent.putExtra("groupId", id)
+                intent.putExtra("personName", personName)
                 intent.putExtra("groupName", groupName)
                 intent.putExtra("selectDays", selectedDays)
                 intent.putExtra("selectBeginTime", selectBeginTime)

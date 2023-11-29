@@ -48,12 +48,12 @@ class CameraActivity : AppCompatActivity() {
     private var selectEndTime: String? = null
     private var timeStamp: Long? = 0
     private var photoTaken = false
-    private var isPhotoBeingTaken = false
+    var isPhotoBeingTaken = false
     private var lastTakenPhotoUri: Uri? = null
     private var countdownTimer: CountDownTimer? = null
     private var remainingTimeMillis: Long = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewBinding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(viewBinding.root)
@@ -76,14 +76,9 @@ class CameraActivity : AppCompatActivity() {
         val photoUri = intent.getStringExtra("photoUri")
         if (photoUri != null) {
             val savedPhotoUri = Uri.parse(photoUri)
-            // Carregue o URI da foto na ImageView (photoImageView)
-            // Certifique-se de que photoImageView seja visível
             viewBinding.photoImageView.visibility = View.VISIBLE
-            // Use alguma biblioteca de carregamento de imagem, como Glide ou Picasso, para carregar a imagem na ImageView
-            // Exemplo com Glide:
             Glide.with(this).load(savedPhotoUri).into(viewBinding.photoImageView)
         } else {
-            // Caso contrário, a ImageView deve permanecer vazia
             viewBinding.photoImageView.visibility = View.GONE
         }
 
@@ -116,12 +111,9 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.continueButton.setOnClickListener {
             if (photoTaken) {
-                // Verifique se o horário atual está dentro do intervalo permitido
                 if (isCurrentTimeWithinInterval(selectBeginTime!!, selectEndTime!!)) {
-                    // Defina a cor cinza para a ProgressBar
-                    val grayColor = ContextCompat.getColor(this, R.color.gray_200) // Substitua R.color.gray pela sua cor cinza
+                    val grayColor = ContextCompat.getColor(this, R.color.gray_200)
 
-                    // Configure a cor da ProgressBar
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         viewBinding.progressBar.indeterminateTintList = ColorStateList.valueOf(grayColor)
                     } else {
@@ -148,7 +140,6 @@ class CameraActivity : AppCompatActivity() {
             }
         }
         if (savedInstanceState != null) {
-            // Restaurar a URI da foto do estado anterior, se existir
             takenPhotoUri = savedInstanceState.getParcelable(SAVED_INSTANCE_STATE_URI) ?: Uri.EMPTY
             if (takenPhotoUri != Uri.EMPTY) {
                 showPhoto(takenPhotoUri)
@@ -158,13 +149,10 @@ class CameraActivity : AppCompatActivity() {
 
         viewBinding.reshot.setOnClickListener {
             if (photoTaken) {
-                // Oculte a foto
                 hidePhoto()
 
-                // Defina photoTaken como falso para permitir tirar uma nova foto
                 photoTaken = false
 
-                // Exclua a foto anterior do armazenamento
                 lastTakenPhotoUri?.let { uri ->
                     deletePhotoFromStorage(uri)
                     lastTakenPhotoUri = null
@@ -175,14 +163,12 @@ class CameraActivity : AppCompatActivity() {
         groupId = intent.getStringExtra("groupId") ?: ""
         name = intent.getStringExtra("personName").toString()
 
-        // Recupere o nome do grupo usando o groupId
         fetchGroupName(groupId)
 
         viewBinding.takeShotButton.setOnClickListener {
             if (!photoTaken) {
                 takePhoto(enteredToken)
             } else {
-                // Se uma foto já foi tirada, apenas oculte a foto anterior
                 hidePhoto()
             }
         }
@@ -195,7 +181,6 @@ class CameraActivity : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                // Este método será chamado quando o contador regressivo for concluído, se necessário
             }
         }
         countdownTimer?.start()
@@ -205,14 +190,11 @@ class CameraActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        // Salvar a URI da foto no estado da instância
         outState.putParcelable(SAVED_INSTANCE_STATE_URI, takenPhotoUri)
     }
 
-
-    private fun takePhoto(enteredToken: String?) {
+    fun takePhoto(enteredToken: String?) {
         if (isPhotoBeingTaken) {
-            // Já estamos tirando uma foto, não faça nada
             return
         }
 
@@ -220,13 +202,10 @@ class CameraActivity : AppCompatActivity() {
             deletePhotoFromStorage(lastTakenPhotoUri!!)
         }
 
-        // Defina isPhotoBeingTaken como true para evitar que outra foto seja tirada até que a atual seja salva
         isPhotoBeingTaken = true
 
-        // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
-        // Create time stamped name and MediaStore entry.
         val photoName = UUID.randomUUID().toString()
 
         val contentValues = ContentValues().apply {
@@ -237,65 +216,58 @@ class CameraActivity : AppCompatActivity() {
             }
         }
 
-        // Create output options object which contains file + metadata
         val outputOptions = ImageCapture.OutputFileOptions.Builder(
             contentResolver, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues
         ).build()
-
-        // Resto do código para tirar a foto...
 
         imageCapture.takePicture(outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    // Lida com o erro
-
-                    // Defina isPhotoBeingTaken como false em caso de erro
                     isPhotoBeingTaken = false
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
                     savedUri?.let {
-                        // Atualize takenPhotoUri com a URI da nova foto
                         takenPhotoUri = savedUri
                         showPhoto(takenPhotoUri)
                         photoTaken = true
 
-                        // Atualize lastTakenPhotoUri com a URI da nova foto
                         lastTakenPhotoUri = takenPhotoUri
 
-                        // Chamamos o método para fazer o upload da foto para o Firebase Storage
                         uploadPhoto(takenPhotoUri)
+                        savePhotoUriToSharedPreferences(takenPhotoUri, groupId)
 
                         val msg = "Photo capture succeeded: ${output.savedUri}"
                         Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
                     }
 
-                    // Defina isPhotoBeingTaken como false após a foto ter sido salva
                     isPhotoBeingTaken = false
                 }
             })
     }
 
-
+    private fun savePhotoUriToSharedPreferences(photoUri: Uri, groupId: String) {
+        val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString(groupId, photoUri.toString())
+        editor.apply()
+    }
 
     private fun updateTimestamp() {
-        // Calcule o timestamp com base na diferença entre o horário atual e selectBeginTime
         val currentDateTime = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
-        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US) // Altere o formato para "HH:mm"
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
         val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val currentLocalTime = currentDateTime.toLocalTime()
         val secondsUntilBeginTime = Duration.between(currentLocalTime, beginTime).seconds
 
-        // Atualize o timestamp com base no tempo restante até o início do intervalo
         timeStamp = secondsUntilBeginTime
         if (remainingTimeMillis != 0L){
             updateCountdownTimers()
             countdownTimer?.start()
         }
     }
-
 
     private fun updateCountdownTimers() {
         val seconds = (timeStamp?.rem(60))?.toInt()
@@ -307,43 +279,35 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun updateRemainingTimeMillis() {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US) // Use "HH:mm" para um formato de 24 horas
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
 
-        // Obtenha a data e hora atual no fuso horário do Brasil (Horário de Brasília)
         val currentDateTimeInBrasilia = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"))
         val currentDateTime = LocalDateTime.ofInstant(currentDateTimeInBrasilia.toInstant(), ZoneId.of("America/Sao_Paulo"))
 
         val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val endTime = LocalTime.parse(selectEndTime, formatter)
 
-        // Crie um LocalDateTime para representar o início e o fim do intervalo
+        // Create LocalDateTime to know the beggining interval
         val beginDateTime = currentDateTime.withHour(beginTime.hour).withMinute(beginTime.minute)
         val endDateTime = currentDateTime.withHour(endTime.hour).withMinute(endTime.minute)
 
         if (currentDateTime.isBefore(beginDateTime)) {
-            // A hora atual está antes do início do intervalo
-            // Calcule o tempo restante até o início do intervalo
             val remainingDuration = Duration.between(currentDateTime, beginDateTime)
             remainingTimeMillis = remainingDuration.toMillis()
         } else if (currentDateTime.isAfter(endDateTime)) {
-            // A hora atual está após o final do intervalo, então calcule o tempo restante até o próximo dia
+            // Calculate time till next day
             val nextBeginDateTime = beginDateTime.plusDays(1)
             val remainingDuration = Duration.between(currentDateTime, nextBeginDateTime)
             remainingTimeMillis = remainingDuration.toMillis()
         } else {
-            // A hora atual está dentro do intervalo permitido
-            // Defina remainingTimeMillis como zero
             remainingTimeMillis = 0
         }
     }
 
-
     private fun updateCountdownTimer() {
         if (remainingTimeMillis == 0L) {
-            // Está dentro do intervalo permitido, exiba a mensagem desejada
             viewBinding.timestamp.text = "You are able to take photo!"
         } else if (remainingTimeMillis > 0) {
-            // Ainda não está dentro do intervalo permitido, continue mostrando o tempo restante
             val seconds = (remainingTimeMillis / 1000 % 60).toInt()
             val minutes = ((remainingTimeMillis / 1000) / 60 % 60).toInt()
             val hours = ((remainingTimeMillis / 1000) / 3600).toInt()
@@ -354,26 +318,19 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun isCurrentTimeWithinInterval(selectBeginTime: String, selectEndTime: String): Boolean {
-        // Obtém a hora atual no fuso horário do Brasil (Horário de Brasília)
         val currentTime = LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
 
-        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US) // Altere o formato para "HH:mm"
+        val formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.US)
 
         val beginTime = LocalTime.parse(selectBeginTime, formatter)
         val endTime = LocalTime.parse(selectEndTime, formatter)
 
-        // Verifique se o intervalo cruza a meia-noite
         if (beginTime.isAfter(endTime)) {
-            // Se o intervalo cruza a meia-noite, verifique se o horário atual é depois de beginTime
-            // OU antes de endTime para determinar se está dentro do intervalo.
             return currentTime.toLocalTime().isAfter(beginTime) || currentTime.toLocalTime().isBefore(endTime)
         } else {
-            // Se o intervalo não cruza a meia-noite, verifique se o horário atual está entre beginTime e endTime.
             return currentTime.toLocalTime().isAfter(beginTime) && currentTime.toLocalTime().isBefore(endTime)
         }
     }
-
-
 
     private fun toggleFlash() {
         isFlashEnabled = !isFlashEnabled
@@ -396,9 +353,7 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.photoImageView.setImageURI(takenPhotoUri)
         viewBinding.reshot.visibility = View.VISIBLE
         viewBinding.takeShotButton.visibility = View.GONE
-
     }
-
     private fun hidePhoto() {
         viewBinding.cameraPreview.visibility = View.VISIBLE
         viewBinding.photoImageView.visibility = View.GONE
@@ -407,9 +362,7 @@ class CameraActivity : AppCompatActivity() {
         viewBinding.flipCameraButton.visibility = View.VISIBLE
         viewBinding.reshot.visibility = View.GONE
         viewBinding.takeShotButton.visibility = View.VISIBLE
-
     }
-
 
     private fun applyFlash() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
@@ -465,58 +418,46 @@ class CameraActivity : AppCompatActivity() {
 
 
     private fun deletePhotoFromStorage(uri: Uri) {
-        // Extraia o caminho do URI
         val path = uri.path
 
         if (path != null) {
             val storage = Firebase.storage
             val storageRef = storage.reference
 
-            // O caminho do Firebase Storage é armazenado na URI, por exemplo: "/photos/12345.jpg"
             val photoRef = storageRef.child(path)
 
             photoRef.delete()
                 .addOnSuccessListener {
-                    // A foto anterior foi excluída com sucesso
                     Log.d(TAG, "Photo deleted successfully.")
-
-                    // Exclua a referência da foto do Firestore após a exclusão bem-sucedida do armazenamento
                     val photoUriString = uri.toString()
                     deletePhotoFromFirestore(photoUriString)
                 }
                 .addOnFailureListener { exception ->
-                    // Trate falhas na exclusão da foto anterior aqui
                     Log.e(TAG, "Error deleting photo: $exception")
                 }
         }
     }
 
-
     private fun deletePhotoFromFirestore(photoUri: String) {
         val firestore = Firebase.firestore
 
-        // Consulte o Firestore para encontrar o documento com base na photoUri
         firestore.collection("photos")
             .whereEqualTo("photoUri", photoUri)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    // Exclua o documento correspondente
                     firestore.collection("photos")
                         .document(document.id)
                         .delete()
                         .addOnSuccessListener {
-                            // Documento excluído com sucesso
                             Log.d(TAG, "Document deleted successfully.")
                         }
                         .addOnFailureListener { exception ->
-                            // Trate a falha na exclusão do documento
                             Log.e(TAG, "Error deleting document: $exception")
                         }
                 }
             }
             .addOnFailureListener { exception ->
-                // Trate a falha na consulta ao Firestore
                 Log.e(TAG, "Error querying Firestore: $exception")
             }
     }
@@ -554,7 +495,6 @@ class CameraActivity : AppCompatActivity() {
         val photoName = intent.getStringExtra("personName")
         val groupId = intent.getStringExtra("groupId")
 
-        // Consulta para definir isDeleted como true para fotos antigas do usuário
         val firestore = Firebase.firestore
         firestore.collection("photos")
             .whereEqualTo("groupId", groupId)
@@ -564,39 +504,31 @@ class CameraActivity : AppCompatActivity() {
                 for (document in documents) {
                     val oldPhotoUriString = document.getString("photoUri")
                     if (!oldPhotoUriString.isNullOrBlank()) {
-                        // Define isDeleted como true para fotos antigas do usuário
+                        // set isDeleted as true to delete photos
                         val docRef = firestore.collection("photos").document(document.id)
                         docRef.update("isDeleted", true)
                             .addOnSuccessListener {
-                                // isDeleted definido como true com sucesso
                             }
                             .addOnFailureListener { exception ->
-                                // Trate a falha ao definir isDeleted como true
                             }
                     }
                 }
 
-                // Crie uma referência no Firebase Storage com um nome único para a foto
+                // Unique reference firebase to each picture
                 val photoRef = storageRef.child("photos/${UUID.randomUUID()}/$photoName.jpg")
 
-                // Realize o upload da nova foto com isDeleted como false
+                // Always the new photo will be isDeleted = false
                 val uploadTask = photoRef.putFile(photoUri)
 
                 uploadTask.addOnSuccessListener { taskSnapshot ->
-                    // O upload da foto foi bem-sucedido, você pode obter a URL de download aqui
                     photoRef.downloadUrl.addOnSuccessListener { uri ->
-                        // A URI da foto que você deve salvar no Firestore
                         val photoUriString = uri.toString()
-
-                        // Agora você pode salvar esta URI no Firestore como fez antes
                         savePhotoUriToFirestore(photoUriString)
                     }
                 }.addOnFailureListener { exception ->
-                    // Trate falhas no upload aqui
                 }
             }
             .addOnFailureListener { exception ->
-                // Trate falhas na consulta ao Firestore
             }
     }
 
@@ -609,16 +541,16 @@ class CameraActivity : AppCompatActivity() {
             "photoUri" to photoUri,
             "groupId" to groupId,
             "personName" to name,
-            // Outros dados associados à foto, se houver
+            "isDeleted" to false
         )
 
         firestore.collection("photos")
             .add(photoData)
             .addOnSuccessListener { documentReference ->
-                // Foto e dados salvos com sucesso no Firestore
+                // Success
             }
             .addOnFailureListener { exception ->
-                // Trate a falha ao salvar no Firestore
+                // Failure
             }
     }
     private fun fetchGroupName(groupId: String) {
@@ -632,11 +564,9 @@ class CameraActivity : AppCompatActivity() {
                     val groupName = document.getString("groupName")
                     viewBinding.tvGroup.text = groupName
                 } else {
-                    // Trate o caso em que o documento não existe
                 }
             }
             .addOnFailureListener { exception ->
-                // Trate a falha na consulta ao Firestore
             }
     }
 
@@ -659,7 +589,6 @@ class CameraActivity : AppCompatActivity() {
 
         alertDialog.show()
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

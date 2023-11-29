@@ -1,4 +1,4 @@
-package com.guga.supp4youapp.presentation.ui.adapter
+package com.guga.supp4youapp.presentation.ui.fragment.adapter
 
 import android.content.Context
 import android.view.View

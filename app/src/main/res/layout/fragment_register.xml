@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:inputType="textNoSuggestions"
         android:hint="@string/write_your_email"
-        android:textColorHint="@color/white"
+        android:textColorHint="@color/sub_text"
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"

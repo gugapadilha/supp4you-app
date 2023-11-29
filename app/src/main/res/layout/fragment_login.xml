@@ -79,10 +79,10 @@
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/ed_email"
-            android:layout_width="250dp"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
             android:hint="@string/write_your_email"
-            android:textColorHint="@color/white"
+            android:textColorHint="@color/sub_text"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:inputType="textNoSuggestions"
@@ -100,7 +100,7 @@
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/ed_password"
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="@string/password"
@@ -111,6 +111,19 @@
             android:imeOptions="actionDone"
             app:layout_constraintStart_toStartOf="@+id/view"
             app:layout_constraintTop_toBottomOf="@+id/ed_email" />
+
+        <TextView
+            android:id="@+id/ed_reset_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:text="Forgot?"
+            android:textColor="@color/sub_text"
+            android:textColorHint="@color/sub_text"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/visibility"
+            app:layout_constraintEnd_toStartOf="@+id/visibility"
+            app:layout_constraintTop_toTopOf="@+id/visibility" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/visibility"

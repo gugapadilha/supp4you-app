@@ -71,6 +71,24 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
         }
 
+        binding.edResetPassword.setOnClickListener {
+            val email = binding.edEmail.text.toString()
+
+            if (email.isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                auth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(requireContext(), "Password reset email sent.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Failed to send password reset email.", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } else {
+                Toast.makeText(requireContext(), "Please enter a valid email address.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+
         binding.visibility.setOnClickListener {
             loginViewModel.changeVisibilityPassowrd()
         }
@@ -85,10 +103,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         binding.clBtnGoogle.setOnClickListener {
             binding.progressBar.visibility = View.VISIBLE
-
-            // Iniciar o processo de login com o Google
             signInWithGoogle()
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.progressBar.visibility = View.GONE
+
     }
 
     private fun signInWithGoogle() {
@@ -99,7 +122,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         val googleSignInClient = GoogleSignIn.getClient(requireContext(), googleSignInOptions)
 
-        // Solicitar seleção de conta
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }
@@ -117,23 +139,19 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     auth.signInWithCredential(credential)
                         .addOnCompleteListener(requireActivity()) { task ->
                             if (task.isSuccessful) {
-                                // Sucesso no login com o Google
                                 Toast.makeText(requireContext(), "Login with Google successful", Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(R.id.action_loginFragment_to_detailsFragment)
                             } else {
-                                // Falha no login com o Google
                                 Toast.makeText(requireContext(), "Failed to login with Google", Toast.LENGTH_SHORT).show()
                             }
                         }
                 }
             } catch (e: ApiException) {
-                // Falha na autenticação do Google
                 Log.w(TAG, "Google sign in failed", e)
                 Toast.makeText(requireContext(), "Google sign in failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
 
     fun changeIconVisibility(
         passwordField: AppCompatEditText,

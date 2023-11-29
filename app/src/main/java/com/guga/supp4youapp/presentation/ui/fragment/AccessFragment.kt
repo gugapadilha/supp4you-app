@@ -12,8 +12,11 @@ import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.R
 import com.guga.supp4youapp.data.remote.database.Space
 import com.guga.supp4youapp.databinding.FragmentAccessBinding
-import com.guga.supp4youapp.presentation.ui.adapter.CustomSpinnerAdapter
-import kotlinx.coroutines.*
+import com.guga.supp4youapp.presentation.ui.fragment.adapter.CustomSpinnerAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.*
 
@@ -38,14 +41,17 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
             val selectEndTime = endTime
             val currentTimestamp = System.currentTimeMillis()
 
+            if (selectBeginTime != null && selectEndTime != null && selectBeginTime >= selectEndTime) {
+                Toast.makeText(requireContext(), "End Time must be higher than begin Time", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             if (groupName.isNotEmpty() && selectBeginTime != null && selectEndTime != null) {
                 binding.progressBar.visibility = View.VISIBLE
 
-                // Gere o novo grupo ID
                 CoroutineScope(Dispatchers.Main).launch {
                     newGroupId = generateUniqueGroupID()
 
-                    // Crie o espaço com o novo código numérico, usando o newGroupId
                     val space = Space(
                         id = newGroupId!!.toLong(),
                         groupName = groupName,
@@ -55,14 +61,13 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
                         timesTamp = currentTimestamp
                     )
 
-                    // Adicione o espaço ao Firestore
                     val spaceId = createSpace(space)
 
                     delay(1000)
                     binding.progressBar.visibility = View.GONE
 
                     val bundle = Bundle()
-                    bundle.putString("spaceId", newGroupId) // Use o newGroupId como spaceId
+                    bundle.putString("spaceId", newGroupId)
                     bundle.putString("personName", personName)
                     bundle.putString("groupName", groupName)
                     bundle.putString("selectBeginTime", selectBeginTime)
@@ -132,7 +137,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
 
     suspend fun createSpace(space: Space): Long {
         newGroupId = generateUniqueGroupID()
-        // Defina o valor do campo "id" no documento do Firestore
+        // Define id field in firestore
         space.id = newGroupId!!.toLong()
         val result = createSpace.document(newGroupId!!).set(space).await()
         return newGroupId!!.toLong()
@@ -144,7 +149,7 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         while (true) {
             val numericValue = random.nextInt(10000)
             val groupId = String.format("%04d", numericValue)
-            // Verifique se o grupo já existe no Firestore
+            // Verify if group already exist in firestore
             val groupDoc = createSpace.document(groupId).get().await()
             if (!groupDoc.exists()) {
                 return groupId
@@ -156,8 +161,8 @@ class AccessFragment : Fragment(R.layout.fragment_access) {
         val timePickerDialog = TimePickerDialog(
             requireContext(),
             { _, hourOfDay, minute ->
-                val horaFormatada = String.format("%02d:%02d", hourOfDay, minute)
-                callback(horaFormatada)
+                val hourForm = String.format("%02d:%02d", hourOfDay, minute)
+                callback(hourForm)
             },
             selectedTime.get(Calendar.HOUR_OF_DAY),
             selectedTime.get(Calendar.MINUTE),

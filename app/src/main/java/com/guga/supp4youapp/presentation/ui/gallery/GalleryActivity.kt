@@ -1,5 +1,6 @@
 package com.guga.supp4youapp.presentation.ui.gallery
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.guga.supp4youapp.databinding.ActivityGalleryBinding
+import com.guga.supp4youapp.presentation.ui.group.GroupManager
+import com.guga.supp4youapp.presentation.ui.group.GroupModel
 
 class GalleryActivity : AppCompatActivity() {
 
@@ -36,11 +39,12 @@ class GalleryActivity : AppCompatActivity() {
             }
         }
 
-
         val groupId = intent.getStringExtra("groupId")
         if (groupId != null) {
             fetchGroupName(groupId)
             fetchPhotos(groupId)
+
+            saveGroupToSharedPreferences(groupId)
         }
     }
 
@@ -53,17 +57,43 @@ class GalleryActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     val groupName = document.getString("groupName")
-                    binding.groupCode.text = "Code: $groupId" // Atualiza o TextView com o groupId
+                    binding.groupCode.text = "Code: $groupId"
                     binding.tvGroup.text = groupName
-                } else {
-                    // Trate o caso em que o documento não existe
+                }
+            }
+            .addOnFailureListener { exception ->
+            }
+    }
+
+    private fun saveGroupToSharedPreferences(groupId: String) {
+        val firestore = Firebase.firestore
+
+        firestore.collection("create")
+            .document(groupId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    val groupName = document.getString("groupName")
+                    val beginTime = document.getString("selectBeginTime")
+                    val endTime = document.getString("selectEndTime")
+
+                    val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("groupName", groupName)
+                    editor.putString("groupCode", groupId)
+                    editor.putString("selectBeginTime", beginTime)
+                    editor.putString("selectEndTime", endTime)
+                    editor.apply()
+
+                    //Add to group manager to get the details
+                    GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = groupId!!.toInt(), beginTime = beginTime!!, endTime = endTime!!))
+                    GroupManager.saveEnteredGroups(this)
                 }
             }
             .addOnFailureListener { exception ->
                 // Trate a falha na consulta ao Firestore
             }
     }
-
 
     private fun fetchPhotos(groupId: String) {
         val firestore = Firebase.firestore
@@ -73,27 +103,39 @@ class GalleryActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documents ->
                 val photoItems = mutableListOf<PhotoItem>()
+                val photosToDelete = mutableListOf<String>()
+
                 for (document in documents) {
                     val photoUriString = document.getString("photoUri")
-                    val isDeleted = document.getBoolean("isDeleted") ?: false // Obtém o status de exclusão
+                    val isDeleted = document.getBoolean("isDeleted") ?: false
 
-                    if (!photoUriString.isNullOrBlank() && !isDeleted) {
+                    if (!photoUriString.isNullOrBlank()) {
                         val photoUri = Uri.parse(photoUriString)
                         val personName = document.getString("personName") ?: "Unknown User"
 
-                        val photoItem = PhotoItem(
-                            photoUri,
-                            personName,
-                            isDeleted // Define o status de exclusão no PhotoItem
-                        )
-                        photoItems.add(photoItem)
+                        val photoItem = PhotoItem(photoUri, personName, isDeleted)
+
+                        if (isDeleted) {
+                            photosToDelete.add(document.id)
+                        } else {
+                            photoItems.add(photoItem)
+                        }
                     }
                 }
+
+                for (photoId in photosToDelete) {
+                    val docRef = firestore.collection("photos").document(photoId)
+                    docRef.delete()
+                        .addOnSuccessListener {
+                        }
+                        .addOnFailureListener { exception ->
+                        }
+                }
+
                 galleryAdapter.submitList(photoItems)
                 binding.swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { exception ->
-                // Trate a falha ao recuperar as fotos do Firestore.
                 binding.swipeRefreshLayout.isRefreshing = false
             }
     }
@@ -109,3 +151,4 @@ class GalleryActivity : AppCompatActivity() {
         galleryAdapter.submitList(initialPhotoList)
     }
 }
+

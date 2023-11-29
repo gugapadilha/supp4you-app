@@ -1,6 +1,5 @@
 package com.guga.supp4youapp.di
 
-import com.guga.supp4youapp.data.remote.FakeApi
 import com.guga.supp4youapp.data.repository.LoginRepositoryImpl
 import com.guga.supp4youapp.domain.repository.UserRepository
 import com.guga.supp4youapp.domain.rest.RetrofitService
@@ -16,7 +15,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideUserRepository(api: FakeApi, retrofitService: RetrofitService): UserRepository{
-        return LoginRepositoryImpl(api,retrofitService)
+    fun provideUserRepository(retrofitService: RetrofitService): UserRepository{
+        return LoginRepositoryImpl(retrofitService)
     }
 }
