@@ -10,7 +10,6 @@ import com.guga.supp4youapp.databinding.ItemGalleryBinding
 
 class GalleryAdapter : ListAdapter<PhotoItem, GalleryAdapter.PhotoViewHolder>(PhotoDiffCallback()) {
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val binding = ItemGalleryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return PhotoViewHolder(binding)

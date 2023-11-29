@@ -10,9 +10,8 @@ object GroupManager {
     private const val PREF_ENTERED_GROUPS= "MyPreferences"
     private const val ENTERED_GROUPS_KEY = "MyPreferences"
 
-
     fun addGroup(group: GroupModel) {
-        // Verifica se o grupo já está na lista
+        // Verify if group already exist in list
         val isGroupAlreadyAdded = enteredGroups.any { it.groupCode == group.groupCode }
 
         if (!isGroupAlreadyAdded) {
@@ -31,7 +30,7 @@ object GroupManager {
         )
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-        // Converter a lista de grupos participados para uma string e salvar no SharedPreferences
+        // Converting list and saving
         val gruposString = Gson().toJson(enteredGroups)
         editor.putString(ENTERED_GROUPS_KEY, gruposString)
         editor.apply()

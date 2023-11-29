@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.firebase.FirebaseApp
+import com.guga.supp4youapp.presentation.ui.fragment.adapter.CustomSpinnerAdapter
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

@@ -1,4 +1,4 @@
-package com.untitledshows.pov.domain.repository
+package com.guga.supp4youapp.domain.repository
 
 import com.guga.supp4youapp.domain.model.Event
 import com.guga.supp4youapp.domain.model.User

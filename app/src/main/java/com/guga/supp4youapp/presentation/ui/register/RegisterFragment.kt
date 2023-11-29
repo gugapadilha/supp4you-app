@@ -45,7 +45,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             val password = binding.edPassword.text.toString()
 
             if (checkAllFields()) {
-                // Mostrar a ProgressBar antes de iniciar a criação da conta
                 binding.progressBar.visibility = View.VISIBLE
 
                 auth.createUserWithEmailAndPassword(username, password).addOnCompleteListener{
@@ -56,14 +55,12 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         Log.e("error: ", it.exception.toString())
                     }
 
-                    // Ocultar a ProgressBar após a conclusão da criação da conta
                     binding.progressBar.visibility = View.GONE
 
                     findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
                 }
             }
         }
-
 
         registerViewModel.visiblePassword.observe(viewLifecycleOwner) { visible ->
             changeIconVisibility(
@@ -90,14 +87,9 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         }
 
         binding.clBtnGoogle.setOnClickListener {
-            // Mostrar a ProgressBar antes de iniciar o processo de login com o Google
             binding.progressBar.visibility = View.VISIBLE
-
-            // Iniciar o processo de login com o Google
             signInWithGoogle()
-
         }
-
     }
 
     override fun onResume() {
@@ -119,23 +111,19 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     auth.signInWithCredential(credential)
                         .addOnCompleteListener(requireActivity()) { task ->
                             if (task.isSuccessful) {
-                                // Sucesso no login com o Google
                                 Toast.makeText(requireContext(), "Login with Google successful", Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
                             } else {
-                                // Falha no login com o Google
                                 Toast.makeText(requireContext(), "Failed to login with Google", Toast.LENGTH_SHORT).show()
                             }
                         }
                 }
             } catch (e: ApiException) {
-                // Falha na autenticação do Google
                 Log.w(TAG, "Google sign in failed", e)
                 Toast.makeText(requireContext(), "Google sign in failed", Toast.LENGTH_SHORT).show()
             }
         }
     }
-
 
     private fun signInWithGoogle() {
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -145,7 +133,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
         val googleSignInClient = GoogleSignIn.getClient(requireContext(), googleSignInOptions)
 
-        // Solicitar seleção de conta
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, RC_SIGN_IN)
     }

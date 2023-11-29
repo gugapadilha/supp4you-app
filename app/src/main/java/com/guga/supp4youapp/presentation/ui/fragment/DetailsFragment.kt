@@ -41,9 +41,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
     lateinit var auth: FirebaseAuth
     var isSignOutDialogShowing = false
     private var personName: String = ""
-    private var takenPhotoUri: Uri? = null // Adicione isso
-
-
+    private var takenPhotoUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +49,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
-        // Recupere o nome do usuário dos SharedPreferences
 
         return binding.root
     }
@@ -61,12 +58,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
 
         auth = Firebase.auth
 
-        // Recupere o nome do usuário dos SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val sharedPreferencess = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
 
         val savedName = sharedPreferences.getString("personName", "")
 
-        // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
         if (savedName != null && savedName.isNotEmpty()) {
             binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
         }
@@ -76,7 +72,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             if (name.isNotEmpty()) {
                 personName = name
 
-                // Salve o nome do usuário nos SharedPreferences
                 val editor = sharedPreferences.edit()
                 editor.putString("personName", personName)
                 editor.apply()
@@ -91,12 +86,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             val name = binding.textView.text.toString()
             personName = name
 
-            // Salve o nome do usuário nos SharedPreferences
             val editor = sharedPreferences.edit()
             editor.putString("personName", personName)
             editor.apply()
 
-            // Crie um Bundle para passar o nome para a AccessFragment
             val bundle = Bundle()
             bundle.putString("personName", personName)
 
@@ -168,7 +161,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val savedName = sharedPreferences.getString("personName", "")
 
-        // Se o nome do usuário foi salvo anteriormente, preencha o campo de texto
         if (savedName != null && savedName.isNotEmpty()) {
             binding.textView.text = Editable.Factory.getInstance().newEditable(savedName)
         }
@@ -184,7 +176,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         val args = Bundle()
         args.putString("personName", personName)
         args.putString("photoName", photoName)
-        args.putParcelable("takenPhotoUri", takenPhotoUri) // Configurar a URI aqui
+        args.putParcelable("takenPhotoUri", takenPhotoUri)
         bottomSheetFragment.arguments = args
 
         bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
@@ -222,13 +214,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                 val groupName = document.getString("groupName")
                                 val createTimestamp = document.getLong("timesTamp")
 
-                                // Verifique se o dia atual já terminou com base no endTime do Firestore
                                 if (isCurrentTimeAfterEndTime(selectEndTimeFromFirestore)) {
-                                    // O dia atual terminou, então remova o URI da foto dos SharedPreferences
                                     clearPhotoUriFromSharedPreferences(code)
-
-                                    // Além disso, você pode excluir qualquer URI da foto no Firestore se necessário
-                                    // clearPhotoUriFromFirestore(code)
                                 }
                                 if (selectBeginTimeFromFirestore != null) {
                                     checkAndMarkPhotosAsDeleted(code, selectBeginTimeFromFirestore, personName,
@@ -236,14 +223,13 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                     )
                                 }
 
-                                // Continuar com a lógica de verificar se há um URI de foto nos SharedPreferences
                                 val sharedPreferences = requireContext().getSharedPreferences(
                                     "MyPreferences",
                                     Context.MODE_PRIVATE
                                 )
                                 val photoUriString = sharedPreferences.getString(code, null)
 
-                                // Verifique se a foto do usuário já existe no grupo
+                                //Verify if user's photo exist in firestore
                                 val firestore = Firebase.firestore
                                 firestore.collection("photos")
                                     .whereEqualTo("groupId", code)
@@ -253,7 +239,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                         if (!userPhotosQuerySnapshot.isEmpty) {
                                             GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt(), beginTime = selectBeginTimeFromFirestore!!, endTime = selectEndTimeFromFirestore!!))
                                             GroupManager.saveEnteredGroups(requireContext())
-                                            // O usuário atual já tirou uma foto no grupo, redirecione para a GalleryActivity
+                                            //if current user already has taken a picture - GalleryActivity
                                             val intent = Intent(
                                                 requireContext(),
                                                 GalleryActivity::class.java
@@ -265,7 +251,7 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                         } else {
                                             GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = enteredToken!!.toInt(), beginTime = selectBeginTimeFromFirestore!!, endTime = selectEndTimeFromFirestore!!))
                                             GroupManager.saveEnteredGroups(requireContext())
-                                            // O usuário atual não tirou uma foto anteriormente, redirecione-o para a CameraActivity
+                                            //if current user didnt take his  picture - CameraActivity
                                             val intent =
                                                 Intent(requireContext(), CameraActivity::class.java)
                                             intent.putExtra("groupId", enteredToken)
@@ -316,7 +302,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             val db = FirebaseFirestore.getInstance()
             val collectionReference = db.collection("create")
 
-            val currentTime = Calendar.getInstance()
             val currentDate = Date()
 
             collectionReference.get().addOnCompleteListener { task ->
@@ -339,11 +324,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                             expirationDate.add(Calendar.DAY_OF_YEAR, numberOfDays.toInt())
 
                             if (daysDifference >= numberOfDays) {
-                                // Se a data de expiração foi atingida, exclua o documento e marque as fotos como ocultas
                                 val documentReference = collectionReference.document(groupId)
                                 documentReference.delete()
                                     .addOnSuccessListener {
-                                        // Documento excluído com sucesso
+                                        //Document deleted successfully
                                         markPhotosAsHidden(groupId)
                                     }
                                     .addOnFailureListener { e ->
@@ -354,11 +338,10 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                                         ).show()
                                     }
                             } else if (isCurrentTimeAfterBeginTime(selectBeginTime)) {
-                                // Se a data atual for posterior ao próximo selectBeginTime, atualize isDeleted
                                 val documentReference = collectionReference.document(groupId)
                                 documentReference.update("isDeleted", true)
                                     .addOnSuccessListener {
-                                        // Atualização do campo isDeleted para true com sucesso
+                                        //Field marked as true
                                     }
                                     .addOnFailureListener { e ->
                                         Toast.makeText(
@@ -408,7 +391,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 }
             }.time
 
-            // Obtenha o número de dias restantes com base em `selectDays`
             val remainingDays = getRemainingDaysFromSelectDays()
 
             val tomorrow = Calendar.getInstance()
@@ -451,10 +433,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
         }
 
         fun getRemainingDaysFromSelectDays(): Long {
-            // Você precisa implementar a lógica para calcular os dias restantes com base em `selectDays`
-            // Isso depende de como `selectDays` é configurado, você pode mapear as opções para números de dias.
-            // Vou adicionar um exemplo simples aqui.
-
             val sharedPreferences = requireContext().getSharedPreferences(
                 "MyPreferences",
                 Context.MODE_PRIVATE
@@ -462,10 +440,14 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             val selectDaysString = sharedPreferences.getString("selectDays", "1 Days")
 
             return when (selectDaysString) {
-                "1 Days" -> 1
-                "3 Days" -> 3
-                "7 Days" -> 7
-                "30 Days" -> 30
+                "1 Days" -> return 1
+                "2 Days" -> return 2
+                "3 Days" -> return 3
+                "5 Days" -> return 5
+                "7 Days" -> return 7
+                "30 Days" -> return 30
+                "60 Days" -> return 60
+                "90 Days" -> return 90
                 "Unlimited" -> Long.MAX_VALUE
                 else -> 0
             }
@@ -479,7 +461,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                     val beginHour = beginTimeParts[0].toInt()
                     val beginMinute = beginTimeParts[1].toInt()
 
-                    // Configure a hora e o minuto de beginTime
                     val beginCalendar = Calendar.getInstance()
                     beginCalendar.set(Calendar.HOUR_OF_DAY, beginHour)
                     beginCalendar.set(Calendar.MINUTE, beginMinute)
@@ -491,20 +472,22 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             return false
         }
 
-
         fun mapDaysToNumber(daysString: String): Long {
             when (daysString) {
                 "1 Days" -> return 1
+                "2 Days" -> return 2
                 "3 Days" -> return 3
+                "5 Days" -> return 5
                 "7 Days" -> return 7
                 "30 Days" -> return 30
+                "60 Days" -> return 60
+                "90 Days" -> return 90
                 "Unlimited" -> return Long.MAX_VALUE
                 else -> return 0
             }
         }
 
         private fun markPhotosAsHidden(groupId: String) {
-            // Acesse o Firestore e marque as fotos do grupo como ocultas
             val firestore = FirebaseFirestore.getInstance()
             val photosCollection = firestore.collection("photos")
 
@@ -514,14 +497,11 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         for (document in task.result) {
-                            // Marque cada foto como oculta no Firestore
                             val docRef = photosCollection.document(document.id)
                             docRef.update("isDeleted", true)
                                 .addOnSuccessListener {
-                                    // Foto marcada como oculta com sucesso
                                 }
                                 .addOnFailureListener { exception ->
-                                    // Trate a falha ao marcar a foto como oculta
                                 }
                         }
                     } else {
@@ -542,7 +522,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
                     val endHour = endTimeParts[0].toInt()
                     val endMinute = endTimeParts[1].toInt()
 
-                    // Configure a hora e o minuto de endTime
                     val endCalendar = Calendar.getInstance()
                     endCalendar.set(Calendar.HOUR_OF_DAY, endHour)
                     endCalendar.set(Calendar.MINUTE, endMinute)
@@ -554,7 +533,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             return false
         }
 
-
         private fun clearPhotoUriFromSharedPreferences(groupId: String) {
             val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
             val editor = sharedPreferences.edit()
@@ -562,6 +540,4 @@ class DetailsFragment : Fragment(R.layout.fragment_details) {
             editor.apply()
         }
     }
-
-
 }

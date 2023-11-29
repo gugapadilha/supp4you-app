@@ -16,9 +16,7 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
         val groupCodeTextView: TextView = itemView.findViewById(R.id.tv_group_code)
         val beginTime: TextView = itemView.findViewById(R.id.tv_begin_time)
         val endTime: TextView = itemView.findViewById(R.id.tv_end_time)
-
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_groups, parent, false)
         return GroupViewHolder(itemView)
@@ -29,7 +27,6 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
 
         holder.groupNameTextView.text = "Group: " + group.groupName
         holder.groupCodeTextView.text = "Code: " +String.format("%04d", group.groupCode)
-        // Formatar o horário de início
         if (!group.beginTime.isNullOrEmpty()) {
             try {
                 val beginTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -42,7 +39,6 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
             holder.beginTime.text = "00:00"
         }
 
-        // Formatar o horário de término
         if (!group.endTime.isNullOrEmpty()) {
             try {
                 val endTimeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -55,9 +51,7 @@ class AllGroupsAdapter(private val groupList: List<GroupModel>) : RecyclerView.A
             holder.endTime.text = "00:00"
         }
 
-        // Define um OnClickListener para lidar com a ação de clicar em um grupo
         holder.itemView.setOnClickListener {
-        // Implemente a ação que você deseja quando um grupo é clicado
         }
     }
 

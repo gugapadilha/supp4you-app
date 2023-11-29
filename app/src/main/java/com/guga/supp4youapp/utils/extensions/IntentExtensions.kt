@@ -13,8 +13,6 @@ fun Intent.putEventArgs(event: Event): Intent {
     return putExtra(EVENT_ARGS_KEY, event)
 }
 
-// If activity call eventArgs but no Event have been passed,
-// it`s preferable to straight throw an exception to alert developers of missing argument
 val Intent.eventArgs: Event?
     get() = getParcelableEvent()
 

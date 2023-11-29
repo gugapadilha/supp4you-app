@@ -14,7 +14,6 @@ import com.guga.supp4youapp.presentation.ui.camera.model.CameraActions
 import com.guga.supp4youapp.utils.livedata.SingleLiveEvent
 import initialCameraScreenState
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import setState
@@ -38,7 +37,6 @@ class CameraViewModel(
 
     private lateinit var currentEvent: Event
 
-    //WARNING: this method needs to be called BEFORE we can continue with ANY file operations
     fun setCurrentEvent(event: Event) {
         currentEvent = event
 

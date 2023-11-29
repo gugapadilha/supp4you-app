@@ -67,9 +67,13 @@
     //Days
     <string-array name="days">
         <item>1 Days</item>
+        <item>2 Days</item>
         <item>3 Days</item>
+        <item>5 Days</item>
         <item>7 Days</item>
         <item>30 Days</item>
+        <item>60 Days</item>
+        <item>90 Days</item>
         <item>Unlimited</item>
     </string-array>
 

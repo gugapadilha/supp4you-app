@@ -108,12 +108,13 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/textView"
-        android:layout_width="wrap_content"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
         android:hint="@string/write_your_name"
         android:textColorHint="@color/grey_300"
         android:textColor="@color/white"
         android:imeOptions="actionDone"
+        android:maxLength="25"
         android:singleLine="true"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/view2"

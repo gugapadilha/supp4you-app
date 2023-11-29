@@ -180,12 +180,6 @@ class DetailsFragmentTest {
         //Assert
         assertNotSame(groups.size, deletedGroups.size)
     }
-
-    private fun createGroup(currentDate: Date, daysString: String): Group {
-        val timestamp = Date(currentDate.time - TimeUnit.DAYS.toMillis(2))
-        return Group(timestamp, daysString)
-    }
-
     private fun checkGroupsForAutoDeletion(currentDate: Date, groups: List<Group>): List<Group> {
         val groupsToDelete = mutableListOf<Group>()
         for (group in groups) {
@@ -204,6 +198,13 @@ class DetailsFragmentTest {
         }
         return groupsToDelete
     }
+
+
+    private fun createGroup(currentDate: Date, daysString: String): Group {
+        val timestamp = Date(currentDate.time - TimeUnit.DAYS.toMillis(2))
+        return Group(timestamp, daysString)
+    }
+
 
     private fun mapDaysToNumber(daysString: String): Long {
         when (daysString) {

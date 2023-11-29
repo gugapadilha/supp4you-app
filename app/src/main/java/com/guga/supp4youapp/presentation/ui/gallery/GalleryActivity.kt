@@ -36,7 +36,6 @@ class GalleryActivity : AppCompatActivity() {
             if (groupId != null) {
                 fetchGroupName(groupId)
                 fetchPhotos(groupId)
-
             }
         }
 
@@ -46,9 +45,7 @@ class GalleryActivity : AppCompatActivity() {
             fetchPhotos(groupId)
 
             saveGroupToSharedPreferences(groupId)
-
         }
-
     }
 
     private fun fetchGroupName(groupId: String) {
@@ -60,14 +57,11 @@ class GalleryActivity : AppCompatActivity() {
             .addOnSuccessListener { document ->
                 if (document != null) {
                     val groupName = document.getString("groupName")
-                    binding.groupCode.text = "Code: $groupId" // Atualiza o TextView com o groupId
+                    binding.groupCode.text = "Code: $groupId"
                     binding.tvGroup.text = groupName
-                } else {
-                    // Trate o caso em que o documento não existe
                 }
             }
             .addOnFailureListener { exception ->
-                // Trate a falha na consulta ao Firestore
             }
     }
 
@@ -83,7 +77,6 @@ class GalleryActivity : AppCompatActivity() {
                     val beginTime = document.getString("selectBeginTime")
                     val endTime = document.getString("selectEndTime")
 
-                    // Salva o nome e o código do grupo nos SharedPreferences
                     val sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.putString("groupName", groupName)
@@ -92,11 +85,9 @@ class GalleryActivity : AppCompatActivity() {
                     editor.putString("selectEndTime", endTime)
                     editor.apply()
 
-                    // Adiciona o grupo ao GroupManager se necessário
+                    //Add to group manager to get the details
                     GroupManager.addGroup(GroupModel(groupName = groupName.toString(), groupCode = groupId!!.toInt(), beginTime = beginTime!!, endTime = endTime!!))
                     GroupManager.saveEnteredGroups(this)
-                } else {
-                    // Trate o caso em que o documento não existe
                 }
             }
             .addOnFailureListener { exception ->
@@ -112,41 +103,32 @@ class GalleryActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { documents ->
                 val photoItems = mutableListOf<PhotoItem>()
-                val photosToDelete = mutableListOf<String>() // Lista de IDs de fotos a serem excluídas
+                val photosToDelete = mutableListOf<String>()
 
                 for (document in documents) {
                     val photoUriString = document.getString("photoUri")
-                    val isDeleted = document.getBoolean("isDeleted") ?: false // Obtém o status de exclusão
+                    val isDeleted = document.getBoolean("isDeleted") ?: false
 
                     if (!photoUriString.isNullOrBlank()) {
                         val photoUri = Uri.parse(photoUriString)
                         val personName = document.getString("personName") ?: "Unknown User"
 
-                        val photoItem = PhotoItem(
-                            photoUri,
-                            personName,
-                            isDeleted // Define o status de exclusão no PhotoItem
-                        )
+                        val photoItem = PhotoItem(photoUri, personName, isDeleted)
 
                         if (isDeleted) {
-                            // Se a foto estiver marcada como excluída, adicione-a à lista de fotos para exclusão
                             photosToDelete.add(document.id)
                         } else {
-                            // Adicione a foto à lista de fotos a serem exibidas
                             photoItems.add(photoItem)
                         }
                     }
                 }
 
-                // Exclua as fotos marcadas para exclusão do Firestore
                 for (photoId in photosToDelete) {
                     val docRef = firestore.collection("photos").document(photoId)
                     docRef.delete()
                         .addOnSuccessListener {
-                            // Foto excluída com sucesso
                         }
                         .addOnFailureListener { exception ->
-                            // Trate a falha na exclusão da foto
                         }
                 }
 
@@ -154,11 +136,9 @@ class GalleryActivity : AppCompatActivity() {
                 binding.swipeRefreshLayout.isRefreshing = false
             }
             .addOnFailureListener { exception ->
-                // Trate a falha ao recuperar as fotos do Firestore.
                 binding.swipeRefreshLayout.isRefreshing = false
             }
     }
-
 
     private fun setupRecyclerView() {
         galleryAdapter = GalleryAdapter()

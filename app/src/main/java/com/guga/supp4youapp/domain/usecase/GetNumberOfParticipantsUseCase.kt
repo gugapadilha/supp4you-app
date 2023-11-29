@@ -1,7 +1,7 @@
 package com.guga.supp4youapp.domain.usecase
 
 import com.guga.supp4youapp.domain.model.Event
-import com.untitledshows.pov.domain.repository.EventRepository
+import com.guga.supp4youapp.domain.repository.EventRepository
 import kotlinx.coroutines.flow.Flow
 
 class GetNumberOfParticipantsUseCase(
