@@ -34,6 +34,7 @@
 ![image](https://github.com/gugapadilha/supp4you-app/assets/79876042/c4eb288c-8283-4c33-a8a6-f9369b733ce4)
 
    ### Architecture and tests:
-   
+   ###
+   ###
 ![structure](https://github.com/gugapadilha/supp4you-app/assets/79876042/0cada039-50f9-41d7-ac5b-de10966b2397)
 ![coverage](https://github.com/gugapadilha/supp4you-app/assets/79876042/4e7510f7-38d6-403d-9f5b-72cfe5a2fef5)
