@@ -28,8 +28,8 @@
    ### Images Mobile Project:
   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![image](https://github.com/gugapadilha/supp4you-app/assets/79876042/5354eedf-e762-467b-adc9-2f73346b411a)
-![image](https://github.com/gugapadilha/supp4you-app/assets/79876042/bd53d3b2-1f4b-42c1-99a3-fdd0adc3cacb)
+![image](https://github.com/gugapadilha/supp4you-app/assets/79876042/912bc73f-03a1-4508-87eb-1bfcfdbf26de)
+
 
 
 ![Screenshot_1696872117](https://github.com/gugapadilha/supp4you-app/assets/79876042/27f2487f-0f5d-4153-b55a-8d389492b790)
