@@ -29,6 +29,7 @@
   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 ![image](https://github.com/gugapadilha/supp4you-app/assets/79876042/912bc73f-03a1-4508-87eb-1bfcfdbf26de)
+![image](https://github.com/gugapadilha/supp4you-app/assets/79876042/400fd3ca-9db5-43da-9c3b-f7b006f48857)
 
 
 
